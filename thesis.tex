@@ -1,0 +1,157 @@
+% For printing in a4
+%\documentclass[a4,10pt,twoside,openright,italian,english]{book}% twoside!
+
+% For printing with the A5 format
+\documentclass[10pt,twoside,openright,english,italian]{book}% twoside!
+
+% Set paper size
+\usepackage[twoside=true]{geometry}
+
+%For printing with the weird format
+\geometry{
+	paperwidth=17cm,
+	paperheight=24cm,
+	margin=2cm,
+	top=2.3cm,
+	bindingoffset=0.4cm
+}
+% For printing in a4
+%\geometry{a4paper,
+%  margin=3cm,
+%  top=3.8cm,
+%  bindingoffset=0.4cm
+%}
+
+%Uncomment this for final prints: this just enables printing on a4 paper
+\usepackage[cam,center,a4,pdflatex,axes]{crop}
+
+\usepackage{phdthesis}
+
+\usepackage{fancyhdr}
+\usepackage{color}
+\usepackage{array}
+\usepackage{mdwmath}
+\usepackage{mdwtab}
+\usepackage{amsmath,amssymb}
+\usepackage{cite}
+\usepackage{graphicx}
+\usepackage{glossaries}
+\usepackage{listings}
+\usepackage{subfig}
+\usepackage{booktabs}
+\usepackage{latexsym}
+\usepackage{color}
+\usepackage{url}
+\usepackage{bnf}
+\usepackage{rotating}
+\usepackage{multirow}
+\usepackage{phdtitle}
+\usepackage{paralist}
+\usepackage{bibentry}
+%\usepackage[algochapter]{algorithm2e}
+\usepackage[bookmarks=true,pdftex=false,bookmarksopen=true,pdfborder={0,0,0}]{hyperref}
+\usepackage{lscape}
+\usepackage{algorithmic}
+\usepackage{algorithm}
+\usepackage{longtable}
+\usepackage[T1]{fontenc}
+\usepackage[latin1]{inputenc}
+
+%% \hyphenation{} is used to force the
+\hyphenation{}
+
+\newtheorem{Definition}{Definition}[section]
+
+\lstset{tabsize=2,basicstyle=\footnotesize,breaklines=true}
+
+\usepackage[english,italian]{babel}
+
+\usepackage{ulem}
+\normalem
+
+\hypersetup{pdftitle={Deep Learning for Structured Prediction}, pdfauthor={Visin Francesco}}
+
+\nobibliography*
+
+\department {Department of Electronics, Information and Bioengineering}
+\phdprogram{Doctoral Programme In Computer Science}
+
+\author{Francesco Visin}
+\title{Deep Learning for Structured Prediction}
+\supervisor{Matteo Matteucci}
+\cosupervisor{Aaron Courville}
+\tutor{Andrea Bonarini}
+\chair{Coordinator Name}
+\titleimage{img/logopoli.png}
+\phdcycle{2016 -- XXVIII}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Let's Start The Real Document
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{document}
+\selectlanguage{english}
+
+\maketitle
+
+\pagestyle{empty}
+
+\cleardoublepage
+\newpage
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Acknowledgement
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%\input{acknowledge}
+
+\cleardoublepage
+\newpage
+
+\pagestyle{fancy}
+% change numbering into Roman numbers for the introductory part
+\setcounter{page}{1}
+\pagenumbering{Roman}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Abstract
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\input{chapters/abstract}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Summary
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\selectlanguage{english}
+\input{chapters/summary}
+\selectlanguage{english}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% TOC
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\tableofcontents
+\cleardoublepage
+\newpage
+
+% Now lets go back to normal numbering
+\setcounter{page}{1}
+\pagenumbering{arabic}
+
+\cleardoublepage
+\input{chapters/chapter1} % uncomment if you want part I
+\input{chapters/chapter2} % uncomment if you want part I
+\input{chapters/chapter3} % uncomment if you want part I
+\input{chapters/chapter4} % uncomment if you want part I
+\input{chapters/chapter5} % uncomment if you want part I
+\input{chapters/chapter6} % uncomment if you want part I
+\input{chapters/chapter7} % uncomment if you want part I
+
+%\cleardoublepage
+%\listoffigures
+%\listoftables
+
+\cleardoublepage
+\phantomsection
+\addcontentsline{toc}{chapter}{\bibname}
+\small
+\bibliographystyle{plain}
+\bibliography{thesis}
+
+\end{document}
