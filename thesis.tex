@@ -27,17 +27,26 @@
 
 \usepackage{phdthesis}
 
+\usepackage{pgf}
+\usepackage{tikz}
+\usetikzlibrary{positioning}
+\usetikzlibrary{decorations.pathreplacing}
+\usetikzlibrary{shapes.geometric}
+\usetikzlibrary{automata}
+\usetikzlibrary{arrows}
+\usepackage{neuralnetwork}
+
 \usepackage{fancyhdr}
 \usepackage{color}
 \usepackage{array}
 \usepackage{mdwmath}
 \usepackage{mdwtab}
-\usepackage{amsmath,amssymb}
-\usepackage{cite}
+\usepackage{amsmath,amsthm,amssymb}
+%\usepackage{cite}
 \usepackage{graphicx}
 \usepackage{glossaries}
 \usepackage{listings}
-\usepackage{subfig}
+%\usepackage{subfig}% hyperref support within the subfig package is broken
 \usepackage{booktabs}
 \usepackage{latexsym}
 \usepackage{color}
@@ -47,16 +56,28 @@
 \usepackage{multirow}
 \usepackage{phdtitle}
 \usepackage{paralist}
-\usepackage{bibentry}
+%\usepackage{bibentry}
 %\usepackage[algochapter]{algorithm2e}
 \usepackage[bookmarks=true,pdftex=false,bookmarksopen=true,pdfborder={0,0,0}]{hyperref}
 \usepackage{lscape}
-\usepackage{algorithmic}
+%\usepackage{algorithmic}
 \usepackage{algorithm}
 \usepackage{longtable}
 \usepackage[T1]{fontenc}
 \usepackage[latin1]{inputenc}
+%\usepackage[utf8]{inputenc}
+\usepackage{authblk}
+\usepackage[framemethod=tikz]{mdframed}
+\usepackage{natbib}
+\usepackage{subcaption}
+\usepackage{tikz}
+\usepackage{xcolor}
+\usepackage{epigraph}
+\usepackage{float}
+\usepackage{todonotes}
+\setlength{\marginparwidth}{3cm}  % Set margin width for todonotes
 
+\usepackage{hyperref}
 %% \hyphenation{} is used to force the
 \hyphenation{}
 
@@ -71,7 +92,7 @@
 
 \hypersetup{pdftitle={Deep Learning for Visual Structured Prediction}, pdfauthor={Visin Francesco}}
 
-\nobibliography*
+%\nobibliography*
 
 \department {Department of Electronics, Information and Bioengineering}
 \phdprogram{Doctoral Programme In Computer Science}
@@ -84,6 +105,38 @@
 \chair{Coordinator Name}
 \titleimage{img/logopoli.png}
 \phdcycle{2016 -- XXVIII}
+
+% define todocommand
+%\newcommand\todo[1]{\textcolor{red}{#1}}
+
+% From conv_arithmetic
+\definecolor{blue}{RGB}{38,139,210}
+\definecolor{cyan}{RGB}{42,161,152}
+\definecolor{violet}{RGB}{108,113,196}
+\definecolor{red}{RGB}{220,50,47}
+\definecolor{base01}{RGB}{88,110,117}
+\definecolor{base02}{RGB}{7,54,66}
+\definecolor{base03}{RGB}{0,43,54}
+
+\usetikzlibrary{calc,shapes,positioning}
+
+\newtheorem{relationship}{Relationship}
+\providecommand*{\relationshipautorefname}{Relationship}
+\surroundwithmdframed[
+    topline=false,
+    bottomline=false,
+    middlelinewidth=0.5pt,
+    linecolor=base01,
+    roundcorner=5pt,
+    innertopmargin=0pt,
+    leftmargin=15pt,
+    rightmargin=15pt,
+    nobreak=true,
+]{relationship}
+
+\let\originalepigraph\epigraph
+\renewcommand\epigraph[2]{\originalepigraph{\textit{#1}}{\textsc{#2}}}
+
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Let's Start The Real Document
@@ -98,10 +151,14 @@
 \cleardoublepage
 \newpage
 
+\setlength{\epigraphwidth}{0.4\textwidth}
+\epigraph{All models are wrong, but some are useful.}{George E. P. Box}
+\clearpage
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-% Acknowledgement
+% Acknowledgements
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%\input{acknowledge}
+%\input{acknowledgements}
 
 \cleardoublepage
 \newpage
@@ -135,13 +192,12 @@
 \pagenumbering{arabic}
 
 \cleardoublepage
-\input{chapters/chapter1} % uncomment if you want part I
-\input{chapters/chapter2} % uncomment if you want part I
-\input{chapters/chapter3} % uncomment if you want part I
-\input{chapters/chapter4} % uncomment if you want part I
-\input{chapters/chapter5} % uncomment if you want part I
-\input{chapters/chapter6} % uncomment if you want part I
-\input{chapters/chapter7} % uncomment if you want part I
+\input{chapters/chapter1}
+\input{chapters/chapter2}
+\input{chapters/chapter3}
+\input{chapters/chapter4}
+\input{chapters/chapter5}
+\input{chapters/chapter6}
 
 %\cleardoublepage
 %\listoffigures
@@ -151,7 +207,8 @@
 \phantomsection
 \addcontentsline{toc}{chapter}{\bibname}
 \small
-\bibliographystyle{plain}
-\bibliography{thesis}
+\bibliographystyle{natbib}
+%\bibliographystyle{plain}
+\bibliography{ml,myrefs}
 
 \end{document}
