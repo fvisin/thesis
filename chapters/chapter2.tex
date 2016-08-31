@@ -49,56 +49,21 @@ rule inspired the Perceptron~(see~\autoref{fig:perceptron}), the first ANN that
 was able to vary its own weights, i.e. to find the setting that allowed it to
 exhibit the desired behavior~\citep{Rosenblatt57}.
 
-%\tikzstyle{colorful} = [fill=gray!10]
-%\tikzstyle{block} = [draw, colorful, rectangle, minimum height=3em, minimum width=3em]
-% \tikzstyle{input} = [coordinate]
-% \begin{tikzpicture}[auto, node distance=1cm,>=latex']
-%     % box outside
-%     \node [block] at (0,0) (input) {};
-%     % step function
-%     \draw[line width=0.05mm]([xshift=0pt]input)  +(0,-12pt) -- +(0,12pt); % thin vert
-%     \draw[line width=0.25mm](input)  +(0pt,8pt) -- +(12pt,8pt); %top horiz
-%     \draw[line width=0.25mm]([xshift=0pt]input)  +(0,-8pt) -- +(0,8pt); % wide vert
-%     %\draw[rotate=90]([xshift=-9pt]input)  +(0,-12pt) -- +(0,12pt);
-%     \draw[line width=0.25mm](input)  +(-12pt,-8pt) -- +(0pt,-8pt); %top horiz
-% \end{tikzpicture}
-
+% PERCEPTRON
 \begin{figure}[h]
     \centering
     \begin{neuralnetwork} [nodespacing=6mm, layerspacing=25mm,
             maintitleheight=2.5em, layertitleheight=4em,
             height=3, toprow=false, nodesize=17pt,
             style={}, title={}, titlestyle={}]
-        \newcommand{\linkstext}[4] {
-            % from layer=#1, from node=#2, to layer=#3, to node=#4
-            $w_#2$
-        }
 
-        % Text
-        %\newcommand{\nodetextclear}[2]{}
-        \newcommand{\nodetextxi}[2]{$x_#2$}
-        \newcommand{\nodetextyi}[2]{$y_#2$}
-        \newcommand{\nodetexts}[2]{$s$}
-        \newcommand{\nodetexty}[2]{$y$}
-
-        % Step function
-        \newcommand{\nodetextstep}[2]{
-            \tikzstyle{input} = [coordinate]
-            \begin{tikzpicture}[auto, >=latex']
-            \draw[line width=0.05mm](0,0)  +(0,-8pt) -- +(0,8pt); % thin vert
-            \draw[line width=0.25mm](0,0)  +(0pt,5pt) -- +(8pt,5pt); % wide top horiz
-            \draw[line width=0.25mm](0,0)  +(0,-5pt) -- +(0,5pt); % wide vert
-            \draw[line width=0.25mm](0,0)  +(-8pt,-5pt) -- +(0pt,-5pt); % wide top horiz
-            \end{tikzpicture}
-        }
-
-        % Layers
+        %%%%% Layers
         \inputlayer[count=5, bias=false, title=Input\\layer, text=\nodetextxi]   % bias=true, nodeclass={input neuron}
-        \outputlayer[count=1, text=\nodetexts]   % bias=false, nodeclass={output neuron}
-        {\setdefaultlinklabel{\linkstext}\linklayers}
+        \outputlayer[count=1, text=\nodetextsigma]   % bias=false, nodeclass={output neuron}
+        {\setdefaultlinklabel{\wilink}\linklayers}
         %\define@key{network}{layerspacing} {\pgfmathsetlengthmacro\nn@layerspacing{#1}}
         %\define@key{}{layerspacing} {2mm}
-        \def\neuralnetwork\nn@layerspacing{2em}
+        %\def\neuralnetwork\nn@layerspacing{2em}
         \outputlayer[count=1, text=\nodetextstep]   % bias=false, nodeclass={output neuron}
         \linklayers
         \outputlayer[count=1, text=\nodetexty]   % bias=false, nodeclass={output neuron}
@@ -108,7 +73,7 @@ exhibit the desired behavior~\citep{Rosenblatt57}.
     \caption{\label{fig:perceptron}A representation of the Perceptron.}
 \end{figure}
 
-The activation rule of the perceptron is very simple and is at the base\todo{verifica base or bases} of
+The activation rule of the perceptron is very simple and is at the base of
 many modern neural networks. The weighted sum of each input $x_i$ and its
 corresponding weight $w_i$ is computed as
 
@@ -142,6 +107,7 @@ fashion:
 of the Perceptron and $x_i^t$ and $w_i^t$ are respectively the $i$-th input and
 weight at time $t$.
 
+
 The introduction of a model that could learn from the data
 %This discovery
 was welcomed with excitement as the beginning of a new era and
@@ -150,36 +116,60 @@ research in ANNs became very active for approximately a decade, until in
 Perceptron, demonstrating that a single layered Perceptron could not model
 basic operations like the XOR logic operation~\citep{Minsky69}.
 
-The excessive excitement for the early successes of ANNs turned into strong
+The excessive enthusiasm for the early successes of ANNs turned into strong
 disappointment: even if~\cite{Minsky69} showed that a multiple layered
 Perceptron could model the XOR bitwise operation, it also pointed out that
 Rosenblatt's learning algorithm was limited to single layered Perceptrons and
 could not autonomously learn how to solve the problem. The expectation of an
 artificial intelligence that could learn by itself to solve problems and
-interact with humans appeared suddently unrealistic and most of the research
-community lost interest in ANNs.
+interact with humans appeared suddenly unrealistic and most of the research
+community lost interest in ANNs. The field experienced a severe slow down and
+most of the fundings were cut.
 
-The field experienced a severe slow down after most of the fundings were cut,
-until in 1982 John Hopfield presented a model of the human memory that did not
-only give insights on how the brain works, but was also useful in practical
-applications and had a sound and detail mathematical grounding. At the same
-time at the US-Japan Joint Conference on Cooperative/Competitive Neural
-Networks Japan announched a renewed effort in building Neural Networks and the
-fear that the US might be left behind renewed the US effort on this topic.
+After a decade known as the AI Winter, in 1982 John Hopfield presented a model
+of the human memory that did not only give insights on how the brain works, but
+was also useful in practical applications and had a sound and detail
+mathematical grounding. At the same time at the US-Japan Joint Conference on
+Cooperative/Competitive Neural Networks Japan announced a renewed effort in
+building Neural Networks and the fear that the US might be left behind renewed
+their effort on this topic.
 
-The real breakthrough that caused the
+The breakthrough that completely restored the interest in the field came in
+1986, when \cite{Rumelhart86b} rediscovered the backpropagation
+algorithm~\citep{Werbos74} that allowed to train ANNs composed by multiple
+layers~\autoref{sec:backprop}. Since then ANNs have been constantly focus of
+study and innovation and established the state of the art in several domains.
 
-It was nt until the rediscovery of the backpropagation algorithm in 1986 that the field gained widespread interest again.
+\subsection{Backpropagation}\label{sec:backprop}
+The learning rule introduced with Perceptrons did not allow to train models
+with multiple layers, such as that of~\autoref{fig:MLP}.
 
-The backpropagation algorithm, originally discovered by Werbos in 1974 was rediscovered in 1986 with the book Learning Internal Representation by Error Propagation by Rumelhart, Hinton and Williams. Backpropagation is a form of the gradient descent algorithm used with artificial neural networks for minimization and curve-fitting.
+% MLP
+\begin{figure}[h]
+    \centering
+    \begin{neuralnetwork} [nodespacing=6mm, layerspacing=25mm,
+            maintitleheight=2.5em, layertitleheight=4em,
+            height=3, toprow=false, nodesize=17pt,
+            style={}, title={}, titlestyle={}]
+        %%%%% Layers
+        \inputlayer[count=5, bias=false, title=Input\\layer, text=\nodetextxi]   % bias=true, nodeclass={input neuron}
+        %{\setdefaultlinklabel{\linkstext}\linklayers}
+        \hiddenlayer[count=5, bias=false, title=Hidden\\layer, text=\nodetexthi]   % bias=true, nodeclass={input neuron}
+        {\setdefaultlinklabel{\wijlink}\linklayers}
+        \outputlayer[count=1, text=\nodetextsigma]   % bias=false, nodeclass={output neuron}
+        \linklayers
+        \outputlayer[count=1, text=\nodetextsigmoid]   % bias=false, nodeclass={output neuron}
+        \linklayers
+        \outputlayer[count=1, text=\nodetexty]   % bias=false, nodeclass={output neuron}
+        \linklayers
+    \end{neuralnetwork}
+    \centering
+    \caption{\label{fig:MLP}A multi-layered Perceptron}
+\end{figure}
 
-It wasn't until 1986, when the backpropagation algorithm~\cite{origBackprop}
-that allowed to train ANNs composed by more than one layer was
-rediscovered~\citep{backprop}, that ANNs became an active field of study again.
-Since then, ANNs have been applied to many fields, achieving state of the art
-results in computer vision~\cite{something}, robotics~\cite{something},
-medical diagnostics~\cite{something}, astronomy~\cite{something}, ..
+The reason why the learning rule Perceptron was not
 
+form of the gradient descent algorithm used with artificial neural networks for minimization and curve-fitting.
 
 In the new millennium, deep NNs have finally attracted wide-spread attention,
 mainly by outperforming alternative machine learning methods such as kernel
