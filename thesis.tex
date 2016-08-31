@@ -60,7 +60,6 @@
 \usepackage{paralist}
 %\usepackage{bibentry}
 %\usepackage[algochapter]{algorithm2e}
-\usepackage[bookmarks=true,pdftex=false,bookmarksopen=true,pdfborder={0,0,0}]{hyperref}
 \usepackage{lscape}
 %\usepackage{algorithmic}
 \usepackage{algorithm}
@@ -79,15 +78,14 @@
 \usepackage{todonotes}
 \setlength{\marginparwidth}{3cm}  % Set margin width for todonotes
 
-\usepackage{hyperref}
-%% \hyphenation{} is used to force the
+\usepackage[english,italian]{babel} % has to precede hyperref to set the language of \autoref
+\usepackage[bookmarks=true,pdftex=false,bookmarksopen=true,pdfborder={0,0,0}]{hyperref}
 \hyphenation{}
 
 \newtheorem{Definition}{Definition}[section]
 
 \lstset{tabsize=2,basicstyle=\footnotesize,breaklines=true}
 
-\usepackage[english,italian]{babel}
 
 \usepackage{ulem}
 \normalem

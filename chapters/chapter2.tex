@@ -99,14 +99,14 @@ biggest innovation of~\cite{Rosenblatt57}, is probably the update
 algorithm that allowed to modify the weights of the model in a Hebbian rule
 fashion:
 
-\begin{equation*}
+\begin{equation}\label{eq:perceptron_lr}
     w_i^{(t+1)} = w_i^{t} + \eta \cdot (\hat y - y) \cdot x_i^{t}
-\end{equation*}
+\end{equation}
 
 \noindent where $\hat y$ is the target (i.e. desired) value, $y$ is the output
-of the Perceptron and $x_i^t$ and $w_i^t$ are respectively the $i$-th input and
-weight at time $t$.
-
+of the Perceptron, $x_i^t$ and $w_i^t$ are respectively the $i$-th input and
+weight at time $t$ and $\eta$ is a scaling factor that allows to
+adjust the magnitude by which the weights are modified.
 
 The introduction of a model that could learn from the data
 %This discovery
@@ -142,7 +142,8 @@ study and innovation and established the state of the art in several domains.
 
 \subsection{Backpropagation}\label{sec:backprop}
 The learning rule introduced with Perceptrons did not allow to train models
-with multiple layers, such as that of~\autoref{fig:MLP}.
+with multiple layers (i.e. with \emph{hidden} layers), such as the one depicted
+in~\autoref{fig:MLP}.
 
 % MLP
 \begin{figure}[h]
@@ -167,8 +168,8 @@ with multiple layers, such as that of~\autoref{fig:MLP}.
     \caption{\label{fig:MLP}A multi-layered Perceptron}
 \end{figure}
 
-The reason why the learning rule Perceptron was not
-
+This was not possible because to compute the variation of a weight
+with~\autoref{eq:perceptron_lr}
 form of the gradient descent algorithm used with artificial neural networks for minimization and curve-fitting.
 
 In the new millennium, deep NNs have finally attracted wide-spread attention,
