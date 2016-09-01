@@ -149,13 +149,13 @@ in~\autoref{fig:MLP}.
 \begin{figure}[h]
     \centering
     \begin{neuralnetwork} [nodespacing=6mm, layerspacing=25mm,
-            maintitleheight=2.5em, layertitleheight=4em,
-            height=3, toprow=false, nodesize=17pt,
+            maintitleheight=2.5em, layertitleheight=5em,
+            height=3, toprow=true, nodesize=17pt,
             style={}, title={}, titlestyle={}]
         %%%%% Layers
-        \inputlayer[count=5, bias=false, title=Input\\layer, text=\nodetextxi]   % bias=true, nodeclass={input neuron}
+        \inputlayer[count=3, bias=false, title=Input\\layer, text=\nodetextxi]   % bias=true, nodeclass={input neuron}
         %{\setdefaultlinklabel{\linkstext}\linklayers}
-        \hiddenlayer[count=5, bias=false, title=Hidden\\layer, text=\nodetexthi]   % bias=true, nodeclass={input neuron}
+        \hiddenlayer[count=4, bias=true, title=Hidden\\layer, text=\nodetexthi]   % bias=true, nodeclass={input neuron}
         {\setdefaultlinklabel{\wijlink}\linklayers}
         \outputlayer[count=1, text=\nodetextsigma]   % bias=false, nodeclass={output neuron}
         \linklayers
