@@ -26,6 +26,7 @@
 
 \define@key{network}{nodespacing} {\pgfmathsetlengthmacro\nn@nodespacing{#1}}
 \define@key{network}{layerspacing} {\pgfmathsetlengthmacro\nn@layerspacing{#1}}
+\newcommand{\redefinelayerspacing}[1] {\pgfmathsetlengthmacro\nn@layerspacing{#1}}
 \define@key{network}{height} {\def\nn@height{#1}}
 \define@key{network}{maintitleheight} {\pgfmathsetlengthmacro\nn@maintitleheight{#1}}
 \define@key{network}{layertitleheight} {\pgfmathsetlengthmacro\nn@layertitleheight{#1}}
