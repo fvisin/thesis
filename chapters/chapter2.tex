@@ -136,12 +136,21 @@ their effort on this topic.
 
 The breakthrough that completely restored the interest in the field came in
 1986, when \cite{Rumelhart86b} rediscovered the backpropagation
-algorithm~\citep{Werbos74} that allowed to train ANNs composed by multiple
-layers~\autoref{sec:backprop}. Since then ANNs have been constantly focus of
-study and innovation and established the state of the art in several domains.
+algorithm~\citep{Linnainmaa70,Werbos74} that allowed to train ANNs composed by
+multiple layers~(see \autoref{sec:backprop}). Since then ANNs have been
+constantly focus of study and innovation and established the state of the art
+in several domains.
+
+% SCHMIDHUEBER
+%In the new millennium, deep NNs have finally attracted wide-spread attention,
+%mainly by outperforming alternative machine learning methods such as kernel
+%machines in numerous important applications. In fact, since 2009, supervised
+%deep NNs have won many official international pattern recognition competitions
+%achieving the first superhuman visual pattern recognition results in limited
+%domains.
 
 \subsection{Backpropagation}\label{sec:backprop}
-The learning rule introduced with Perceptrons did not allow to train models
+The learning rule introduced with Perceptrons does not allow to train models
 with multiple layers (i.e. with \emph{hidden} layers), such as the one depicted
 in~\autoref{fig:MLP}.
 
@@ -168,41 +177,45 @@ in~\autoref{fig:MLP}.
     \caption{\label{fig:MLP}A multi-layered Perceptron}
 \end{figure}
 
-This was not possible because to compute the variation of a weight
-with~\autoref{eq:perceptron_lr}
-form of the gradient descent algorithm used with artificial neural networks for minimization and curve-fitting.
+This is not possible due to the fact that to compute the variation of the
+weights of a layer with~\autoref{eq:perceptron_lr} it is necessary to know the
+correct value of its output, which is known only for the last layer. To address
+this apparently insurmountable obstacle it suffices to notice that the
+computation performed by the activation function is a non-linear but
+differentiable function of the inputs. This allows for computing the
+partial derivatives of the error, i.e. the difference between the desired
+output and the actual one, w.r.t. the weights of the network. In other words,
+it is possible to use calculus to determine the amount by which each neuron of
+the last layer contributed to causing the error, and then further split the
+responsibility of each of them among the ones of the preceding layer. This way
+the error can be \emph{backpropagated} through the layers of the network,
+assigning to each weight its amount of blame. This information can be used by
+an \emph{optimization algorithm} to iteratively change the weights to minimize
+the error.
 
-In the new millennium, deep NNs have finally attracted wide-spread attention,
-mainly by outperforming alternative machine learning methods such as kernel
-machines in numerous important applications. In fact, since 2009, supervised
-deep NNs have won many official international pattern recognition competitions
-achieving the first superhuman visual pattern recognition results in limited
-domains.
+% Example for backprop
+\begin{figure}[h]
+    \centering
+    \begin{neuralnetwork} [nodespacing=6mm, layerspacing=25mm,
+            maintitleheight=2.5em, layertitleheight=4em,
+            height=3, toprow=false, nodesize=17pt,
+            style={}, title={}, titlestyle={}]
+        %%%%% Layers
+        \inputlayer[count=2, bias=false, title=Input\\layer, text=\nodetextxi]   % bias=true, nodeclass={input neuron}
+        \hiddenlayer[count=3, bias=false, title=Hidden\\layer, text=\nodetexthi]   % bias=true, nodeclass={input neuron}
+        {\setdefaultlinklabel{\wijllink}\linklayers}
+        \hiddenlayer[count=5, bias=false, title=Hidden\\layer, text=\nodetexthi]   % bias=true, nodeclass={input neuron}
+        {\setdefaultlinklabel{\wijllink}\linklayers}
+        \hiddenlayer[count=4, bias=false, title=Hidden\\layer, text=\nodetexthi]   % bias=true, nodeclass={input neuron}
+        {\setdefaultlinklabel{\wijllink}\linklayers}
+        \outputlayer[count=1, text=\nodetexty]   % bias=false, nodeclass={output neuron}
+        {\setdefaultlinklabel{\wijllink}\linklayers}
+    \end{neuralnetwork}
+    \centering
+    \caption{An ANN with 3 hidden layers\label{fig:BP_example}}
+\end{figure}
 
-Typically, an
-artificial neuron applies an affine transformation of its input $x$, usually
-followed by a non-linearity:
-
-\begin{equation*}
-    y = \sigma(Wx + b)
-\end{equation*}
-
-\noindent where $\sigma$ is any non-linearity, such as e.g. a sigmoid or a tanh function,
-$W$ is a weight matrix and $b$ is a bias vector.
-
-A biological neuron takes around $10^{-3}$ seconds to perform one operation,
-whereas a modern GPU can process up to NN DATA per second~\citep{NVIDIA}.
-Nonetheless, many tasks that are trivial for humans prove to be extremely
-complicated for computers. Why is that? The power of the brain lies in its
-large number of connections.\cite{SOMETHING}
-
-It is well known that the brain is organized in functional areas, each of them
-usually structured in \emph{layers} that process the incoming signal in an
-incremental fashion. These areas are usually connected both in a
-\emph{feedforward}, i.e. to neurons belonging to deeper (i.e., further away
-from the input) layers, and in a \emph{feedback} fashion (i.e. to previous
-layers in the hierarchy). Similarly, ANNs usually employ either feedforward or
-feedback connections.
+Consider the network in~\autoref{fig:BP_example}
 
 The rest of this chapter will focus on two very common kinds of ANNs
 respectively characterized by a feedforward and feedback connectivity pattern,
@@ -1265,4 +1278,18 @@ of the input, and its output size is
 
 %================================== SECTION ==================================
 \section{Recurrent networks}\label{sec:i}
+A biological neuron takes around $10^{-3}$ seconds to perform one operation,
+whereas a modern GPU can process up to NN DATA per second~\citep{NVIDIA}.
+Nonetheless, many tasks that are trivial for humans prove to be extremely
+complicated for computers. Why is that? The power of the brain lies in its
+large number of connections.\cite{SOMETHING}
+
+It is well known that the brain is organized in functional areas, each of them
+usually structured in \emph{layers} that process the incoming signal in an
+incremental fashion. These areas are usually connected both in a
+\emph{feedforward}, i.e. to neurons belonging to deeper (i.e., further away
+from the input) layers, and in a \emph{feedback} fashion (i.e. to previous
+layers in the hierarchy). Similarly, ANNs usually employ either feedforward or
+feedback connections.
+
 Write something about RNNs, LSTMs, GRUs
