@@ -64,8 +64,10 @@ exhibit the desired behavior~\citep{Rosenblatt57}.
         %\define@key{network}{layerspacing} {\pgfmathsetlengthmacro\nn@layerspacing{#1}}
         %\define@key{}{layerspacing} {2mm}
         %\def\neuralnetwork\nn@layerspacing{2em}
+        \redefinelayerspacing{18mm}
         \outputlayer[count=1, text=\nodetextstep]   % bias=false, nodeclass={output neuron}
         \linklayers
+        \redefinelayerspacing{16mm}
         \outputlayer[count=1, text=\nodetexty]   % bias=false, nodeclass={output neuron}
         \linklayers
     \end{neuralnetwork}
@@ -155,27 +157,29 @@ with multiple layers (i.e. with \emph{hidden} layers), such as the one depicted
 in~\autoref{fig:MLP}.
 
 % MLP
-\begin{figure}[h]
-    \centering
-    \begin{neuralnetwork} [nodespacing=6mm, layerspacing=25mm,
-            maintitleheight=2.5em, layertitleheight=5em,
-            height=3, toprow=true, nodesize=17pt,
-            style={}, title={}, titlestyle={}]
-        %%%%% Layers
-        \inputlayer[count=3, bias=false, title=Input\\layer, text=\nodetextxi]   % bias=true, nodeclass={input neuron}
-        %{\setdefaultlinklabel{\linkstext}\linklayers}
-        \hiddenlayer[count=4, bias=true, title=Hidden\\layer, text=\nodetexthi]   % bias=true, nodeclass={input neuron}
-        {\setdefaultlinklabel{\wijlink}\linklayers}
-        \outputlayer[count=1, text=\nodetextsigma]   % bias=false, nodeclass={output neuron}
-        \linklayers
-        \outputlayer[count=1, text=\nodetextsigmoid]   % bias=false, nodeclass={output neuron}
-        \linklayers
-        \outputlayer[count=1, text=\nodetexty]   % bias=false, nodeclass={output neuron}
-        \linklayers
-    \end{neuralnetwork}
-    \centering
-    \caption{\label{fig:MLP}A multi-layered Perceptron}
-\end{figure}
+% \begin{figure}[h]
+%     \centering
+%     \begin{neuralnetwork} [nodespacing=6mm, layerspacing=25mm,
+%             maintitleheight=2.5em, layertitleheight=5em,
+%             height=3, toprow=true, nodesize=17pt,
+%             style={}, title={}, titlestyle={}]
+%         %%%%% Layers
+%         \inputlayer[count=3, bias=false, title=Input\\layer, text=\nodetextxi]   % bias=true, nodeclass={input neuron}
+%         %{\setdefaultlinklabel{\linkstext}\linklayers}
+%         \hiddenlayer[count=4, bias=true, title=Hidden\\layer, text=\nodetexthi]   % bias=true, nodeclass={input neuron}
+%         {\setdefaultlinklabel{\wijlink}\linklayers}
+%         \outputlayer[count=1, text=\nodetextsigma]   % bias=false, nodeclass={output neuron}
+%         \linklayers
+%         \redefinelayerspacing{20.5mm}
+%         \outputlayer[count=1, text=\nodetextsigmoid]   % bias=false, nodeclass={output neuron}
+%         \linklayers
+%         \redefinelayerspacing{18mm}
+%         \outputlayer[count=1, text=\nodetexty]   % bias=false, nodeclass={output neuron}
+%         \linklayers
+%     \end{neuralnetwork}
+%     \centering
+%     \caption{\label{fig:MLP}A multi-layered Perceptron}
+% \end{figure}
 
 This is not possible due to the fact that to compute the variation of the
 weights of a layer with~\autoref{eq:perceptron_lr} it is necessary to know the
@@ -196,23 +200,30 @@ the error.
 % Example for backprop
 \begin{figure}[h]
     \centering
-    \begin{neuralnetwork} [nodespacing=6mm, layerspacing=25mm,
+    \begin{neuralnetwork} [nodespacing=7.5mm, layerspacing=23mm,
             maintitleheight=2.5em, layertitleheight=4em,
-            height=3, toprow=false, nodesize=17pt,
+            height=3, toprow=true, nodesize=17pt,
             style={}, title={}, titlestyle={}]
         %%%%% Layers
-        \inputlayer[count=2, bias=false, title=Input\\layer, text=\nodetextxi]   % bias=true, nodeclass={input neuron}
-        \hiddenlayer[count=3, bias=false, title=Hidden\\layer, text=\nodetexthi]   % bias=true, nodeclass={input neuron}
+        \inputlayer[count=2, bias=false, title=Input\\layer, text=\nodetextxi]
+        \hiddenlayer[count=3, bias=true, title=Layer 1, text=\nodetexthi]
         {\setdefaultlinklabel{\wijllink}\linklayers}
-        \hiddenlayer[count=5, bias=false, title=Hidden\\layer, text=\nodetexthi]   % bias=true, nodeclass={input neuron}
+        \hiddenlayer[count=5, bias=true, title=Layer 2, text=\nodetexthi]
         {\setdefaultlinklabel{\wijllink}\linklayers}
-        \hiddenlayer[count=4, bias=false, title=Hidden\\layer, text=\nodetexthi]   % bias=true, nodeclass={input neuron}
+        \hiddenlayer[count=4, bias=true, title=Layer 3, text=\nodetexthi]
         {\setdefaultlinklabel{\wijllink}\linklayers}
-        \outputlayer[count=1, text=\nodetexty]   % bias=false, nodeclass={output neuron}
+        \outputlayer[count=1, text=\nodetextsigma]
         {\setdefaultlinklabel{\wijllink}\linklayers}
+        \redefinelayerspacing{20.5mm}
+        \outputlayer[count=1, text=\nodetextsigmoid]
+        \linklayers
+        \redefinelayerspacing{18.8mm}
+        \outputlayer[count=1, text=\nodetexty]
+        \linklayers
     \end{neuralnetwork}
     \centering
-    \caption{An ANN with 3 hidden layers\label{fig:BP_example}}
+    %\caption{An ANN with 3 hidden layers\label{fig:BP_example}}
+    \caption{\label{fig:MLP}A multi-layered Perceptron}
 \end{figure}
 
 Consider the network in~\autoref{fig:BP_example}
