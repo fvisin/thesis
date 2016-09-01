@@ -111,14 +111,20 @@
 }
 % Text on nodes
 \newcommand{\nodetextclear}[2]{}
-\newcommand{\nodetextxi}[2]{$x_#2$}
+\newcommand{\nodetextxi}[2]{
+    \ifnum0=#2\relax
+        $b$
+    \else
+        $x_#2$
+    \fi
+}
 \newcommand{\nodetexthi}[2]{
     \ifnum0=#2\relax
         $b$
     \else
         $h_#2$
     \fi
-    }
+}
 \newcommand{\nodetextyi}[2]{$y_#2$}
 \newcommand{\nodetexts}[2]{$s$}
 \newcommand{\nodetextsigma}[2]{$\Sigma$}
