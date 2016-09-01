@@ -80,6 +80,10 @@
 
 \usepackage[english,italian]{babel} % has to precede hyperref to set the language of \autoref
 \usepackage[bookmarks=true,pdftex=false,bookmarksopen=true,pdfborder={0,0,0}]{hyperref}
+% Change subsection to Section in autoref
+\addto\extrasenglish{%
+    \renewcommand{\subsectionautorefname}{Section \negthinspace}
+}
 \hyphenation{}
 
 \newtheorem{Definition}{Definition}[section]
