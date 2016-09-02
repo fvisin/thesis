@@ -52,13 +52,13 @@ exhibit the desired behavior~\citep{Rosenblatt57}.
 % PERCEPTRON
 \begin{figure}[h]
     \centering
-    \begin{neuralnetwork} [nodespacing=6mm, layerspacing=25mm,
-            maintitleheight=2.5em, layertitleheight=4em,
-            height=3, toprow=false, nodesize=17pt,
+    \begin{neuralnetwork} [nodespacing=6mm, layerspacing=23mm,
+            maintitleheight=2.5em, layertitleheight=5em,
+            height=3, toprow=true, nodesize=17pt,
             style={}, title={}, titlestyle={}]
 
         %%%%% Layers
-        \inputlayer[count=5, bias=false, title=Input\\layer, text=\nodetextxi]   % bias=true, nodeclass={input neuron}
+        \inputlayer[count=5, bias=true, title=Input\\layer, text=\nodetextxi]   % bias=true, nodeclass={input neuron}
         \outputlayer[count=1, text=\nodetextsigma]   % bias=false, nodeclass={output neuron}
         {\setdefaultlinklabel{\wilink}\linklayers}
         %\define@key{network}{layerspacing} {\pgfmathsetlengthmacro\nn@layerspacing{#1}}
@@ -83,23 +83,29 @@ corresponding weight $w_i$ is computed as
     s = \sum_{i=0}^{n}(w_i \cdot x_i)
 \end{equation*}
 
-\noindent and is then passed through a step function of form
+\noindent where to simplify the notation the bias term $b$ has been replaced
+by an equivalent input term $x_0=b$. Note that this is simply the dot
+product of the weight matrix $W$ and the input vector $x$. The result of this
+first affine transformation is then passed through a step function of form
 
 \begin{equation*}
     y =
         \begin{cases}
             1,          & \text{if } s \geq 0 \\
-            -1,         & \text{else}
+            -1,         & \text{otherwise}
         \end{cases}
 \end{equation*}
 
 % Although most modern ANNs apply a different non-linear function
 % (see~\autoref{sec:activation_fn}),
+that determines the binary output of the Perceptron.
 
-These two equations fully determine the output of the Perceptron, but the
-biggest innovation of~\cite{Rosenblatt57}, is probably the update
-algorithm that allowed to modify the weights of the model in a Hebbian rule
-fashion:
+This is interesting because it can be used, e.g., to classify whether the input
+belongs to a specific class or not, but the biggest innovation
+of~\cite{Rosenblatt57} is most probably the update algorithm that allowed to
+modify the weights of the model in a Hebbian rule fashion. The weights and the
+bias -- also called the \emph{parameters} of the network -- are \emph{learned}
+according to the following rule:
 
 \begin{equation}\label{eq:perceptron_lr}
     w_i^{(t+1)} = w_i^{t} + \eta \cdot (\hat y - y) \cdot x_i^{t}
@@ -116,7 +122,107 @@ was welcomed with excitement as the beginning of a new era and
 research in ANNs became very active for approximately a decade, until in
 1969 Minsky and Papert published a detailed mathematical analysis of the
 Perceptron, demonstrating that a single layered Perceptron could not model
-basic operations like the XOR logic operation~\citep{Minsky69}.
+basic operations like the XOR logic operation~\citep{Minsky69}. More generally,
+Perceptrons can solve linearly separable problems, but fail at tackling
+non-linearly separable ones like the XOR~(see~\autoref{fig:XOR}).
+
+\begin{figure}[h]
+    \centering
+    \begin{tikzpicture}[scale=0.5]
+        % linearly separable box
+        \draw (0,0) rectangle (6,6);
+        \draw[text=black] (3,0) node[below] {$a)$};
+        \draw[color=black,line width=1pt]
+            (2,6) -- (5,0);
+
+        % non-linearly separable box
+        \draw (7,0) rectangle (13,6);
+        \draw[text=black] (10,0) node[below] {$b)$};
+        \draw[color=black,line width=1pt] plot [smooth] coordinates {
+            (8.5, 6) (9.7, 4) (11.2, 3) (11, 2) (10.3, 1) (10.5,0)};
+
+        % XOR
+        \draw (14,0) rectangle (20,6);
+        \draw[text=black] (17,0) node[below] {$c)$};
+        \draw[color=black,line width=1pt]
+            (14,1) -- (19,6);
+
+        \def\positive{{%
+        % linear
+        {.75, 0.2},
+        {2.3, 0.5},
+        {4.5, 0.5},
+        {3.5, 0.7},
+        {1.8, 0.8},
+        {1.5, 2},
+        {1.2, 2.1},
+        {1.5, 3},
+        {2, 4},
+        {2.1, 5.3},
+        {1, 5.3},
+        {1.2, 5.8},
+        % non-linear
+        {7.75, 0.2},
+        {10, 0.5},
+        {8.8, 0.8},
+        {8.5, 2},
+        {10, 2.2},
+        {10.75, 3},
+        {8.5, 3},
+        {9.3, 3.3},
+        {7.2, 4.1},
+        {9, 4.2},
+        {8.2, 5},
+        {8, 5.5},
+        % XOR
+        {15, 1},
+        {19, 5},
+        }}
+
+        % \draw positive dots
+        \foreach \i in {0,...,25} {
+          \pgfmathparse{\positive[\i][0]}\let \x \pgfmathresult;
+          \pgfmathparse{\positive[\i][1]}\let \y \pgfmathresult;
+          \fill[blue] (\x,\y) circle (4pt);
+        }
+
+        \def\negative{{%
+        % linear
+        {5.8, 0.9},
+        {4.6, 1.6},
+        {4, 2.5},
+        {5, 2.7},
+        {5.5, 3.7},
+        {3.5, 4.2},
+        {3.9, 4.7},
+        {3.5, 5},
+        {4.5, 5.2},
+        % non-linear
+        {12, 0.5},
+        {11, 0.8},
+        {12.8, 0.9},
+        {11.6, 1.6},
+        {12, 2.7},
+        {12.5, 3.7},
+        {10.5, 4.2},
+        {9.5, 4.7},
+        {11.5, 5.2},
+        % XOR
+        {19, 1},
+        {15, 5},
+        }}
+
+        % \draw negative dots
+        \foreach \i in {0,...,19} {
+          \pgfmathparse{\negative[\i][0]}\let \x \pgfmathresult;
+          \pgfmathparse{\negative[\i][1]}\let \y \pgfmathresult;
+          \fill[red] (\x,\y) circle (4pt);
+        }
+    \end{tikzpicture}
+    \caption{a) A linearly separable problem b) A non-linearly separable
+        problem c) The XOR problem with a tentative solution that fails at
+        separating the points of the space.\label{fig:XOR}}
+\end{figure}
 
 The excessive enthusiasm for the early successes of ANNs turned into strong
 disappointment: even if~\cite{Minsky69} showed that a multiple layered
@@ -197,11 +303,11 @@ assigning to each weight its amount of blame. This information can be used by
 an \emph{optimization algorithm} to iteratively change the weights to minimize
 the error.
 
-% Example for backprop
+% MLP
 \begin{figure}[h]
     \centering
     \begin{neuralnetwork} [nodespacing=7.5mm, layerspacing=23mm,
-            maintitleheight=2.5em, layertitleheight=4em,
+            maintitleheight=2.5em, layertitleheight=5em,
             height=3, toprow=true, nodesize=17pt,
             style={}, title={}, titlestyle={}]
         %%%%% Layers
@@ -226,7 +332,7 @@ the error.
     \caption{\label{fig:MLP}A multi-layered Perceptron}
 \end{figure}
 
-Consider the network in~\autoref{fig:BP_example}
+Consider the network in~\autoref{fig:MLP}.
 
 The rest of this chapter will focus on two very common kinds of ANNs
 respectively characterized by a feedforward and feedback connectivity pattern,
