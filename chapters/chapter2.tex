@@ -58,17 +58,14 @@ exhibit the desired behavior~\citep{Rosenblatt57}.
             style={}, title={}, titlestyle={}]
 
         %%%%% Layers
-        \inputlayer[count=5, bias=true, title=Input\\layer, text=\nodetextxi]   % bias=true, nodeclass={input neuron}
-        \outputlayer[count=1, text=\nodetextsigma]   % bias=false, nodeclass={output neuron}
+        \inputlayer[count=5, bias=true, title=Input\\layer, text=\nodetextxi]
+        \outputlayer[count=1, text=\nodetextsigma]
         {\setdefaultlinklabel{\wilink}\linklayers}
-        %\define@key{network}{layerspacing} {\pgfmathsetlengthmacro\nn@layerspacing{#1}}
-        %\define@key{}{layerspacing} {2mm}
-        %\def\neuralnetwork\nn@layerspacing{2em}
         \redefinelayerspacing{18mm}
-        \outputlayer[count=1, text=\nodetextstep]   % bias=false, nodeclass={output neuron}
+        \outputlayer[count=1, text=\nodetextstep]
         \linklayers
         \redefinelayerspacing{16mm}
-        \outputlayer[count=1, text=\nodetexty]   % bias=false, nodeclass={output neuron}
+        \outputlayer[count=1, text=\nodetexty]
         \linklayers
     \end{neuralnetwork}
     \centering
@@ -76,8 +73,9 @@ exhibit the desired behavior~\citep{Rosenblatt57}.
 \end{figure}
 
 The activation rule of the perceptron is very simple and is at the base of
-many modern neural networks. The weighted sum of each input $x_i$ and its
-corresponding weight $w_i$ is computed as
+many modern neural networks. Given an $n$-dimensional input $x$, the weighted
+sum of each dimension of the input $x_i$ and its corresponding weight $w_i$ is
+computed as
 
 \begin{equation*}
     s = \sum_{i=0}^{n}(w_i \cdot x_i)
@@ -85,18 +83,19 @@ corresponding weight $w_i$ is computed as
 
 \noindent where to simplify the notation the bias term $b$ has been replaced
 by an equivalent input term $x_0=b$. Note that this is simply the dot
-product of the weight matrix $W$ and the input vector $x$. The result of this
-first affine transformation is then passed through a step function of form
+product of the weight matrix $W$, frequently referred to as \emph{kernel}, and
+the input vector $x$. The result of this first affine transformation is then
+passed through a step function of form
 
 \begin{equation*}
     y =
         \begin{cases}
             1,          & \text{if } s \geq 0 \\
-            -1,         & \text{otherwise}
+            0,         & \text{otherwise}
         \end{cases}
 \end{equation*}
 
-% Although most modern ANNs apply a different non-linear function
+% Although most modern ANNs apply a different nonlinear function
 % (see~\autoref{sec:activation_fn}),
 that determines the binary output of the Perceptron.
 
@@ -108,7 +107,7 @@ bias -- also called the \emph{parameters} of the network -- are \emph{learned}
 according to the following rule:
 
 \begin{equation}\label{eq:perceptron_lr}
-    w_i^{(t+1)} = w_i^{t} + \eta \cdot (\hat y - y) \cdot x_i^{t}
+    w_i^{new} = w_i^{old} + \eta \cdot (\hat y - y) \cdot x_i
 \end{equation}
 
 \noindent where $\hat y$ is the target (i.e. desired) value, $y$ is the output
@@ -122,9 +121,15 @@ was welcomed with excitement as the beginning of a new era and
 research in ANNs became very active for approximately a decade, until in
 1969 Minsky and Papert published a detailed mathematical analysis of the
 Perceptron, demonstrating that a single layered Perceptron could not model
-basic operations like the XOR logic operation~\citep{Minsky69}. More generally,
-Perceptrons can solve linearly separable problems, but fail at tackling
-non-linearly separable ones like the XOR~(see~\autoref{fig:XOR}).
+basic operations like the XOR logic operation~\citep{Minsky69}. The limit of
+Perceptrons is that they can only solve linearly separable problems, and fail
+at tackling nonlinearly separable problems like the
+XOR~(see~\autoref{fig:XOR}). This is not the case for MultiLayer
+Perceptrons~(MLP, depicted in~\autoref{fig:MLP}), an evolution of Perceptrons
+that introduces one or more intermediate layers (called \emph{hidden layers})
+between the input and the output. Since each of these layers is followed by a
+nonlinearity, the result is a nonlinear transformation that projects the input
+into a linearly separable space.
 
 \begin{figure}[h]
     \centering
@@ -135,7 +140,7 @@ non-linearly separable ones like the XOR~(see~\autoref{fig:XOR}).
         \draw[color=black,line width=1pt]
             (2,6) -- (5,0);
 
-        % non-linearly separable box
+        % nonlinearly separable box
         \draw (7,0) rectangle (13,6);
         \draw[text=black] (10,0) node[below] {$b)$};
         \draw[color=black,line width=1pt] plot [smooth] coordinates {
@@ -161,7 +166,7 @@ non-linearly separable ones like the XOR~(see~\autoref{fig:XOR}).
         {2.1, 5.3},
         {1, 5.3},
         {1.2, 5.8},
-        % non-linear
+        % nonlinear
         {7.75, 0.2},
         {10, 0.5},
         {8.8, 0.8},
@@ -197,7 +202,7 @@ non-linearly separable ones like the XOR~(see~\autoref{fig:XOR}).
         {3.9, 4.7},
         {3.5, 5},
         {4.5, 5.2},
-        % non-linear
+        % nonlinear
         {12, 0.5},
         {11, 0.8},
         {12.8, 0.9},
@@ -219,20 +224,19 @@ non-linearly separable ones like the XOR~(see~\autoref{fig:XOR}).
           \fill[red] (\x,\y) circle (4pt);
         }
     \end{tikzpicture}
-    \caption{a) A linearly separable problem b) A non-linearly separable
-        problem c) The XOR problem with a tentative solution that fails at
+    \caption{a) A linearly separable problem. b) A nonlinearly separable
+        problem. c) The XOR problem with a tentative solution that fails at
         separating the points of the space.\label{fig:XOR}}
 \end{figure}
 
 The excessive enthusiasm for the early successes of ANNs turned into strong
-disappointment: even if~\cite{Minsky69} showed that a multiple layered
-Perceptron could model the XOR bitwise operation, it also pointed out that
-Rosenblatt's learning algorithm was limited to single layered Perceptrons and
-could not autonomously learn how to solve the problem. The expectation of an
-artificial intelligence that could learn by itself to solve problems and
-interact with humans appeared suddenly unrealistic and most of the research
-community lost interest in ANNs. The field experienced a severe slow down and
-most of the fundings were cut.
+disappointment: even if~\cite{Minsky69} showed that an MLP could model the XOR
+bitwise operation, it also pointed out that Rosenblatt's learning algorithm was
+limited to single layered Perceptrons and could not autonomously learn how to
+solve the problem. The expectation of an artificial intelligence that could
+learn by itself to solve problems and interact with humans appeared suddenly
+unrealistic and most of the research community lost interest in ANNs. The field
+experienced a severe slow down and most of the fundings were cut.
 
 After a decade known as the AI Winter, in 1982 John Hopfield presented a model
 of the human memory that did not only give insights on how the brain works, but
@@ -243,7 +247,7 @@ building Neural Networks and the fear that the US might be left behind renewed
 their effort on this topic.
 
 The breakthrough that completely restored the interest in the field came in
-1986, when \cite{Rumelhart86b} rediscovered the backpropagation
+1986, when~\cite{Rumelhart86b} rediscovered the backpropagation
 algorithm~\citep{Linnainmaa70,Werbos74} that allowed to train ANNs composed by
 multiple layers~(see \autoref{sec:backprop}). Since then ANNs have been
 constantly focus of study and innovation and established the state of the art
@@ -257,53 +261,7 @@ in several domains.
 %achieving the first superhuman visual pattern recognition results in limited
 %domains.
 
-\subsection{Backpropagation}\label{sec:backprop}
-The learning rule introduced with Perceptrons does not allow to train models
-with multiple layers (i.e. with \emph{hidden} layers), such as the one depicted
-in~\autoref{fig:MLP}.
-
-% MLP
-% \begin{figure}[h]
-%     \centering
-%     \begin{neuralnetwork} [nodespacing=6mm, layerspacing=25mm,
-%             maintitleheight=2.5em, layertitleheight=5em,
-%             height=3, toprow=true, nodesize=17pt,
-%             style={}, title={}, titlestyle={}]
-%         %%%%% Layers
-%         \inputlayer[count=3, bias=false, title=Input\\layer, text=\nodetextxi]   % bias=true, nodeclass={input neuron}
-%         %{\setdefaultlinklabel{\linkstext}\linklayers}
-%         \hiddenlayer[count=4, bias=true, title=Hidden\\layer, text=\nodetexthi]   % bias=true, nodeclass={input neuron}
-%         {\setdefaultlinklabel{\wijlink}\linklayers}
-%         \outputlayer[count=1, text=\nodetextsigma]   % bias=false, nodeclass={output neuron}
-%         \linklayers
-%         \redefinelayerspacing{20.5mm}
-%         \outputlayer[count=1, text=\nodetextsigmoid]   % bias=false, nodeclass={output neuron}
-%         \linklayers
-%         \redefinelayerspacing{18mm}
-%         \outputlayer[count=1, text=\nodetexty]   % bias=false, nodeclass={output neuron}
-%         \linklayers
-%     \end{neuralnetwork}
-%     \centering
-%     \caption{\label{fig:MLP}A multi-layered Perceptron}
-% \end{figure}
-
-This is not possible due to the fact that to compute the variation of the
-weights of a layer with~\autoref{eq:perceptron_lr} it is necessary to know the
-correct value of its output, which is known only for the last layer. To address
-this apparently insurmountable obstacle it suffices to notice that the
-computation performed by the activation function is a non-linear but
-differentiable function of the inputs. This allows for computing the
-partial derivatives of the error, i.e. the difference between the desired
-output and the actual one, w.r.t. the weights of the network. In other words,
-it is possible to use calculus to determine the amount by which each neuron of
-the last layer contributed to causing the error, and then further split the
-responsibility of each of them among the ones of the preceding layer. This way
-the error can be \emph{backpropagated} through the layers of the network,
-assigning to each weight its amount of blame. This information can be used by
-an \emph{optimization algorithm} to iteratively change the weights to minimize
-the error.
-
-% MLP
+\subsection{MultiLayer Perceptron}\label{sec:MLP}
 \begin{figure}[h]
     \centering
     \begin{neuralnetwork} [nodespacing=7.5mm, layerspacing=23mm,
@@ -318,21 +276,138 @@ the error.
         {\setdefaultlinklabel{\wijllink}\linklayers}
         \hiddenlayer[count=4, bias=true, title=Layer 3, text=\nodetexthi]
         {\setdefaultlinklabel{\wijllink}\linklayers}
-        \outputlayer[count=1, text=\nodetextsigma]
-        {\setdefaultlinklabel{\wijllink}\linklayers}
-        \redefinelayerspacing{20.5mm}
-        \outputlayer[count=1, text=\nodetextsigmoid]
-        \linklayers
-        \redefinelayerspacing{18.8mm}
+        %\outputlayer[count=1, text=\nodetextsigma]
+        %{\setdefaultlinklabel{\wijllink}\linklayers}
+        %\redefinelayerspacing{20.5mm}
+        %\outputlayer[count=1, text=\nodetextsigmoid]
+        %\linklayers
+        %\redefinelayerspacing{18.8mm}
         \outputlayer[count=1, text=\nodetexty]
-        \linklayers
+        {\setdefaultlinklabel{\wijllink}\linklayers}
     \end{neuralnetwork}
     \centering
-    %\caption{An ANN with 3 hidden layers\label{fig:BP_example}}
-    \caption{\label{fig:MLP}A multi-layered Perceptron}
+    \caption{\label{fig:MLP}A MultiLayer Perceptron. The sum and the
+        nonlinearity nodes have been omitted for the sake of clarity.
+    }
 \end{figure}
 
-Consider the network in~\autoref{fig:MLP}.
+Consider the network in~\autoref{fig:MLP}. As opposed to the Perceptron, the
+MLP has multiple hidden layers, where each neuron of one hidden layer is
+connected to all the neurons of the previous and next layer. Each connection
+from a neuron $i$ to a neuron $j$ in layer $l$ is associated to a weight
+$w_{ij}^{(l)}$. Similarly to the Perceptron case, each layer computes an affine
+transformation, followed by a nonlinearity that is usually called
+\emph{activation function}.
+%that is usually different from the one proposed in the Perceptron paper.
+
+The processing performed by the hierarchy of layers of the MLP is equivalent to
+a composition of multiple functions
+
+\begin{equation}\label{eq:fn_composition}
+    y = h^{(L)}_{\theta} \circ
+        h^{(L-1)}_{\theta} \circ
+        \dots \circ
+        h^{(1)}_{\theta}
+\end{equation}
+
+Each of these functions $h^{(l)}$ depends on some parameters - namely the
+weights and bias of the layer, $W^{(l)}$ and $b^{(l)}$, as well as the choice
+of activation function for the layer $a^{(l)}$. It is common to refer to the
+parameters that fully characterize a layer as \emph{sufficient statistics},
+usually denoted as $\theta$.
+
+The MLP is not the only architecture used in ANNs. In \autoref{sec:cnn,sec:rnn}
+two of the most used alternatives will be described. In general every layer of
+an ANN will compute some activation based on its input and a nonlinearity, that
+is usually different from the one proposed in the Perceptron paper. In the
+following section, some of the most used activation functions will be
+described.
+%Generally, more complex activation functions than the one proposed in the
+%Perceptron are being used. Here are some of the most frequently used ones.
+
+\subsection{Activation functions}\label{sec:activations}
+\begin{figure}[h]
+    \centering
+    \begin{tikzpicture}[domain=-3:3]
+        \draw[very thin,color=gray] (-3.1, -1.1) grid (3.1, 3.1);
+        \foreach \x in {-3,-2,-1,0,1,2,3}
+            \node[anchor=north] at (\x,-1) {\x};
+        \foreach \y in {-1,0,1,2,3}
+            \node[anchor=east] at (-3,\y) {\y};
+        % axes
+        \draw[->,thick] (-3.1, 0) -- (3.1, 0) node[right] {$x$};
+        \draw[->,thick] (0, -1.1) -- (0, 3.1) node[above] {$f(x)$};
+
+        % activations
+        \draw[color=blue] plot (\x, { 1/(1+exp(-1 * \x)) })
+            node[right,yshift=-0.5em] {$sigmoid(x)$};
+        %\draw[color=yellow] plot (\x, { 1/(1+exp(-.5 * \x)) })
+        %    node[right] {$f(x) = sigmoid(x), beta=.5$};
+        \draw[color=orange] plot (\x, { ( 1 - exp(-2*\x) ) / ( 1 + exp(-2*\x) ) })
+            node[right,yshift=0.5em] {$tanh(x)$};
+        \draw[color=red] plot (\x, { max(0, \x) })
+            node[right] {$ReLU(x)$};
+        \draw[color=purple] plot (\x, { max(0.03 * \x, \x) })
+            node[above, xshift=-13.7em,yshift=-10.5em] {$Leaky ReLU(x)$};
+    \end{tikzpicture}
+    \caption{Some of the most common activation functions: sigmoid, tanh, ReLU
+        and Leaky ReLU\label{fig:activations}}
+\end{figure}
+
+The activation function is one of the most important component of an ANN. As
+explained in the previous sections, to tackle nonlinearly separable problems it
+is imperative to map the input into a space that is linearly separable. The
+activation function does this by performing an \emph{element-wise nonlinear
+transformation} of the pre-activation that comes from the affine
+transformation.
+
+The affine transformation and the nonlinearity work together in a very tight
+interaction: the latter is fixed and does not evolve during training, but
+is a powerful transformation; the former instead, is determined by the weights
+that are learned during training and exploits the latter to separate the
+incoming activation so that they are easier to separate.
+
+In addition to this, it is interesting to point out that if there was no
+activation function, the composition of multiple affine transformation would
+reduce to being an affine transformation, and the MLP would go back to being a
+Perceptron.
+
+\subsubsection{logistic}\label{sec:logistic}
+The logistic
+sigmoid $\frac{1}{1+exp(-x)}$
+tanh $\frac{1}{1+exp(-x)}$
+relu $\frac{1}{1+exp(-x)}$
+sigmoid $\frac{1}{1+exp(-x)}$
+
+
+\subsection{Backpropagation}\label{sec:backprop}
+The learning rule introduced with Perceptrons does not allow to train models
+with multiple layers (i.e. with \emph{hidden} layers), such as the one depicted
+in~\autoref{fig:MLP}.
+
+This is not possible due to the fact that to compute the variation of the
+weights of a layer with~\autoref{eq:perceptron_lr} it is necessary to know the
+correct value of its output, which is known only for the last layer. To address
+this apparently insurmountable obstacle it suffices to notice that the
+computation performed by the activation function is a nonlinear but
+differentiable function of the inputs. This allows for computing the
+partial derivatives of the error, i.e. the difference between the desired
+output and the actual one, w.r.t. the weights of the network. In other words,
+it is possible to use calculus to determine the amount by which each neuron of
+the last layer contributed to causing the error, and then further split the
+responsibility of each of them among the ones of the preceding layer. This way
+the error can be \emph{backpropagated} through the layers of the network,
+assigning to each weight its amount of blame. This information can be used by
+an \emph{optimization algorithm} to iteratively change the weights to minimize
+the error.
+
+The backpropagation algorithm has some resemblance with the learning rule of
+the Perceptron~(\autoref{eq:perceptron_lr}). The main idea in that case was
+to modify each weight of the network by a factor proportional to the error $E =
+\hat y - y$ and to the input. Even if in MLP it is usually common to consider
+other kinds of errors, such as the mean squared error (MSE) $E_{MSE} =
+\frac{1}{n} \sum_{i=0}^n(\hat y_i - y_i)^2$, the same concept applies: the
+learning procedure tries to modify the weights in order to minimize the error.
 
 The rest of this chapter will focus on two very common kinds of ANNs
 respectively characterized by a feedforward and feedback connectivity pattern,
@@ -971,7 +1046,7 @@ the input. The most common kind of pooling is \emph{max pooling}, which
 consists in splitting the input in (usually non-overlapping) patches and
 outputting the maximum value of each patch. Other kinds of pooling exist, e.g.,
 mean or average pooling, which all share the same idea of aggregating the input
-locally by applying a non-linearity to the content of some patches \citep{%
+locally by applying a nonlinearity to the content of some patches \citep{%
 boureau-cvpr-10,boureau-icml-10,boureau-iccv-11,ICML2011Saxe_551}.
 
 Some readers may have noticed that the treatment of convolution arithmetic only
