@@ -74,11 +74,12 @@ exhibit the desired behavior~\citep{Rosenblatt57}.
 
 The activation rule of the perceptron is very simple and is at the base of
 many modern neural networks. Given an $n$-dimensional input $x$, the weighted
-sum of each dimension of the input $x_i$ and its corresponding weight $w_i$ is
+sum of each dimension of the input $x_i$ and its corresponding weight $w_i$ --
+often referred to as \emph{preactivation} -- is
 computed as
 
 \begin{equation*}
-    s = \sum_{i=0}^{n}(w_i \cdot x_i)
+    z = \sum_{i=0}^{n}(w_i \cdot x_i)
 \end{equation*}
 
 \noindent where to simplify the notation the bias term $b$ has been replaced
@@ -90,17 +91,21 @@ passed through a step function of form
 \begin{equation*}
     y =
         \begin{cases}
-            1,          & \text{if } s \geq 0 \\
+            1,          & \text{if } z \geq 0 \\
             0,         & \text{otherwise}
         \end{cases}
 \end{equation*}
 
 % Although most modern ANNs apply a different nonlinear function
 % (see~\autoref{sec:activation_fn}),
-that determines the binary output of the Perceptron.
+\noindent that determines the binary output of the Perceptron.
 
-This is interesting because it can be used, e.g., to classify whether the input
-belongs to a specific class or not, but the biggest innovation
+This can be used, e.g., to classify whether the input belongs to a specific
+class or not. Note that the model can be easily extended to handle multiple
+classes, by simply adding more dimensions to $y$ and assigning each of them to
+a different class.
+
+The behavior of the Perceptron is indeed remarkable, but the biggest innovation
 of~\cite{Rosenblatt57} is most probably the update algorithm that allowed to
 modify the weights of the model in a Hebbian rule fashion. The weights and the
 bias -- also called the \emph{parameters} of the network -- are \emph{learned}
@@ -249,9 +254,9 @@ their effort on this topic.
 The breakthrough that completely restored the interest in the field came in
 1986, when~\cite{Rumelhart86b} rediscovered the backpropagation
 algorithm~\citep{Linnainmaa70,Werbos74} that allowed to train ANNs composed by
-multiple layers~(see \autoref{sec:backprop}). Since then ANNs have been
-constantly focus of study and innovation and established the state of the art
-in several domains.
+multiple layers by performing gradient descent~(see \autoref{sec:backprop}).
+Since then ANNs have been constantly focus of study and innovation and
+established the state of the art in several domains.
 
 % SCHMIDHUEBER
 %In the new millennium, deep NNs have finally attracted wide-spread attention,
@@ -298,22 +303,19 @@ from a neuron $i$ to a neuron $j$ in layer $l$ is associated to a weight
 $w_{ij}^{(l)}$. Similarly to the Perceptron case, each layer computes an affine
 transformation, followed by a nonlinearity that is usually called
 \emph{activation function}.
-%that is usually different from the one proposed in the Perceptron paper.
 
 The processing performed by the hierarchy of layers of the MLP is equivalent to
 a composition of multiple functions
 
 \begin{equation}\label{eq:fn_composition}
-    y = h^{(L)}_{\theta} \circ
-        h^{(L-1)}_{\theta} \circ
-        \dots \circ
+    y = h^{(L)}_{\theta} \circ h^{(L-1)}_{\theta} \circ \dots \circ
         h^{(1)}_{\theta}
 \end{equation}
 
-Each of these functions $h^{(l)}$ depends on some parameters - namely the
-weights and bias of the layer, $W^{(l)}$ and $b^{(l)}$, as well as the choice
-of activation function for the layer $a^{(l)}$. It is common to refer to the
-parameters that fully characterize a layer as \emph{sufficient statistics},
+\noindent Each of these functions $h^{(l)}$ depends on some parameters - namely
+the weights and bias of the layer, $W^{(l)}$ and $b^{(l)}$, as well as the
+choice of activation function for the layer $a^{(l)}$. It is common to refer to
+the parameters that fully characterize a layer as \emph{sufficient statistics},
 usually denoted as $\theta$.
 
 The MLP is not the only architecture used in ANNs. In \autoref{sec:cnn,sec:rnn}
@@ -329,6 +331,7 @@ described.
 \begin{figure}[h]
     \centering
     \begin{tikzpicture}[domain=-3:3]
+        % grid
         \draw[very thin,color=gray] (-3.1, -1.1) grid (3.1, 3.1);
         \foreach \x in {-3,-2,-1,0,1,2,3}
             \node[anchor=north] at (\x,-1) {\x};
@@ -338,15 +341,19 @@ described.
         \draw[->,thick] (-3.1, 0) -- (3.1, 0) node[right] {$x$};
         \draw[->,thick] (0, -1.1) -- (0, 3.1) node[above] {$f(x)$};
 
-        % activations
+        % Sigmoid
         \draw[color=blue] plot (\x, { 1/(1+exp(-1 * \x)) })
-            node[right,yshift=-0.5em] {$sigmoid(x)$};
+            node[right,yshift=-0.5em] {$logistic(x)$};
+        % Beta sigmoid
         %\draw[color=yellow] plot (\x, { 1/(1+exp(-.5 * \x)) })
         %    node[right] {$f(x) = sigmoid(x), beta=.5$};
+        % Tanh
         \draw[color=orange] plot (\x, { ( 1 - exp(-2*\x) ) / ( 1 + exp(-2*\x) ) })
             node[right,yshift=0.5em] {$tanh(x)$};
+        % ReLU
         \draw[color=red] plot (\x, { max(0, \x) })
             node[right] {$ReLU(x)$};
+        % Leaky ReLU
         \draw[color=purple] plot (\x, { max(0.03 * \x, \x) })
             node[above, xshift=-13.7em,yshift=-10.5em] {$Leaky ReLU(x)$};
     \end{tikzpicture}
@@ -364,21 +371,138 @@ transformation.
 The affine transformation and the nonlinearity work together in a very tight
 interaction: the latter is fixed and does not evolve during training, but
 is a powerful transformation; the former instead, is determined by the weights
-that are learned during training and exploits the latter to separate the
-incoming activation so that they are easier to separate.
+that are learned during training and exploits the latter to map the incoming
+activation into a new space where they are easier to separate.
 
-In addition to this, it is interesting to point out that if there was no
-activation function, the composition of multiple affine transformation would
-reduce to being an affine transformation, and the MLP would go back to being a
-Perceptron.
+In addition to this it is interesting to point out that if there was no
+activation function, since the composition of multiple affine transformation
+is an affine transformation, the layers of the MLP could be replaced by a
+single equivalent layer, and the MLP would become a Perceptron.
 
-\subsubsection{logistic}\label{sec:logistic}
-The logistic
-sigmoid $\frac{1}{1+exp(-x)}$
-tanh $\frac{1}{1+exp(-x)}$
-relu $\frac{1}{1+exp(-x)}$
-sigmoid $\frac{1}{1+exp(-x)}$
+Many activation functions have been proposed in the years and even if our
+understanding of this component has improved, which one to use with the
+different architectures and tasks is still object of active debate and a matter
+of personal preference. The upcoming sections describe the ones that are most
+frequently used, in the context where the activation of the previous layer
+$l-1$ is defined as $a^{(l-1)}$ and the result of the affine transformation
+is denoted as $z^{(l)} = W^{(l)} \cdot a^{(l-1)}$.
 
+\subsubsection{Logistic}\label{sec:logistic}
+The logistic, often called \emph{sigmoid}, is a differentiable monotonically
+increasing function that takes any real-valued number and maps it to $[0, 1]$.
+As evident from its representation in~\autoref{fig:activations}, for large
+negative numbers it asymptotes to $0$ while for large positive numbers it
+asymptotes to $1$. It is defined as
+
+\begin{equation}\label{eq:sigmoid}
+    \frac{1}{1+\exp(-x)}
+\end{equation}
+
+\noindent The logistic function has probably been the most used nonlinearity
+historically due to its possible interpretation as the firing rate of a neuron
+given its potential (i.e. the level of excitement provoked by its incoming
+spikes): when the potential is low the neuron fires less often whereas when the
+potential is high the frequency of the spikes increases.
+
+Its use is not as widespread as it used to be though, due to two major
+drawbacks:
+\begin{itemize}
+    \item \emph{Saturation kills the gradient:}
+        backpropagation~\autoref{sec:backprop} relies on the gradient of the
+        error to determine the parameter update. The logistic function
+        saturates at both ends, resulting in a very small or zero gradient.
+        This problem -- often referred to as~\emph{vanishing gradient} -- makes
+        training very slow or prevents it in some cases. This also makes the
+        logistic units very sensitive to the initialization of the weights of
+        the network, that ideally should be such that the initial input of the
+        logistic function is close to zero.
+    \item \emph{The output is not zero-centered:} the dynamics of ANNs are
+        usually complex and difficult to inspect, but it is widely believed
+        that normalizing (i.e. zero-centered with unit variance) the
+        intermediate activations of the network helps
+        training~(\cite{Ioffe+Szegedy-2015,Laurent2015,arpit2016normalization,
+        cooijmans2016recurrent}). The output of the logistic function is always
+        positive, which causes the mean activation to be non-zero. This could
+        introduce undesirable dynamics that could slow down or prevent
+        training.
+\end{itemize}
+
+\subsubsection{Hyperbolic tangent (tanh)}\label{sec:tanh}
+
+The hyperbolic tangent, typically shortened as~\emph{tanh}, is a differentiable
+monotonically increasing function that maps any real-valued number to $[-1, 1]$.
+This nonlinear function suffers from the same vanishing problem as the
+logistic, but its mean is centered in zero. Furthermore, the tanh is often
+chosen where it is desirable to be able to increase or decrease some quantity
+by small amounts, thanks to its codomain. It is defined as
+
+\begin{equation}\label{eq:fn_composition}
+    \frac{1-exp(-2x)}{1+exp(-2x)}
+\end{equation}
+
+
+\subsubsection{Rectified Linear Unit (ReLU)}\label{sec:ReLU}
+Since its introduction, the Rectified Linear Unit
+(ReLu)~\cite{Jarrett-ICCV2009-small,Nair+Hinton-2010} has become the
+nonlinearity of choice in many
+applications~\cite{Krizhevsky-2012,LeCun-et-al-Nature2015,
+Gloroto+Bengio-2010anon}. Although very simple, it has some very interesting
+properties and a few drawbacks:
+
+\begin{itemize}
+    \item \emph{No positive saturation:} the ReLU is zero for non-positive
+        inputs, but does not saturate otherwise. This ensures a flow of
+        gradient whenever the input is positive that was found to significantly
+        speed up the convergence of training.
+    \item \emph{Cheap to compute:} as opposed to many other activation
+        functions that require expensive operations, such as e.g. exponentials,
+        ReLU's implementation simply amounts to thresholding at zero. Another
+        important characteristic is that the gradient is trivial to compute:
+
+        \begin{equation*}
+            \nabla (ReLU) =
+                \begin{cases}
+                    a^{(l-1)},  & \text{if } z^{(l)} > 0 \\
+                    0,          & \text{if } z^{(l)} < 0 \\
+                    undefined,  & \text{if } z^{(l)} = 0
+                \end{cases}
+        \end{equation*}
+
+    \item \emph{Induce sparsity:} ReLU units induce sparsity, since whenever
+        the input preactivation is negative their activation is zero. Sparsity
+        is usually a desired property: as opposed to dense encoding, sparsity
+        will produce representations where only a few entries will change
+        upon small variations of the input, i.e. will produce a representation
+        that is more consistent and robust to perturbations. Furthermore,
+        sparsity allows for a more compact encoding, which is desirable in many
+        contexts such as, e.g., data compression and efficient data transfer.
+        Finally, it is also usually easier to linearly separate sparse
+        representations~\citep{Glorot+al-AI-2011-small}.
+    \item \emph{ReLU units can die:} when a large gradient flows through a ReLU
+        unit it can change its weights in such a way that will prevent it from
+        ever being active again. In this case every input will put the ReLU
+        unit on the flat zero side. This will prevent any gradient flow and the
+        unit will never leave this state becoming \emph{de~facto} "dead". This
+        can be alleviated using a lower learning rate or choosing some
+        modification of ReLU less sensitive to this problem.
+\end{itemize}
+
+ReLU is defined as
+
+\begin{equation}\label{eq:fn_composition}
+    max(0, x)
+\end{equation}
+
+\subsubsection{Leaky Rectified Linear Unit (Leaky ReLU)}\label{sec:LReLU}
+Leaky ReLUs are one of the most adopted alternatives to ReLUs. They have been
+proposed as a way to alleviate the dying units problem of ReLUs, by preventing
+the unit from saturating allowing a small gradient to always flow through the
+unit, potentially recovering extreme values of the weights. Leaky ReLUs are
+defined as
+
+\begin{equation}\label{eq:fn_composition}
+    max(\beta*x, x)
+\end{equation}
 
 \subsection{Backpropagation}\label{sec:backprop}
 The learning rule introduced with Perceptrons does not allow to train models
