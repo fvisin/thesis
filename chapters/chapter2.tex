@@ -330,32 +330,39 @@ described.
 \subsection{Activation functions}\label{sec:activations}
 \begin{figure}[h]
     \centering
-    \begin{tikzpicture}[domain=-3:3]
+    \begin{tikzpicture}[domain=-2.9:2.9]
         % grid
-        \draw[very thin,color=gray] (-3.1, -1.1) grid (3.1, 3.1);
-        \foreach \x in {-3,-2,-1,0,1,2,3}
-            \node[anchor=north] at (\x,-1) {\x};
-        \foreach \y in {-1,0,1,2,3}
-            \node[anchor=east] at (-3,\y) {\y};
+        \draw[very thin,color=gray] (-2.9, -1.1) grid (2.9, 2.9);
+        \foreach \x in {-2,-1,0,1,2}
+            \node[anchor=north] at (\x,-1.1) {\x};
+        \foreach \y in {-1,0,1,2}
+            \node[anchor=east] at (-2.9,\y) {\y};
         % axes
-        \draw[->,thick] (-3.1, 0) -- (3.1, 0) node[right] {$x$};
+        \draw[->,thick] (-2.9, 0) -- (3.1, 0) node[right] {$x$};
         \draw[->,thick] (0, -1.1) -- (0, 3.1) node[above] {$f(x)$};
 
-        % Sigmoid
-        \draw[color=blue] plot (\x, { 1/(1+exp(-1 * \x)) })
+        % Logistic
+        \draw[thick, color=blue]
+            plot (\x, { 1/(1+exp(-1 * \x)) })
             node[right,yshift=-0.5em] {$logistic(x)$};
-        % Beta sigmoid
-        %\draw[color=yellow] plot (\x, { 1/(1+exp(-.5 * \x)) })
-        %    node[right] {$f(x) = sigmoid(x), beta=.5$};
+        % Beta logistic
+        %\draw[color=purple] plot (\x, { 1/(1+exp(-.5 * \x)) })
+        %    node[right] {$f(x) = logistic(x), beta=.5$};
         % Tanh
-        \draw[color=orange] plot (\x, { ( 1 - exp(-2*\x) ) / ( 1 + exp(-2*\x) ) })
+        \draw[thick, color=orange]
+            plot (\x, { ( 1 - exp(-2*\x) ) / ( 1 + exp(-2*\x) ) })
             node[right,yshift=0.5em] {$tanh(x)$};
         % ReLU
-        \draw[color=red] plot (\x, { max(0, \x) })
-            node[right] {$ReLU(x)$};
+        \draw[thick, color=red]
+            plot (\x, { max(0, \x) })
+            %node[right] {$ReLU(x)$};
+            node[xshift=-19.3em,yshift=-8em] (a) {$ReLU(x)$};
         % Leaky ReLU
-        \draw[color=purple] plot (\x, { max(0.03 * \x, \x) })
-            node[above, xshift=-13.7em,yshift=-10.5em] {$Leaky ReLU(x)$};
+        \draw[thick, color=yellow]
+            plot (\x, { max(0.03 * \x, \x) })
+            %node[above, xshift=-13.7em,yshift=-10.5em] {$Leaky ReLU(x)$};
+            %node[above, xshift=-20em,yshift=-10.5em] {$Leaky ReLU(x)$};
+            node[below = 1.2em of a.east, anchor=east] {$Leaky ReLU(x)$};
     \end{tikzpicture}
     \caption{Some of the most common activation functions: sigmoid, tanh, ReLU
         and Leaky ReLU\label{fig:activations}}
@@ -394,8 +401,8 @@ As evident from its representation in~\autoref{fig:activations}, for large
 negative numbers it asymptotes to $0$ while for large positive numbers it
 asymptotes to $1$. It is defined as
 
-\begin{equation}\label{eq:sigmoid}
-    \frac{1}{1+\exp(-x)}
+\begin{equation}\label{eq:logistic}
+    logistic(z) = \frac{1}{1+\exp(-z)}
 \end{equation}
 
 \noindent The logistic function has probably been the most used nonlinearity
@@ -436,18 +443,23 @@ logistic, but its mean is centered in zero. Furthermore, the tanh is often
 chosen where it is desirable to be able to increase or decrease some quantity
 by small amounts, thanks to its codomain. It is defined as
 
-\begin{equation}\label{eq:fn_composition}
-    \frac{1-exp(-2x)}{1+exp(-2x)}
+\begin{equation}\label{eq:tanh}
+    tanh(z) = \frac{1-exp(-2z)}{1+exp(-2z)}
 \end{equation}
 
 
-\subsubsection{Rectified Linear Unit (ReLU)}\label{sec:ReLU}
+\subsubsection{Rectified Linear Unit (ReLU)}\label{sec:relu}
 Since its introduction, the Rectified Linear Unit
 (ReLu)~\cite{Jarrett-ICCV2009-small,Nair+Hinton-2010} has become the
-nonlinearity of choice in many
-applications~\cite{Krizhevsky-2012,LeCun-et-al-Nature2015,
-Gloroto+Bengio-2010anon}. Although very simple, it has some very interesting
-properties and a few drawbacks:
+nonlinearity of choice in many applications~\cite{Krizhevsky-2012,
+LeCun-et-al-Nature2015,Glorot+al-AI-2011-small}. It is defined as
+
+\begin{equation}\label{eq:relu}
+    relu(z) = max(0, z)
+\end{equation}
+
+Although very simple, it has some very interesting properties and a few
+drawbacks:
 
 \begin{itemize}
     \item \emph{No positive saturation:} the ReLU is zero for non-positive
@@ -460,7 +472,7 @@ properties and a few drawbacks:
         important characteristic is that the gradient is trivial to compute:
 
         \begin{equation*}
-            \nabla (ReLU) =
+            \nabla (relu(z^{(l)})) =
                 \begin{cases}
                     a^{(l-1)},  & \text{if } z^{(l)} > 0 \\
                     0,          & \text{if } z^{(l)} < 0 \\
@@ -487,22 +499,82 @@ properties and a few drawbacks:
         modification of ReLU less sensitive to this problem.
 \end{itemize}
 
-ReLU is defined as
-
-\begin{equation}\label{eq:fn_composition}
-    max(0, x)
-\end{equation}
-
-\subsubsection{Leaky Rectified Linear Unit (Leaky ReLU)}\label{sec:LReLU}
+\subsubsection{Leaky Rectified Linear Unit (Leaky ReLU)}\label{sec:lrelu}
 Leaky ReLUs are one of the most adopted alternatives to ReLUs. They have been
 proposed as a way to alleviate the dying units problem of ReLUs, by preventing
 the unit from saturating allowing a small gradient to always flow through the
 unit, potentially recovering extreme values of the weights. Leaky ReLUs are
 defined as
 
-\begin{equation}\label{eq:fn_composition}
-    max(\beta*x, x)
+\begin{equation}\label{eq:lrelu}
+    leaky\_relu(z) = max(\beta*z, z)
 \end{equation}
+
+\subsubsection{Softmax}\label{sec:softmax}
+One peculiar nonlinearity that deserves a particular mention is the softmax.
+This function differs from the previously described activations in that it
+does not only depend on the value of one dimension (or neuron), but rather on
+that of all the dimensions (or neurons) in the layer. The softmax is a
+\emph{squashing~function} that maps its input to a categorical distribution.
+It is defined as
+
+\begin{equation}\label{eq:softmax}
+    softmax(z_i) = \frac{\exp(z_i)}{\sum_{k=0}^K{\exp(z_k)}}
+\end{equation}
+
+\noindent where $K$ is the number of classes, i.e. of dimensions (or neurons).
+
+Note that it is possible to extend the softmax with a parameter $\beta$ that
+controls its steepness (see~\autoref{fig:softmax})
+
+\begin{equation}\label{eq:softmax}
+    softmax(z_i) = \frac{\exp(\beta \cdot z_i)}{\sum_{k=0}^K{\exp(\beta \cdot z_k)}}
+\end{equation}
+
+\begin{figure}[h]
+    \centering
+    \begin{tikzpicture}
+        % grid
+        % \draw[very thin,color=gray] (-4.1, -1.1) grid (4.1, 1.1);
+        % \foreach \x in {-4,-3,-2,-1,0,1,2,3,4}
+        %     \node[anchor=north] at (\x,-1) {\x};
+        % \foreach \y in {-1,0,1}
+        %     \node[anchor=east] at (-1,\y) {\y};
+        % axes
+        %\draw[->,thick] (-4.1, 0) -- (4.1, 0) node[right] {$x$};
+        %\draw[->,thick] (0, -1.1) -- (0, 1.1) node[above] {$f(x)$};
+
+        % softmax
+        \begin{axis}[samples=500,
+                     domain=-3:3,
+                     restrict y to domain =-20:100,
+                     legend cell align=left,
+                     legend pos=outer north east,
+                     %legend style={draw=none}
+                 ]
+            \addplot[thick,yellow ]plot (\x, { exp(1 * \x)/(exp(1) + exp(1 * \x)) });
+            \addplot[thick,orange ]plot (\x, { exp(2 * \x)/(exp(2) + exp(2 * \x)) });
+            \addplot[thick,green  ]plot (\x, { exp(3 * \x)/(exp(3) + exp(3 * \x)) });
+            \addplot[thick,magenta]plot (\x, { exp(4 * \x)/(exp(4) + exp(4 * \x)) });
+            \addplot[thick,blue   ]plot (\x, { exp(5 * \x)/(exp(5) + exp(5 * \x)) });
+            \addplot[thick,red    ]plot (\x, { exp(6 * \x)/(exp(6) + exp(6 * \x)) });
+            \node[anchor=west] (source) at (axis cs:2,0.6){};
+            \node (destination) at (axis cs:0.5,0.9){$\beta$};
+            \draw[thick, ->](source)--(destination);
+
+            \addlegendentry{$softmax(x), \beta = 1$}
+            \addlegendentry{$softmax(x), \beta = 2$}
+            \addlegendentry{$softmax(x), \beta = 3$}
+            \addlegendentry{$softmax(x), \beta = 4$}
+            \addlegendentry{$softmax(x), \beta = 5$}
+            \addlegendentry{$softmax(x), \beta = 6$}
+        \end{axis}
+    \end{tikzpicture}
+    \caption{The extended softmax for different values of the hyperparameter
+        $\beta$. The plots have been obtained considering a two classes setting
+        where $z_1$ is always $1$. As $\beta$ increases, the function becomes
+        steeper.\label{fig:softmax}}
+\end{figure}
 
 \subsection{Backpropagation}\label{sec:backprop}
 The learning rule introduced with Perceptrons does not allow to train models
