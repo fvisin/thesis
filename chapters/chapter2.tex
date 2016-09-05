@@ -73,25 +73,23 @@ exhibit the desired behavior~\citep{Rosenblatt57}.
 \end{figure}
 
 The activation rule of the perceptron is very simple and is at the base of
-many modern neural networks. Given an $n$-dimensional input $x$, the weighted
-sum of each dimension of the input $x_i$ and its corresponding weight $w_i$ --
-often referred to as \emph{preactivation} -- is
-computed as
+many modern neural networks. Given an $n$-dimensional input $\mathbf{x}$, the
+weighted sum of each dimension of the input $x_i$ and its corresponding weight
+$w_i$ -- often referred to as \emph{preactivation} -- is computed as
 
 \begin{equation*}
-    z = \sum_{i=0}^{n}(w_i \cdot x_i)
+    a = \sum_{i=0}^{n}(w_i \cdot x_i)
 \end{equation*}
 
 \noindent where to simplify the notation the bias term $b$ has been replaced
 by an equivalent input term $x_0=b$. Note that this is simply the dot
-product of the weight matrix $W$, frequently referred to as \emph{kernel}, and
-the input vector $x$. The result of this first affine transformation is then
-passed through a step function of form
-
+product of the weight vector $\mathbf{w}$ and the input vector $\mathbf{x}$.
+The result of this first affine transformation is then passed through a step
+function of form
 \begin{equation*}
     y =
         \begin{cases}
-            1,          & \text{if } z \geq 0 \\
+            1,          & \text{if } a \geq 0 \\
             0,         & \text{otherwise}
         \end{cases}
 \end{equation*}
@@ -112,13 +110,13 @@ bias -- also called the \emph{parameters} of the network -- are \emph{learned}
 according to the following rule:
 
 \begin{equation}\label{eq:perceptron_lr}
-    w_i^{new} = w_i^{old} + \eta \cdot (\hat y - y) \cdot x_i
+    w_i^{new} = w_i^{old} + \eta \cdot (\hat {y} - y) \cdot x_i
 \end{equation}
 
 \noindent where $\hat y$ is the target (i.e. desired) value, $y$ is the output
 of the Perceptron, $x_i^t$ and $w_i^t$ are respectively the $i$-th input and
-weight at time $t$ and $\eta$ is a scaling factor that allows to
-adjust the magnitude by which the weights are modified.
+weight at time $t$ and $\eta$ is a scaling factor that allows to adjust the
+magnitude by which the weights are modified.
 
 The introduction of a model that could learn from the data
 %This discovery
@@ -299,31 +297,35 @@ established the state of the art in several domains.
 Consider the network in~\autoref{fig:MLP}. As opposed to the Perceptron, the
 MLP has multiple hidden layers, where each neuron of one hidden layer is
 connected to all the neurons of the previous and next layer. Each connection
-from a neuron $i$ to a neuron $j$ in layer $l$ is associated to a weight
-$w_{ij}^{(l)}$. Similarly to the Perceptron case, each layer computes an affine
-transformation, followed by a nonlinearity that is usually called
-\emph{activation function}.
+from a neuron $h_i^{(l)}$ to a neuron $h_j^{(l)}$ is associated to a weight
+$w_{ij}^{(l)}$.
 
-The processing performed by the hierarchy of layers of the MLP is equivalent to
-a composition of multiple functions
+Similarly to the Perceptron case, each layer computes an affine transformation,
+followed by a nonlinearity -- usually more complex than the one used in
+the Perceptron -- called \emph{activation function}. One layer can thus be seen
+as a function $g^{(l)}$ that depends on some \emph{parameters} -- namely the
+weights matrix and bias of the layer, $\mathbf{W}^{(l)}$ and $b^{(l)}$ -- as
+well as some \emph{hyperparameters} such as, e.g., the number of neurons and
+the choice of activation function. It is common to refer to the trainable
+parameters that fully characterize a layer as \emph{sufficient statistics},
+usually denoted as $\mathbf{\theta}$.
+
+The processing performed by the hierarchy of layers of the MLP results in the
+output vector $\mathbf{y}$ and is equivalent to a composition of multiple
+functions
 
 \begin{equation}\label{eq:fn_composition}
-    y = h^{(L)}_{\theta} \circ h^{(L-1)}_{\theta} \circ \dots \circ
-        h^{(1)}_{\theta}
+    \textbf{y} = g^{(L)}_{\boldsymbol{\theta}} \circ g^{(L-1)}_{\boldsymbol{\theta}} \circ
+    \dots \circ g^{(1)}_{\boldsymbol{\theta}}
 \end{equation}
 
-\noindent Each of these functions $h^{(l)}$ depends on some parameters - namely
-the weights and bias of the layer, $W^{(l)}$ and $b^{(l)}$, as well as the
-choice of activation function for the layer $a^{(l)}$. It is common to refer to
-the parameters that fully characterize a layer as \emph{sufficient statistics},
-usually denoted as $\theta$.
 
-The MLP is not the only architecture used in ANNs. In \autoref{sec:cnn,sec:rnn}
-two of the most used alternatives will be described. In general every layer of
-an ANN will compute some activation based on its input and a nonlinearity, that
-is usually different from the one proposed in the Perceptron paper. In the
-following section, some of the most used activation functions will be
-described.
+The MLP is one of the most used architectures for ANNs, yet not the only one.
+In \autoref{sec:cnn} and \autoref{sec:rnn} two of the most used alternatives
+will be described. In general every layer of an ANN will compute some
+activation based on its input and a nonlinearity, that is usually different
+from the one proposed in the Perceptron paper. In the following section, some
+of the most used activation functions will be described.
 %Generally, more complex activation functions than the one proposed in the
 %Perceptron are being used. Here are some of the most frequently used ones.
 
@@ -338,31 +340,29 @@ described.
         \foreach \y in {-1,0,1,2}
             \node[anchor=east] at (-2.9,\y) {\y};
         % axes
-        \draw[->,thick] (-2.9, 0) -- (3.1, 0) node[right] {$x$};
-        \draw[->,thick] (0, -1.1) -- (0, 3.1) node[above] {$f(x)$};
+        \draw[->,thick] (-2.9, 0) -- (3.1, 0) node[right] {$a$};
+        \draw[->,thick] (0, -1.1) -- (0, 3.1) node[above] {$f(a)$};
 
         % Logistic
         \draw[thick, color=blue]
             plot (\x, { 1/(1+exp(-1 * \x)) })
-            node[right,yshift=-0.5em] {$logistic(x)$};
+            node[right,yshift=-0.5em] {$logistic(a)$};
         % Beta logistic
         %\draw[color=purple] plot (\x, { 1/(1+exp(-.5 * \x)) })
-        %    node[right] {$f(x) = logistic(x), beta=.5$};
+        %    node[right] {$logistic(a), beta=.5$};
         % Tanh
         \draw[thick, color=orange]
             plot (\x, { ( 1 - exp(-2*\x) ) / ( 1 + exp(-2*\x) ) })
-            node[right,yshift=0.5em] {$tanh(x)$};
+            node[right,yshift=0.5em] {$tanh(a)$};
         % ReLU
         \draw[thick, color=red]
             plot (\x, { max(0, \x) })
             %node[right] {$ReLU(x)$};
-            node[xshift=-19.3em,yshift=-8em] (a) {$ReLU(x)$};
+            node[xshift=-19.3em,yshift=-8em] (a) {$ReLU(a)$};
         % Leaky ReLU
         \draw[thick, color=yellow]
             plot (\x, { max(0.03 * \x, \x) })
-            %node[above, xshift=-13.7em,yshift=-10.5em] {$Leaky ReLU(x)$};
-            %node[above, xshift=-20em,yshift=-10.5em] {$Leaky ReLU(x)$};
-            node[below = 1.2em of a.east, anchor=east] {$Leaky ReLU(x)$};
+            node[below = 1.2em of a.east, anchor=east] {$Leaky ReLU(a)$};
     \end{tikzpicture}
     \caption{Some of the most common activation functions: sigmoid, tanh, ReLU
         and Leaky ReLU\label{fig:activations}}
@@ -391,8 +391,9 @@ understanding of this component has improved, which one to use with the
 different architectures and tasks is still object of active debate and a matter
 of personal preference. The upcoming sections describe the ones that are most
 frequently used, in the context where the activation of the previous layer
-$l-1$ is defined as $a^{(l-1)}$ and the result of the affine transformation
-is denoted as $z^{(l)} = W^{(l)} \cdot a^{(l-1)}$.
+$l-1$ is defined as $\mathbf{h}^{(l-1)}$ and the result of the affine
+transformation is denoted as $\mathbf{a}^{(l)} = \mathbf{W}^{(l)} \cdot
+\mathbf{h}^{(l-1)}$.
 
 \subsubsection{Logistic}\label{sec:logistic}
 The logistic, often called \emph{sigmoid}, is a differentiable monotonically
@@ -402,7 +403,7 @@ negative numbers it asymptotes to $0$ while for large positive numbers it
 asymptotes to $1$. It is defined as
 
 \begin{equation}\label{eq:logistic}
-    logistic(z) = \frac{1}{1+\exp(-z)}
+    logistic(\mathbf{a}) = \frac{1}{1+\exp(-\mathbf{a})}
 \end{equation}
 
 \noindent The logistic function has probably been the most used nonlinearity
@@ -444,7 +445,7 @@ chosen where it is desirable to be able to increase or decrease some quantity
 by small amounts, thanks to its codomain. It is defined as
 
 \begin{equation}\label{eq:tanh}
-    tanh(z) = \frac{1-exp(-2z)}{1+exp(-2z)}
+    tanh(\mathbf{a}) = \frac{1-exp(-2\mathbf{a})}{1+exp(-2\mathbf{a})}
 \end{equation}
 
 
@@ -455,7 +456,7 @@ nonlinearity of choice in many applications~\cite{Krizhevsky-2012,
 LeCun-et-al-Nature2015,Glorot+al-AI-2011-small}. It is defined as
 
 \begin{equation}\label{eq:relu}
-    relu(z) = max(0, z)
+    relu(\mathbf{a}) = max(0, \mathbf{a})
 \end{equation}
 
 Although very simple, it has some very interesting properties and a few
@@ -472,11 +473,11 @@ drawbacks:
         important characteristic is that the gradient is trivial to compute:
 
         \begin{equation*}
-            \nabla (relu(z^{(l)})) =
+            \nabla (relu(\mathbf{a}^{(l)})) =
                 \begin{cases}
-                    a^{(l-1)},  & \text{if } z^{(l)} > 0 \\
-                    0,          & \text{if } z^{(l)} < 0 \\
-                    undefined,  & \text{if } z^{(l)} = 0
+                    \mathbf{h}^{(l-1)},  & \text{if } \mathbf{a}^{(l)} > 0 \\
+                    0,          & \text{if } \mathbf{a}^{(l)} < 0 \\
+                    undefined,  & \text{if } \mathbf{a}^{(l)} = 0
                 \end{cases}
         \end{equation*}
 
@@ -507,7 +508,7 @@ unit, potentially recovering extreme values of the weights. Leaky ReLUs are
 defined as
 
 \begin{equation}\label{eq:lrelu}
-    leaky\_relu(z) = max(\beta*z, z)
+    leaky\_relu(\mathbf{a}) = max(\beta*\mathbf{a}, \mathbf{a})
 \end{equation}
 
 \subsubsection{Softmax}\label{sec:softmax}
@@ -519,16 +520,22 @@ that of all the dimensions (or neurons) in the layer. The softmax is a
 It is defined as
 
 \begin{equation}\label{eq:softmax}
-    softmax(z_i) = \frac{\exp(z_i)}{\sum_{k=0}^K{\exp(z_k)}}
+    softmax(a_i) = \frac{\exp(a_i)}{\sum_{k=0}^K{\exp(a_k)}}
 \end{equation}
 
 \noindent where $K$ is the number of classes, i.e. of dimensions (or neurons).
 
-Note that it is possible to extend the softmax with a parameter $\beta$ that
-controls its steepness (see~\autoref{fig:softmax})
+Note that it is possible to add a temperature parameter $T$ to the softmax that
+allows to control its steepness (see~\autoref{fig:softmax}), i.e. to control
+the randomness of predictions. When $T$ is high the distribution over the
+classes will be flatter - with the extreme case of $T = \inf$, where all the
+classes have equal probability. When $T$ is low, the probability curve is
+pickier on the class with higher probability and has a light tail on the other
+classes.
 
-\begin{equation}\label{eq:softmax}
-    softmax(z_i) = \frac{\exp(\beta \cdot z_i)}{\sum_{k=0}^K{\exp(\beta \cdot z_k)}}
+\begin{equation}\label{eq:softmax_tmp}
+    softmax(a_i) = \frac{\exp(a_i / T)}
+                        {\sum_{k=0}^K{\exp(a_k / T)}}
 \end{equation}
 
 \begin{figure}[h]
@@ -545,35 +552,39 @@ controls its steepness (see~\autoref{fig:softmax})
         %\draw[->,thick] (0, -1.1) -- (0, 1.1) node[above] {$f(x)$};
 
         % softmax
-        \begin{axis}[samples=500,
+        \begin{axis}[samples=50,
                      domain=-3:3,
                      restrict y to domain =-20:100,
                      legend cell align=left,
                      legend pos=outer north east,
                      %legend style={draw=none}
                  ]
-            \addplot[thick,yellow ]plot (\x, { exp(1 * \x)/(exp(1) + exp(1 * \x)) });
-            \addplot[thick,orange ]plot (\x, { exp(2 * \x)/(exp(2) + exp(2 * \x)) });
-            \addplot[thick,green  ]plot (\x, { exp(3 * \x)/(exp(3) + exp(3 * \x)) });
-            \addplot[thick,magenta]plot (\x, { exp(4 * \x)/(exp(4) + exp(4 * \x)) });
-            \addplot[thick,blue   ]plot (\x, { exp(5 * \x)/(exp(5) + exp(5 * \x)) });
-            \addplot[thick,red    ]plot (\x, { exp(6 * \x)/(exp(6) + exp(6 * \x)) });
-            \node[anchor=west] (source) at (axis cs:2,0.6){};
-            \node (destination) at (axis cs:0.5,0.9){$\beta$};
+            \addplot[thick,lightgray]plot (\x, { exp(\x/3)/(exp(1) + exp(\x / 3)) });
+            \addplot[thick,lime     ]plot (\x, { exp(\x/2)/(exp(1) + exp(\x / 2)) });
+            \addplot[thick,yellow   ]plot (\x, { exp(1 * \x)/(exp(1) + exp(1 * \x)) });
+            \addplot[thick,orange   ]plot (\x, { exp(2 * \x)/(exp(2) + exp(2 * \x)) });
+            \addplot[thick,green    ]plot (\x, { exp(3 * \x)/(exp(3) + exp(3 * \x)) });
+            \addplot[thick,magenta  ]plot (\x, { exp(4 * \x)/(exp(4) + exp(4 * \x)) });
+            \addplot[thick,blue     ]plot (\x, { exp(5 * \x)/(exp(5) + exp(5 * \x)) });
+            \addplot[thick,red      ]plot (\x, { exp(6 * \x)/(exp(6) + exp(6 * \x)) });
+            \node[anchor=west] (source) at (axis cs:0.95,0.95){};
+            \node (destination) at (axis cs:2.5,0.3){$T$};
             \draw[thick, ->](source)--(destination);
 
-            \addlegendentry{$softmax(x), \beta = 1$}
-            \addlegendentry{$softmax(x), \beta = 2$}
-            \addlegendentry{$softmax(x), \beta = 3$}
-            \addlegendentry{$softmax(x), \beta = 4$}
-            \addlegendentry{$softmax(x), \beta = 5$}
-            \addlegendentry{$softmax(x), \beta = 6$}
+            \addlegendentry{$softmax(a), T= 3$}
+            \addlegendentry{$softmax(a), T= 2$}
+            \addlegendentry{$softmax(a), T= 1$}
+            \addlegendentry{$softmax(a), T= 1/2$}
+            \addlegendentry{$softmax(a), T= 1/3$}
+            \addlegendentry{$softmax(a), T= 1/4$}
+            \addlegendentry{$softmax(a), T= 1/5$}
+            \addlegendentry{$softmax(a), T= 1/6$}
         \end{axis}
     \end{tikzpicture}
-    \caption{The extended softmax for different values of the hyperparameter
-        $\beta$. The plots have been obtained considering a two classes setting
-        where $z_1$ is always $1$. As $\beta$ increases, the function becomes
-        steeper.\label{fig:softmax}}
+    \caption{The behaviour of softmax as temperature $T$ grows. The plots have
+        been obtained considering a bidimensional input setting where the value
+        associated to the second class $a_1$ is always $1$. As $T$ increases,
+        the function becomes steeper.\label{fig:softmax}}
 \end{figure}
 
 \subsection{Backpropagation}\label{sec:backprop}
@@ -583,35 +594,65 @@ in~\autoref{fig:MLP}.
 
 This is not possible due to the fact that to compute the variation of the
 weights of a layer with~\autoref{eq:perceptron_lr} it is necessary to know the
-correct value of its output, which is known only for the last layer. To address
-this apparently insurmountable obstacle it suffices to notice that the
-computation performed by the activation function is a nonlinear but
-differentiable function of the inputs. This allows for computing the
-partial derivatives of the error, i.e. the difference between the desired
-output and the actual one, w.r.t. the weights of the network. In other words,
-it is possible to use calculus to determine the amount by which each neuron of
-the last layer contributed to causing the error, and then further split the
-responsibility of each of them among the ones of the preceding layer. This way
-the error can be \emph{backpropagated} through the layers of the network,
-assigning to each weight its amount of blame. This information can be used by
-an \emph{optimization algorithm} to iteratively change the weights to minimize
-the error.
+correct value of its output, which is given only for the last layer.
+
+To address this apparently insurmountable obstacle it suffices to notice that
+the computation performed by the activation function is a nonlinear but
+differentiable function of the inputs. This allows for computing the partial
+derivatives of the error (e.g. the expected value of the quadratic loss) ,
+w.r.t. the weights of the network. In other words, it is possible to use
+calculus to determine the amount by which each neuron of the last layer
+contributed to causing the error, and then further split the responsibility of
+each of them among the ones of the preceding layer. This way the error can be
+\emph{backpropagated} through the layers of the network, assigning to each
+weight its amount of blame. This information can be used by an
+\emph{optimization algorithm} to iteratively change the weights to minimize the
+error.
 
 The backpropagation algorithm has some resemblance with the learning rule of
 the Perceptron~(\autoref{eq:perceptron_lr}). The main idea in that case was
-to modify each weight of the network by a factor proportional to the error $E =
-\hat y - y$ and to the input. Even if in MLP it is usually common to consider
-other kinds of errors, such as the mean squared error (MSE) $E_{MSE} =
-\frac{1}{n} \sum_{i=0}^n(\hat y_i - y_i)^2$, the same concept applies: the
-learning procedure tries to modify the weights in order to minimize the error.
+to modify each weight of the network by a factor proportional to the error
+(defined as $E = \hat y - y$) and to the input. Even if in MLPs it is usually
+common to consider other kinds of errors, the same concept applies: the
+learning procedure tries to modify the weights in order to minimize some error.
 
-The rest of this chapter will focus on two very common kinds of ANNs
-respectively characterized by a feedforward and feedback connectivity pattern,
-namely Convolutional Neural Networks and Recurrent Neural Networks.
+It is easy to understand backpropagation with a practical example. Consider
+once again~\autoref{fig:MLP}: the network processes a bidimensional input and,
+after three layers of affine transformations followed by a nonlinearity,
+outputs a unidimensional value $\mathbf{y}$. The correct output $\mathbf{\hat
+y}$ is given and is used to compute the error, or~\emph{cost}, with some
+metric. Consider e.g. the mean squared error (MSE)
+
+\begin{equation}\label{eq:MSE}
+    E_{MSE} = \frac{1}{M} \sum_{s=0}^M(\mathbf{\hat y}^{(s)} - \mathbf{y}^{(s)})^2
+\end{equation}
+
+\noindent where $M$ is the overall number of samples in the dataset and the
+superscript in $\mathbf{y}^{(s)}$ is used to represent one sample of the
+dataset (rather than the id of the layer, since there is only one output
+layer).
+
+It is possible to compute the fraction of the error that is imputable to one of
+the neurons of the last layer, $w_{ij}^{(4)}$, by taking the derivative of the
+error w.r.t. to it:
+
+\begin{align*}\label{eq:backprop_step1}
+    \frac{\partial E_{MSE}}{\partial w_{ij}^{(4)}} &=
+        \frac{\partial}{\partial w_{ij}^{(4)}}(\frac{1}{M}\sum_{s=0}^M
+        (\mathbf{\hat y}^{(s)} - \mathbf{y}^{(s)})^2) \\
+    &= \frac{1}{M}\sum_{s=0}^M \frac{\partial}{\partial w_{ij}^{(4)}}(
+        (\mathbf{\hat y}^{(s)} - \mathbf{y}^{(s)})^2) \\
+    &= \frac{1}{M}\sum_{s=0}^M \frac{\partial}{\partial w_{ij}^{(4)}}(
+        (\mathbf{\hat y}^{(s)} - \mathbf{y}^{(s)})^2) \\
+\end{align*}
+
+% The rest of this chapter will focus on two very common kinds of ANNs
+% respectively characterized by a feedforward and feedback connectivity pattern,
+% namely Convolutional Neural Networks and Recurrent Neural Networks.
 
 
 %================================== SECTION ==================================
-\section{Convolutional networks}\label{sec:convnets}
+\section{Convolutional networks}\label{sec:cnn}
 
 Deep convolutional neural networks (CNNs) have been at the heart of spectacular
 advances in deep learning. Although CNNs have been used as early as the nineties
@@ -639,7 +680,7 @@ of clarity.
 For an in-depth treatment of the subject, see Chapter 9 of the Deep Learning
 textbook \citep{Goodfellow-et-al-2016-Book}.
 
-\section{Discrete convolutions}
+\subsection{Discrete convolutions}
 
 The bread and butter of neural networks is \emph{affine transformations}: a
 vector is received as input and is multiplied with a matrix to produce an
@@ -892,7 +933,7 @@ retaining only odd output elements (\autoref{fig:strides_subsampling}).
         one in $s = 2$ output elements is retained (right).}
 \end{figure}
 
-\section{Pooling}
+\subsection{Pooling}
 
 In addition to discrete convolutions themselves, {\em pooling\/} operations
 make up another important building block in CNNs. Pooling operations reduce
@@ -948,7 +989,7 @@ along axis $j$:
         \times 1$ strides.}
 \end{figure}
 
-\chapter{Convolution arithmetic}
+\subsection{Convolution arithmetic}
 
 The analysis of the relationship between convolutional layer properties is eased
 by the fact that they don't interact across axes, i.e., the choice of kernel
@@ -967,7 +1008,7 @@ setting:
 This facilitates the analysis and the visualization, but keep in mind that the
 results outlined here also generalize to the N-D and non-square cases.
 
-\section{No zero padding, unit strides}
+\subsubsection{No zero padding, unit strides}
 
 The simplest case to analyze is when the kernel just slides across every
 position of the input (i.e., $s = 1$ and $p = 0$).
@@ -1036,7 +1077,7 @@ For any $i$ and $k$, and for $s = 1$ and $p = 0$,
         padding and unit strides (i.e., $i = 5$, $k = 3$, $s = 1$ and $p = 2$).}
 \end{figure}
 
-\section{Zero padding, unit strides}
+\subsubsection{Zero padding, unit strides}
 
 To factor in zero padding (i.e., only restricting to $s = 1$), let's consider
 its effect on the effective input size: padding with $p$ zeros changes the
@@ -1057,7 +1098,7 @@ For any $i$, $k$ and $p$, and for $s = 1$,
 In practice, two specific instances of zero padding are used quite extensively
 because of their respective properties. Let's discuss them in more detail.
 
-\subsection{Half (same) padding}
+\paragraph{Half (same) padding}
 
 Having the output size be the same as the input size (i.e., $o = i$) can be a
 desirable property:
@@ -1078,7 +1119,7 @@ $p = \lfloor k / 2 \rfloor = n$,
 padding. \autoref{fig:same_padding_no_strides} provides an example for
 $i = 5$, $k = 3$ and (therefore) $p = 1$.
 
-\subsection{Full padding}
+\paragraph{Full padding}
 
 While convolving a kernel generally {\em decreases\/} the output size with
 respect to the input size, sometimes the opposite is required. This can be
@@ -1099,7 +1140,7 @@ setting every possible partial or complete superimposition of the kernel on the
 input feature map is taken into account. \autoref{fig:full_padding_no_strides}
 provides an example for $i = 5$, $k = 3$ and (therefore) $p = 2$.
 
-\section{No zero padding, non-unit strides}
+\subsection{No zero padding, non-unit strides}
 
 All relationships derived so far only apply for unit-strided convolutions.
 Incorporating non unitary strides requires another inference leap. To
@@ -1130,7 +1171,7 @@ possible step does {\em not\/} coincide with the kernel reaching the end of the
 input, i.e., some input units are left out (see
 \autoref{fig:padding_strides_odd} for an example of such a case).
 
-\section{Zero padding, non-unit strides}
+\subsection{Zero padding, non-unit strides}
 
 The most general case (convolving over a zero padded input using non-unit
 strides) can be derived by applying \autoref{rel:no_padding_strides} on an
@@ -1235,7 +1276,7 @@ in the case of {\em transposed convolutions}.
     \caption{Counting kernel positions.}
 \end{figure}
 
-\chapter{Pooling arithmetic}
+\subsection{Pooling arithmetic}
 
 In a neural network, pooling layers provide invariance to small translations of
 the input. The most common kind of pooling is \emph{max pooling}, which
@@ -1260,7 +1301,7 @@ For any $i$, $k$ and $s$,
 
 \noindent This relationship holds for any type of pooling.
 
-\chapter{Transposed convolution arithmetic}
+\subsection{Transposed convolution arithmetic}
 
 The need for transposed convolutions generally arises from the desire to use a
 transformation going in the opposite direction of a normal convolution, i.e.,
@@ -1293,7 +1334,7 @@ The chapter will focus on the following setting:
 \noindent Once again, the results outlined generalize to the N-D and non-square
 cases.
 
-\section{Convolution as a matrix operation}
+\subsection{Convolution as a matrix operation}
 
 Take for example the convolution represented in
 \autoref{fig:no_padding_no_strides}. If the input and output were to be unrolled
@@ -1329,7 +1370,7 @@ compatible with $\mathbf{C}$ by construction.
 Notably, the kernel $\mathbf{w}$ defines both the matrices $\mathbf{C}$ and
 $\mathbf{C}^T$ used for the forward and backward passes.
 
-\section{Transposed convolution}
+\subsection{Transposed convolution}
 
 Let's now consider what would be required to go the other way around, i.e., map
 from a 4-dimensional space to a 16-dimensional space, while keeping the
@@ -1363,7 +1404,7 @@ properties of each transposed convolution by referring to the direct
 convolution with which it shares the kernel, and defining the equivalent direct
 convolution.
 
-\section{No zero padding, unit strides, transposed}
+\subsection{No zero padding, unit strides, transposed}
 
 The simplest way to think about a transposed convolution is by computing the
 output shape of the direct convolution for a given input shape first, and then
@@ -1415,7 +1456,7 @@ output size is
 Interestingly, this corresponds to a fully padded convolution with unit
 strides.
 
-\section{Zero padding, unit strides, transposed}
+\subsection{Zero padding, unit strides, transposed}
 
 Knowing that the transpose of a non-padded convolution is equivalent to
 convolving a zero padded input, it would be reasonable to suppose that the
@@ -1480,7 +1521,7 @@ p - 1$ and its output size is
         = 1$ and $p' = 1$).}
 \end{figure}
 
-\subsection{Half (same) padding, transposed}
+\paragraph{Half (same) padding, transposed}
 
 By applying the same inductive reasoning as before, it is reasonable to expect
 that the equivalent convolution of the transpose of a half padded convolution
@@ -1504,7 +1545,7 @@ by $k' = k$, $s' = s$ and $p' = p$ and its output size is
 \autoref{fig:same_padding_no_strides_transposed} provides an example for $i =
 5$, $k = 3$ and (therefore) $p = 1$.
 
-\subsection{Full padding, transposed}
+\paragraph{Full padding, transposed}
 
 Knowing that the equivalent convolution of the transpose of a non-padded
 convolution involves full padding, it is unsurprising that the equivalent of
@@ -1525,7 +1566,7 @@ and its output size is
 \autoref{fig:full_padding_no_strides_transposed} provides an example for $i =
 5$, $k = 3$ and (therefore) $p = 2$.
 
-\section{No zero padding, non-unit strides, transposed}
+\subsection{No zero padding, non-unit strides, transposed}
 
 Using the same kind of inductive logic as for zero padded convolutions, one
 might expect that the transpose of a convolution with $s > 1$ involves an
@@ -1602,7 +1643,7 @@ $s - 1$ zeros between each input unit, and its output size is
         $\tilde{i}' = 5$, $k' = k$, $s' = 1$ and $p' = 1$).}
 \end{figure}
 
-\section{Zero padding, non-unit strides, transposed}
+\subsection{Zero padding, non-unit strides, transposed}
 
 When the convolution's input size $i$ is such that $i + 2p - k$ is a multiple
 of $s$, the analysis can extended to the zero padded case by combining
@@ -1665,7 +1706,7 @@ of the input, and its output size is
 \end{figure}
 
 %================================== SECTION ==================================
-\section{Recurrent networks}\label{sec:i}
+\section{Recurrent networks}\label{sec:rnn}
 A biological neuron takes around $10^{-3}$ seconds to perform one operation,
 whereas a modern GPU can process up to NN DATA per second~\citep{NVIDIA}.
 Nonetheless, many tasks that are trivial for humans prove to be extremely
