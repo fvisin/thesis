@@ -297,35 +297,36 @@ established the state of the art in several domains.
 Consider the network in~\autoref{fig:MLP}. As opposed to the Perceptron, the
 MLP has multiple hidden layers, where each neuron of one hidden layer is
 connected to all the neurons of the previous and next layer. Each connection
-from a neuron $h_i^{(l)}$ to a neuron $h_j^{(l)}$ is associated to a weight
-$w_{ij}^{(l)}$.
+from the $i$-th neuron of layer $l-1$ to the $j$-th neuron of layer $(l)$ is
+associated to a weight $w_{ij}^{(l)}$.
 
 Similarly to the Perceptron case, each layer computes an affine transformation,
 followed by a nonlinearity -- usually more complex than the one used in
-the Perceptron -- called \emph{activation function}. One layer can thus be seen
-as a function $g^{(l)}$ that depends on some \emph{parameters} -- namely the
-weights matrix and bias of the layer, $\mathbf{W}^{(l)}$ and $b^{(l)}$ -- as
-well as some \emph{hyperparameters} such as, e.g., the number of neurons and
-the choice of activation function. It is common to refer to the trainable
-parameters that fully characterize a layer as \emph{sufficient statistics},
-usually denoted as $\mathbf{\theta}$.
+the Perceptron -- called \emph{activation function} $\sigma(r)$. One layer can
+thus be seen as a function $f^{(l)}$ that depends on some \emph{parameters} --
+namely the vector of weights $\mathbf{w}^{(l)}$ and the bias of the layer
+$b^{(l)}$ -- as well as some \emph{hyperparameters} such as, e.g., the number
+of neurons and the choice of activation function. It is common to refer to the
+set of trainable parameters that fully characterize a layer as \emph{sufficient
+statistics}, usually denoted as $\boldsymbol{\theta}$.
 
 The processing performed by the hierarchy of layers of the MLP results in the
 output vector $\mathbf{y}$ and is equivalent to a composition of multiple
 functions
 
 \begin{equation}\label{eq:fn_composition}
-    \textbf{y} = g^{(L)}_{\boldsymbol{\theta}} \circ g^{(L-1)}_{\boldsymbol{\theta}} \circ
-    \dots \circ g^{(1)}_{\boldsymbol{\theta}}
+    \textbf{y} = f^{(L)}_{\boldsymbol{\theta}} \circ f^{(L-1)}_{\boldsymbol{\theta}} \circ
+    \dots \circ f^{(1)}_{\boldsymbol{\theta}}
 \end{equation}
 
-
-The MLP is one of the most used architectures for ANNs, yet not the only one.
-In \autoref{sec:cnn} and \autoref{sec:rnn} two of the most used alternatives
-will be described. In general every layer of an ANN will compute some
-activation based on its input and a nonlinearity, that is usually different
-from the one proposed in the Perceptron paper. In the following section, some
-of the most used activation functions will be described.
+Although very common and widely used, the MLP is not the only architecture for
+ANNs. In \autoref{sec:cnn} and \autoref{sec:rnn} two of the most used
+alternatives will be described. Generally, each layer of an ANN computes some
+activation based on its input and a nonlinear activation function. The choice
+of which activation function to use in each layer can have a big impact on the
+performance of the model and is sometimes constrained by the semantic assigned
+to the output of some units. The most important activation functions will be
+introduced in the following section.
 %Generally, more complex activation functions than the one proposed in the
 %Perceptron are being used. Here are some of the most frequently used ones.
 
@@ -412,6 +413,25 @@ given its potential (i.e. the level of excitement provoked by its incoming
 spikes): when the potential is low the neuron fires less often whereas when the
 potential is high the frequency of the spikes increases.
 
+Another very important property of the logistic function is that it is very
+fast to compute its derivative, once solved analytically:
+
+\begin{align}\label{eq:logistic_derivative}
+\begin{split}% to show one label only
+    \frac{\partial}{\partial \mathbf{a}}logistic(\mathbf{a}) &=
+        \frac{\exp(\mathbf{-a})}{\left(1+\exp(-\mathbf{a})\right)^2} \\
+    &= \frac{1}{1+\exp(-\mathbf{a})} \cdot
+        \frac{\exp(-\mathbf{a})}{1+\exp(-\mathbf{a})} \\
+    &= logistic(\mathbf{a}) \cdot
+        \frac{\exp(-\mathbf{a})}{1+\exp(-\mathbf{a})} \\
+    &= logistic(\mathbf{a}) \cdot
+        \frac{1+\exp(-\mathbf{a})-1}{1+\exp(-\mathbf{a})} \\
+    &= logistic(\mathbf{a}) \cdot
+        \left(1-\frac{1}{1+\exp(-\mathbf{a})}\right) \\
+    &= logistic(\mathbf{a}) \cdot (1-logistic(\mathbf{a}))
+\end{split}
+\end{align}
+
 Its use is not as widespread as it used to be though, due to two major
 drawbacks:
 \begin{itemize}
@@ -472,14 +492,14 @@ drawbacks:
         ReLU's implementation simply amounts to thresholding at zero. Another
         important characteristic is that the gradient is trivial to compute:
 
-        \begin{equation*}
+        \begin{equation}\label{eq:relu_derivative}
             \nabla (relu(\mathbf{a}^{(l)})) =
                 \begin{cases}
                     \mathbf{h}^{(l-1)},  & \text{if } \mathbf{a}^{(l)} > 0 \\
                     0,          & \text{if } \mathbf{a}^{(l)} < 0 \\
                     undefined,  & \text{if } \mathbf{a}^{(l)} = 0
                 \end{cases}
-        \end{equation*}
+        \end{equation}
 
     \item \emph{Induce sparsity:} ReLU units induce sparsity, since whenever
         the input preactivation is negative their activation is zero. Sparsity
@@ -617,34 +637,73 @@ common to consider other kinds of errors, the same concept applies: the
 learning procedure tries to modify the weights in order to minimize some error.
 
 It is easy to understand backpropagation with a practical example. Consider
-once again~\autoref{fig:MLP}: the network processes a bidimensional input and,
-after three layers of affine transformations followed by a nonlinearity,
-outputs a unidimensional value $\mathbf{y}$. The correct output $\mathbf{\hat
-y}$ is given and is used to compute the error, or~\emph{cost}, with some
-metric. Consider e.g. the mean squared error (MSE)
+once again~\autoref{fig:MLP}: the network processes a bidimensional input
+$\mathbf{x}$ and, after three layers of affine transformations followed by a
+nonlinearity, returns a unidimensional value $\mathbf{y}$. The correct output
+$\mathbf{\hat y}$ is given and is used to compute the error, or~\emph{cost},
+with some \emph{differentiable} metric. For this example consider e.g. the mean
+squared error (MSE)
 
 \begin{equation}\label{eq:MSE}
-    E_{MSE} = \frac{1}{M} \sum_{s=0}^M(\mathbf{\hat y}^{(s)} - \mathbf{y}^{(s)})^2
+    E_{mse} = \frac{1}{M} \sum_{\mathcal{D}}\frac{1}{2}(\mathbf{\hat y} - \mathbf{y})^2
 \end{equation}
 
-\noindent where $M$ is the overall number of samples in the dataset and the
-superscript in $\mathbf{y}^{(s)}$ is used to represent one sample of the
-dataset (rather than the id of the layer, since there is only one output
-layer).
+\noindent the summation is done over a dataset $\mathcal{D}$ of $M$ samples,
+each composed by an input $\mathbf{x}$ and its associated desired output
+$\mathbf{\hat y}$. $\mathbf{y}$ is used as a compact notation for
+$\mathbf{y(x)}$ and represents the output of the network for one input sample
+$\mathbf{x}$.
 
-It is possible to compute the fraction of the error that is imputable to one of
-the neurons of the last layer, $w_{ij}^{(4)}$, by taking the derivative of the
-error w.r.t. to it:
+It is possible to compute the fraction of the error that is imputable to any
+neuron of the network
+%the neurons of the last layer, i.e. to the weights $\mathbf{W}^{(4)}$,
+by taking the derivative of the error w.r.t. to its weights
+%. The notation $\nabla^{(4)}$
+%will be used to denote the gradient of the error w.r.t. $\mathbf{W}^{(4)}$.
 
-\begin{align*}\label{eq:backprop_step1}
-    \frac{\partial E_{MSE}}{\partial w_{ij}^{(4)}} &=
-        \frac{\partial}{\partial w_{ij}^{(4)}}(\frac{1}{M}\sum_{s=0}^M
-        (\mathbf{\hat y}^{(s)} - \mathbf{y}^{(s)})^2) \\
-    &= \frac{1}{M}\sum_{s=0}^M \frac{\partial}{\partial w_{ij}^{(4)}}(
-        (\mathbf{\hat y}^{(s)} - \mathbf{y}^{(s)})^2) \\
-    &= \frac{1}{M}\sum_{s=0}^M \frac{\partial}{\partial w_{ij}^{(4)}}(
-        (\mathbf{\hat y}^{(s)} - \mathbf{y}^{(s)})^2) \\
-\end{align*}
+\begin{align}\label{eq:backprop_step1}
+\begin{split}
+    \frac{\partial E_{mse}}{\partial w_{ij}^{(l)}} &=
+    \frac{\partial}{\partial w_{ij}^{(l)}}\left(
+        \frac{1}{m}\sum_{\mathcal{D}}\left[
+        \frac{1}{2}(\mathbf{\hat y} - \mathbf{y})^2\right]\right) \\
+    &= \frac{1}{m}\sum_{\mathcal{D}} \left[\frac{1}{2}
+        \frac{\partial}{\partial w_{ij}^{(l)}}
+        \left(\mathbf{\hat y} - \mathbf{y}\right)^2\right] \\
+    &= \frac{1}{m}\sum_{\mathcal{D}}\left[(\mathbf{\hat y} - \mathbf{y})
+        \cdot \frac{\partial}{\partial w_{ij}^{(l)}}(-\mathbf{y})\right] \\
+\end{split}
+\end{align}
+
+\noindent Backpropagation allows to compute the partial derivative
+$\frac{\partial}{\partial w_{ij}^{(l)}}(-\mathbf{y})$
+%of the weight $w_{ij}^{(l)}$
+exploiting the chain rule of derivation. Consider e.g. one of the weights of
+the second layer $w_{ij}^{(2)}$
+
+\begin{equation}\label{eq:backprop_step2}
+    \frac{\partial }{\partial w_{ij}^{(2)}}(-\mathbf{y}) =
+        -\frac{\partial \mathbf{y}}{\partial \mathbf{h}^{(3)}} \cdot
+        \frac{\partial \mathbf{h}^{(3)}}{\partial w_{ij}^{(2)}} \\
+\end{equation}
+
+\noindent Computing the derivative of $\frac{\partial \mathbf{y}}{\partial
+h^{(3)}}$ requires to take the derivative of the activation function. For a
+logistic activation the formula given in~\autoref{eq:logistic_derivative} can
+be substituted in~\autoref{eq:backprop_step2}
+
+\begin{equation}\label{eq:backprop_step2}
+    \frac{\partial }{\partial w_{ij}^{(2)}}(-\mathbf{y}) =
+        -logistic(\mathbf{a^{(3)}})(1-logistic(\mathbf{a^{(3)}})) \cdot
+        \frac{\partial \mathbf{h}^{(3)}}{\partial w_{ij}^{(2)}} \\
+\end{equation}
+    %&= \frac{1}{M}\sum_{s=0}^M \frac{\partial}{\partial \mathbf{W}^{(4)}}
+    %    (\mathbf{\hat y}^{(s)} - \mathbf{W}^{(4)} \cdot \mathbf{h}^{(3)})^2 \\
+    % &= \frac{1}{M}\sum_{s=0}^M \frac{\partial}{\partial \mathbf{W}^{(4)}}(
+    %     (\mathbf{\hat y}^{(s)} - \mathbf{W}^{(4)} \cdot h_i^{(3)})^2) \\
+    % &= \frac{1}{M}\sum_{s=0}^M
+    %     2(\mathbf{\hat y}^{(s)} - \mathbf{W}^{(4)} \cdot h_i^{(3)})^2) -
+    %     h_i^{(3)} \\
 
 % The rest of this chapter will focus on two very common kinds of ANNs
 % respectively characterized by a feedforward and feedback connectivity pattern,
