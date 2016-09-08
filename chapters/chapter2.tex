@@ -78,7 +78,7 @@ weighted sum of each dimension of the input $x_i$ and its corresponding weight
 $w_i$ -- often referred to as \emph{preactivation} -- is computed as
 
 \begin{equation*}
-    a = \sum_{i=0}^{n}(w_i \cdot x_i)
+    z = \sum_{i=0}^{n}(w_i \cdot x_i)
 \end{equation*}
 
 \noindent where to simplify the notation the bias term $b$ has been replaced
@@ -89,7 +89,7 @@ function of form
 \begin{equation*}
     y =
         \begin{cases}
-            1,          & \text{if } a \geq 0 \\
+            1,          & \text{if } z \geq 0 \\
             0,         & \text{otherwise}
         \end{cases}
 \end{equation*}
@@ -110,7 +110,7 @@ bias -- also called the \emph{parameters} of the network -- are \emph{learned}
 according to the following rule:
 
 \begin{equation}\label{eq:perceptron_lr}
-    w_i^{new} = w_i^{old} + \eta \cdot (\hat {y} - y) \cdot x_i
+    w_i^{\text{new}} = w_i^{\text{old}} + \eta \cdot (\hat {y} - y) \cdot x_i
 \end{equation}
 
 \noindent where $\hat y$ is the target (i.e. desired) value, $y$ is the output
@@ -294,29 +294,41 @@ established the state of the art in several domains.
     }
 \end{figure}
 
-Consider the network in~\autoref{fig:MLP}. As opposed to the Perceptron, the
-MLP has multiple hidden layers, where each neuron of one hidden layer is
-connected to all the neurons of the previous and next layer. Each connection
-from the $i$-th neuron of layer $l-1$ to the $j$-th neuron of layer $(l)$ is
-associated to a weight $w_{ij}^{(l)}$.
+\noindent Consider the network in~\autoref{fig:MLP}. As opposed to the
+Perceptron, the MLP has multiple hidden layers, where each neuron of one hidden
+layer is connected to all the neurons of the previous and next layer. Each
+connection from the $i$-th neuron of layer $l-1$ to the $j$-th neuron of layer
+$(l)$ is associated to a weight $w_{ij}^{(l)}$, and all the weights are stored
+in a matrix $\mathbf{W}$.
 
-Similarly to the Perceptron case, each layer computes an affine transformation,
-followed by a nonlinearity -- usually more complex than the one used in
-the Perceptron -- called \emph{activation function} $\sigma(r)$. One layer can
-thus be seen as a function $f^{(l)}$ that depends on some \emph{parameters} --
-namely the vector of weights $\mathbf{w}^{(l)}$ and the bias of the layer
-$b^{(l)}$ -- as well as some \emph{hyperparameters} such as, e.g., the number
-of neurons and the choice of activation function. It is common to refer to the
-set of trainable parameters that fully characterize a layer as \emph{sufficient
-statistics}, usually denoted as $\boldsymbol{\theta}$.
+Similarly to the Perceptron case, each layer computes an affine transformation
+
+\begin{equation}\label{eq:MLP_affine}
+    \mathbf{z}^{(l)} = \mathbf{W}^{(l)} \cdot \mathbf{a}^{(l-1)}
+\end{equation}
+
+\noindent followed by a nonlinearity -- usually more complex than the one
+used in the Perceptron -- called \emph{activation function}
+
+\begin{equation}\label{eq:MLP_activation}
+    \mathbf{a}^{(l)} = \sigma(\mathbf{z}^{(l)})
+\end{equation}
+
+One hidden layer can thus be seen as a function $h^{(l)}$ that depends on some
+\emph{parameters} -- namely the vector of weights $\mathbf{w}^{(l)}$ and the
+bias of the layer $b^{(l)}$ -- as well as some \emph{hyperparameters} such as,
+e.g., the number of neurons and the choice of activation function. It is common
+to refer to the set of trainable parameters that fully characterize a layer as
+\emph{sufficient statistics}, usually denoted as $\boldsymbol{\theta}$.
 
 The processing performed by the hierarchy of layers of the MLP results in the
 output vector $\mathbf{y}$ and is equivalent to a composition of multiple
 functions
 
 \begin{equation}\label{eq:fn_composition}
-    \textbf{y} = f^{(L)}_{\boldsymbol{\theta}} \circ f^{(L-1)}_{\boldsymbol{\theta}} \circ
-    \dots \circ f^{(1)}_{\boldsymbol{\theta}}
+    \textbf{y} = h^{(L)}_{\boldsymbol{\theta}} \circ
+        h^{(L-1)}_{\boldsymbol{\theta}} \circ
+        \dots \circ h^{(1)}_{\boldsymbol{\theta}}
 \end{equation}
 
 Although very common and widely used, the MLP is not the only architecture for
@@ -341,29 +353,29 @@ introduced in the following section.
         \foreach \y in {-1,0,1,2}
             \node[anchor=east] at (-2.9,\y) {\y};
         % axes
-        \draw[->,thick] (-2.9, 0) -- (3.1, 0) node[right] {$a$};
-        \draw[->,thick] (0, -1.1) -- (0, 3.1) node[above] {$f(a)$};
+        \draw[->,thick] (-2.9, 0) -- (3.1, 0) node[right] {$z$};
+        \draw[->,thick] (0, -1.1) -- (0, 3.1) node[above] {$f(z)$};
 
         % Logistic
         \draw[thick, color=blue]
             plot (\x, { 1/(1+exp(-1 * \x)) })
-            node[right,yshift=-0.5em] {$logistic(a)$};
+            node[right,yshift=-0.5em] {$logistic(z)$};
         % Beta logistic
         %\draw[color=purple] plot (\x, { 1/(1+exp(-.5 * \x)) })
         %    node[right] {$logistic(a), beta=.5$};
         % Tanh
         \draw[thick, color=orange]
             plot (\x, { ( 1 - exp(-2*\x) ) / ( 1 + exp(-2*\x) ) })
-            node[right,yshift=0.5em] {$tanh(a)$};
+            node[right,yshift=0.5em] {$tanh(z)$};
         % ReLU
         \draw[thick, color=red]
             plot (\x, { max(0, \x) })
             %node[right] {$ReLU(x)$};
-            node[xshift=-19.3em,yshift=-8em] (a) {$ReLU(a)$};
+            node[xshift=-19.3em,yshift=-8em] (a) {$ReLU(z)$};
         % Leaky ReLU
         \draw[thick, color=yellow]
             plot (\x, { max(0.03 * \x, \x) })
-            node[below = 1.2em of a.east, anchor=east] {$Leaky ReLU(a)$};
+            node[below = 1.2em of a.east, anchor=east] {$Leaky ReLU(z)$};
     \end{tikzpicture}
     \caption{Some of the most common activation functions: sigmoid, tanh, ReLU
         and Leaky ReLU\label{fig:activations}}
@@ -389,12 +401,8 @@ single equivalent layer, and the MLP would become a Perceptron.
 
 Many activation functions have been proposed in the years and even if our
 understanding of this component has improved, which one to use with the
-different architectures and tasks is still object of active debate and a matter
-of personal preference. The upcoming sections describe the ones that are most
-frequently used, in the context where the activation of the previous layer
-$l-1$ is defined as $\mathbf{h}^{(l-1)}$ and the result of the affine
-transformation is denoted as $\mathbf{a}^{(l)} = \mathbf{W}^{(l)} \cdot
-\mathbf{h}^{(l-1)}$.
+different architectures and tasks is still object of active debate and
+sometimes a matter of personal preference.
 
 \subsubsection{Logistic}\label{sec:logistic}
 The logistic, often called \emph{sigmoid}, is a differentiable monotonically
@@ -404,7 +412,7 @@ negative numbers it asymptotes to $0$ while for large positive numbers it
 asymptotes to $1$. It is defined as
 
 \begin{equation}\label{eq:logistic}
-    logistic(\mathbf{a}) = \frac{1}{1+\exp(-\mathbf{a})}
+    logistic(\mathbf{z}) = \frac{1}{1+\exp(-\mathbf{z})}
 \end{equation}
 
 \noindent The logistic function has probably been the most used nonlinearity
@@ -418,17 +426,17 @@ fast to compute its derivative, once solved analytically:
 
 \begin{align}\label{eq:logistic_derivative}
 \begin{split}% to show one label only
-    \frac{\partial}{\partial \mathbf{a}}logistic(\mathbf{a}) &=
-        \frac{\exp(\mathbf{-a})}{\left(1+\exp(-\mathbf{a})\right)^2} \\
-    &= \frac{1}{1+\exp(-\mathbf{a})} \cdot
-        \frac{\exp(-\mathbf{a})}{1+\exp(-\mathbf{a})} \\
-    &= logistic(\mathbf{a}) \cdot
-        \frac{\exp(-\mathbf{a})}{1+\exp(-\mathbf{a})} \\
-    &= logistic(\mathbf{a}) \cdot
-        \frac{1+\exp(-\mathbf{a})-1}{1+\exp(-\mathbf{a})} \\
-    &= logistic(\mathbf{a}) \cdot
-        \left(1-\frac{1}{1+\exp(-\mathbf{a})}\right) \\
-    &= logistic(\mathbf{a}) \cdot (1-logistic(\mathbf{a}))
+    \frac{\partial}{\partial \mathbf{z}}logistic(\mathbf{z}) &=
+        \frac{\exp(\mathbf{-z})}{\left(1+\exp(-\mathbf{z})\right)^2} \\
+    &= \frac{1}{1+\exp(-\mathbf{z})} \cdot
+        \frac{\exp(-\mathbf{z})}{1+\exp(-\mathbf{z})} \\
+    &= logistic(\mathbf{z}) \cdot
+        \frac{\exp(-\mathbf{z})}{1+\exp(-\mathbf{z})} \\
+    &= logistic(\mathbf{z}) \cdot
+        \frac{1+\exp(-\mathbf{z})-1}{1+\exp(-\mathbf{z})} \\
+    &= logistic(\mathbf{z}) \cdot
+        \left(1-\frac{1}{1+\exp(-\mathbf{z})}\right) \\
+    &= logistic(\mathbf{z}) \cdot (1-logistic(\mathbf{z}))
 \end{split}
 \end{align}
 
@@ -465,7 +473,7 @@ chosen where it is desirable to be able to increase or decrease some quantity
 by small amounts, thanks to its codomain. It is defined as
 
 \begin{equation}\label{eq:tanh}
-    tanh(\mathbf{a}) = \frac{1-exp(-2\mathbf{a})}{1+exp(-2\mathbf{a})}
+    tanh(\mathbf{z}) = \frac{1-exp(-2\mathbf{z})}{1+exp(-2\mathbf{z})}
 \end{equation}
 
 
@@ -476,7 +484,7 @@ nonlinearity of choice in many applications~\cite{Krizhevsky-2012,
 LeCun-et-al-Nature2015,Glorot+al-AI-2011-small}. It is defined as
 
 \begin{equation}\label{eq:relu}
-    relu(\mathbf{a}) = max(0, \mathbf{a})
+    relu(\mathbf{z}) = max(0, \mathbf{z})
 \end{equation}
 
 Although very simple, it has some very interesting properties and a few
@@ -493,11 +501,11 @@ drawbacks:
         important characteristic is that the gradient is trivial to compute:
 
         \begin{equation}\label{eq:relu_derivative}
-            \nabla (relu(\mathbf{a}^{(l)})) =
+            \nabla (relu(\mathbf{z}^{(l)})) =
                 \begin{cases}
-                    \mathbf{h}^{(l-1)},  & \text{if } \mathbf{a}^{(l)} > 0 \\
-                    0,          & \text{if } \mathbf{a}^{(l)} < 0 \\
-                    undefined,  & \text{if } \mathbf{a}^{(l)} = 0
+                    \mathbf{a}^{(l-1)},  & \text{if } \mathbf{z}^{(l)} > 0 \\
+                    0,          & \text{if } \mathbf{z}^{(l)} < 0 \\
+                    undefined,  & \text{if } \mathbf{z}^{(l)} = 0
                 \end{cases}
         \end{equation}
 
@@ -528,7 +536,7 @@ unit, potentially recovering extreme values of the weights. Leaky ReLUs are
 defined as
 
 \begin{equation}\label{eq:lrelu}
-    leaky\_relu(\mathbf{a}) = max(\beta*\mathbf{a}, \mathbf{a})
+    leaky\_relu(\mathbf{z}) = max(\beta*\mathbf{z}, \mathbf{z})
 \end{equation}
 
 \subsubsection{Softmax}\label{sec:softmax}
@@ -540,7 +548,7 @@ that of all the dimensions (or neurons) in the layer. The softmax is a
 It is defined as
 
 \begin{equation}\label{eq:softmax}
-    softmax(a_i) = \frac{\exp(a_i)}{\sum_{k=0}^K{\exp(a_k)}}
+    softmax(z_i) = \frac{\exp(z_i)}{\sum_{k=0}^K{\exp(z_k)}}
 \end{equation}
 
 \noindent where $K$ is the number of classes, i.e. of dimensions (or neurons).
@@ -554,8 +562,8 @@ pickier on the class with higher probability and has a light tail on the other
 classes.
 
 \begin{equation}\label{eq:softmax_tmp}
-    softmax(a_i) = \frac{\exp(a_i / T)}
-                        {\sum_{k=0}^K{\exp(a_k / T)}}
+    softmax(z_i) = \frac{\exp(z_i / T)}
+                        {\sum_{k=0}^K{\exp(z_k / T)}}
 \end{equation}
 
 \begin{figure}[h]
@@ -591,20 +599,20 @@ classes.
             \node (destination) at (axis cs:2.5,0.3){$T$};
             \draw[thick, ->](source)--(destination);
 
-            \addlegendentry{$softmax(a), T= 3$}
-            \addlegendentry{$softmax(a), T= 2$}
-            \addlegendentry{$softmax(a), T= 1$}
-            \addlegendentry{$softmax(a), T= 1/2$}
-            \addlegendentry{$softmax(a), T= 1/3$}
-            \addlegendentry{$softmax(a), T= 1/4$}
-            \addlegendentry{$softmax(a), T= 1/5$}
-            \addlegendentry{$softmax(a), T= 1/6$}
+            \addlegendentry{$softmax(z), T= 3$}
+            \addlegendentry{$softmax(z), T= 2$}
+            \addlegendentry{$softmax(z), T= 1$}
+            \addlegendentry{$softmax(z), T= 1/2$}
+            \addlegendentry{$softmax(z), T= 1/3$}
+            \addlegendentry{$softmax(z), T= 1/4$}
+            \addlegendentry{$softmax(z), T= 1/5$}
+            \addlegendentry{$softmax(z), T= 1/6$}
         \end{axis}
     \end{tikzpicture}
     \caption{The behaviour of softmax as temperature $T$ grows. The plots have
-        been obtained considering a bidimensional input setting where the value
-        associated to the second class $a_1$ is always $1$. As $T$ increases,
-        the function becomes steeper.\label{fig:softmax}}
+        been obtained considering a bidimensional input setting where the
+        preactivation associated to the second class $z_1$ is always $1$. As
+        $T$ increases, the function becomes steeper.\label{fig:softmax}}
 \end{figure}
 
 \subsection{Backpropagation}\label{sec:backprop}
@@ -632,9 +640,14 @@ error.
 The backpropagation algorithm has some resemblance with the learning rule of
 the Perceptron~(\autoref{eq:perceptron_lr}). The main idea in that case was
 to modify each weight of the network by a factor proportional to the error
-(defined as $E = \hat y - y$) and to the input. Even if in MLPs it is usually
-common to consider other kinds of errors, the same concept applies: the
-learning procedure tries to modify the weights in order to minimize some error.
+($E = \hat y - y$, in the Perceptron) and to the input. Even if in MLPs it is
+usually common to consider other kinds of errors, the same concept applies: the
+learning procedure tries to modify the weights in order to minimize some error
+
+\begin{equation}
+    %w_{ij}^{(l)} = w_{ij}^{(l)} + \eta \frac{\partial E}{\partial w_{ij}^{(l)}}
+    \mathbf{W} = \mathbf{W} + \eta \frac{\partial E}{\partial \mathbf{W}}
+\end{equation}
 
 It is easy to understand backpropagation with a practical example. Consider
 once again~\autoref{fig:MLP}: the network processes a bidimensional input
@@ -654,12 +667,9 @@ $\mathbf{\hat y}$. $\mathbf{y}$ is used as a compact notation for
 $\mathbf{y(x)}$ and represents the output of the network for one input sample
 $\mathbf{x}$.
 
-It is possible to compute the fraction of the error that is imputable to any
-neuron of the network
-%the neurons of the last layer, i.e. to the weights $\mathbf{W}^{(4)}$,
-by taking the derivative of the error w.r.t. to its weights
-%. The notation $\nabla^{(4)}$
-%will be used to denote the gradient of the error w.r.t. $\mathbf{W}^{(4)}$.
+It is possible to compute the fraction of the error that is imputable to each
+neuron of the network by taking the derivative of the error w.r.t. to its
+weights
 
 \begin{align}\label{eq:backprop_step1}
 \begin{split}
@@ -677,33 +687,50 @@ by taking the derivative of the error w.r.t. to its weights
 
 \noindent Backpropagation allows to compute the partial derivative
 $\frac{\partial}{\partial w_{ij}^{(l)}}(-\mathbf{y})$
-%of the weight $w_{ij}^{(l)}$
-exploiting the chain rule of derivation. Consider e.g. one of the weights of
-the second layer $w_{ij}^{(2)}$
+exploiting the chain rule of derivation. Consider e.g. the weights of the
+second layer $\mathbf{W}^{(2)}$
 
-\begin{equation}\label{eq:backprop_step2}
-    \frac{\partial }{\partial w_{ij}^{(2)}}(-\mathbf{y}) =
-        -\frac{\partial \mathbf{y}}{\partial \mathbf{h}^{(3)}} \cdot
-        \frac{\partial \mathbf{h}^{(3)}}{\partial w_{ij}^{(2)}} \\
+\begin{align}\label{eq:backprop_step2}
+\begin{split}
+    -\frac{\partial\mathbf{y}}{\partial \mathbf{W}^{(2)}} &=
+        -\frac{\partial \mathbf{y}}     {\partial \mathbf{z}^{(4)}} \cdot
+        \frac{\partial \mathbf{z}^{(4)}}{\partial \mathbf{W}^{(2)}} \\
+    &= -\frac{\partial \mathbf{y}}      {\partial \mathbf{z}^{(4)}} \cdot
+        \frac{\partial \mathbf{z}^{(4)}}{\partial \mathbf{a}^{(3)}} \cdot
+        \frac{\partial \mathbf{a}^{(3)}}{\partial \mathbf{W}^{(2)}} \\
+    &= -\frac{\partial \mathbf{y}}      {\partial \mathbf{z}^{(4)}} \cdot
+        \frac{\partial \mathbf{z}^{(4)}}{\partial \mathbf{a}^{(3)}} \cdot
+        \frac{\partial \mathbf{a}^{(3)}}{\partial \mathbf{z}^{(3)}} \cdot
+        \frac{\partial \mathbf{z}^{(3)}}{\partial \mathbf{W}^{(2)}} \\
+    &= -\frac{\partial \mathbf{y}}      {\partial \mathbf{z}^{(4)}} \cdot
+        \frac{\partial \mathbf{z}^{(4)}}{\partial \mathbf{a}^{(3)}} \cdot
+        \frac{\partial \mathbf{a}^{(3)}}{\partial \mathbf{z}^{(3)}} \cdot
+        \frac{\partial \mathbf{z}^{(3)}}{\partial \mathbf{a}^{(2)}} \cdot
+        \frac{\partial \mathbf{a}^{(2)}}{\partial \mathbf{W}^{(2)}} \\
+    &= -\frac{\partial \mathbf{y}}      {\partial \mathbf{z}^{(4)}} \cdot
+        \frac{\partial \mathbf{z}^{(4)}}{\partial \mathbf{a}^{(3)}} \cdot
+        \frac{\partial \mathbf{a}^{(3)}}{\partial \mathbf{z}^{(3)}} \cdot
+        \frac{\partial \mathbf{z}^{(3)}}{\partial \mathbf{a}^{(2)}} \cdot
+        \frac{\partial \mathbf{a}^{(2)}}{\partial \mathbf{z}^{(2)}} \cdot
+        \frac{\partial \mathbf{z}^{(2)}}{\partial \mathbf{W}^{(2)}}
+\end{split}
+\end{align}
+
+\noindent From \autoref{eq:MLP_affine} and \autoref{eq:MLP_activation} follows
+
+\begin{equation}\label{eq:backprop_step3}
+    -\frac{\partial \mathbf{y}}      {\partial \mathbf{z}^{(4)}} \cdot
+        \frac{\partial \mathbf{z}^{(4)}}{\partial \mathbf{a}^{(3)}} \cdot
+        \frac{\partial \mathbf{a}^{(3)}}{\partial \mathbf{z}^{(3)}} \cdot
+        \frac{\partial \mathbf{z}^{(3)}}{\partial \mathbf{a}^{(2)}} \cdot
+        \frac{\partial \mathbf{a}^{(2)}}{\partial \mathbf{W}^{(2)}} =
+    -\sigma'(\mathbf{z}^{(4)}) \cdot
+        \mathbf{W}^{(4)} \cdot
+        \sigma'(\mathbf{z}^{(3)}) \cdot
+        \mathbf{W}^{(3)} \cdot
+        \sigma'(\mathbf{z}^{(2)}) \cdot
+        \mathbf{a}^{(1)}
 \end{equation}
-
-\noindent Computing the derivative of $\frac{\partial \mathbf{y}}{\partial
-h^{(3)}}$ requires to take the derivative of the activation function. For a
-logistic activation the formula given in~\autoref{eq:logistic_derivative} can
-be substituted in~\autoref{eq:backprop_step2}
-
-\begin{equation}\label{eq:backprop_step2}
-    \frac{\partial }{\partial w_{ij}^{(2)}}(-\mathbf{y}) =
-        -logistic(\mathbf{a^{(3)}})(1-logistic(\mathbf{a^{(3)}})) \cdot
-        \frac{\partial \mathbf{h}^{(3)}}{\partial w_{ij}^{(2)}} \\
-\end{equation}
-    %&= \frac{1}{M}\sum_{s=0}^M \frac{\partial}{\partial \mathbf{W}^{(4)}}
-    %    (\mathbf{\hat y}^{(s)} - \mathbf{W}^{(4)} \cdot \mathbf{h}^{(3)})^2 \\
-    % &= \frac{1}{M}\sum_{s=0}^M \frac{\partial}{\partial \mathbf{W}^{(4)}}(
-    %     (\mathbf{\hat y}^{(s)} - \mathbf{W}^{(4)} \cdot h_i^{(3)})^2) \\
-    % &= \frac{1}{M}\sum_{s=0}^M
-    %     2(\mathbf{\hat y}^{(s)} - \mathbf{W}^{(4)} \cdot h_i^{(3)})^2) -
-    %     h_i^{(3)} \\
 
 % The rest of this chapter will focus on two very common kinds of ANNs
 % respectively characterized by a feedforward and feedback connectivity pattern,
