@@ -649,6 +649,9 @@ learning procedure tries to modify the weights in order to minimize some error
     \mathbf{W} = \mathbf{W} + \eta \frac{\partial E}{\partial \mathbf{W}}
 \end{equation}
 
+\noindent where $\eta$ is a scaling factor typically referred to as
+\emph{learning rate}, that determines the size of the gradient descent steps.
+
 It is easy to understand backpropagation with a practical example. Consider
 once again~\autoref{fig:MLP}: the network processes a bidimensional input
 $\mathbf{x}$ and, after three layers of affine transformations followed by a
@@ -685,7 +688,7 @@ weights
 \end{split}
 \end{align}
 
-\noindent Backpropagation allows to compute the partial derivative
+Backpropagation allows to compute the partial derivative
 $\frac{\partial}{\partial w_{ij}^{(l)}}(-\mathbf{y})$
 exploiting the chain rule of derivation. Consider e.g. the weights of the
 second layer $\mathbf{W}^{(2)}$
@@ -719,11 +722,7 @@ second layer $\mathbf{W}^{(2)}$
 \noindent From \autoref{eq:MLP_affine} and \autoref{eq:MLP_activation} follows
 
 \begin{equation}\label{eq:backprop_step3}
-    -\frac{\partial \mathbf{y}}      {\partial \mathbf{z}^{(4)}} \cdot
-        \frac{\partial \mathbf{z}^{(4)}}{\partial \mathbf{a}^{(3)}} \cdot
-        \frac{\partial \mathbf{a}^{(3)}}{\partial \mathbf{z}^{(3)}} \cdot
-        \frac{\partial \mathbf{z}^{(3)}}{\partial \mathbf{a}^{(2)}} \cdot
-        \frac{\partial \mathbf{a}^{(2)}}{\partial \mathbf{W}^{(2)}} =
+    -\frac{\partial\mathbf{y}}{\partial \mathbf{W}^{(2)}} =
     -\sigma'(\mathbf{z}^{(4)}) \cdot
         \mathbf{W}^{(4)} \cdot
         \sigma'(\mathbf{z}^{(3)}) \cdot
@@ -731,6 +730,10 @@ second layer $\mathbf{W}^{(2)}$
         \sigma'(\mathbf{z}^{(2)}) \cdot
         \mathbf{a}^{(1)}
 \end{equation}
+
+\noindent where $\sigma'$ can be computed analytically and depends on the
+activation function of choice (see e.g.~\autoref{eq:logistic_derivative} and
+\autoref{eq:relu_derivative})
 
 % The rest of this chapter will focus on two very common kinds of ANNs
 % respectively characterized by a feedforward and feedback connectivity pattern,
