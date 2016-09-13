@@ -1,92 +1,143 @@
 \chapter{Introduction}
+% \begin{Definition}
+%     PoliMi: Politecnico di Milano
+% \end{Definition}
+
+%% \smallskip introduces a small vertical skip
+%% \bigskip introduces a big vertical skip
 
 %============================= INTRODUCTION =================================
 \section{Introduction}\label{sec:i}
-%Remember that wherever you want you can cite with \verb.\cite{a1}. \cite{a1}, \cite{b1} and/or \cite{m1} someone.
-Or use \verb.\footnote{That's a footnote}. like this\footnote{That's a footnote}
-% this is used to include other .tex files in order to split a long document
+{
+    \setlength\epigraphwidth{10cm}
+    \setlength\epigraphrule{0pt}
+    \renewcommand{\epigraphflush}{center}
+    \epigraph{
+        I am convinced that machines can and will think. I don't mean that
+        machines will behave like men. I don't think for a very long time we
+        are going to have a difficult problem distinguishing a man from a
+        robot. And I don't think my daughter will ever marry a computer. But I
+        think that computer will be doing the things that men do when we say
+        they are thinking. I am convinced that machines can and will think in
+        our lifetime.}{-- \textup{The Thinking Machine (Artificial Intelligence
+            in the 1960s)}, \\ O. Selfridge (Lincoln labs, MIT)}
+}
 
-%============================= SECTIONS =================================
+The dream of machines that can think and substitute humans in doing their jobs
+dates back to the '60s, if not before. We are still not at that point, although
+in the last decade the field experienced outstanding advancements and has been
+object of increasing interest. Machine Learning (ML) settled the state of art
+in many fields, such as e.g., image classification~\cite{Krizhevsky-2012,
+szegedy2016inception, visin2015renet}, semantic
+segmentation~\cite{chen2015semantic, visin15}, video
+understanding~\citep{srivastava2015unsupervised, Xu-et-al-arxiv2015}, natural
+language processing and machine translation~\citep{Bahdanau-et-al-arxiv2014}.
+Much of this research is already in commercial products we use every day, such
+as e.g., speech recognition and speech synthesis in phones, face detection in
+cameras and socials, or traffic signs enhancement in cars. Even more
+impressively, a ML algorithm recently won several games of
+go~\citep{silver2016alphago} -- a game known for being extremely challenging --
+against one of the best human players.
 
-\section{New section}
-You can insert a definition
-	\begin{Definition}
-		PoliMi: Politecnico di Milano
-	\end{Definition}
+Despite its many successes, machine learning is no lamp genie that can tackle
+any problem by simply providing it with enough data. To get results in in
+machine learning requires a meticulous analysis of the characteristics of the
+problem, clever architecture modelling, smart engineering, as well as careful
+inspection of complex and extremely nonlinear compositions of transformations.
+Most of all, it requires good organization, intuition and patience, since many
+of the experiments can last days if not weeks -- even on big clusters of GPUs.
 
-\section{Another section}
-	\subsection{And a subsection}
-		In this sub section I will include many images just to make the list of figures meaningful.
+Our research is focused on visual scene understanding. Our claim is that
+understanding a visual scene -- be it an image or a video -- requires to capture
+its semantic, and that this has to be done by building an incremental
+representation of the context while processing the elements of the scene. For
+this reason we decided to focus on Recurrent Neural Networks (RNNs), a family
+of neural networks with memory -- or state -- that can decide autonomously when
+to store, retrieve or delete information from their memory.
 
-			\begin{figure}[h!tb]
-				\centerline {\includegraphics[scale=0.6]{img/logopoli.png}}
-				\caption{Caption of this PoliMi image.}
-				\label{fig:leet}
-			\end{figure}
+As a first step to address the problem of image understanding, we focused on
+object classification, i.e. the problem of selecting the class an object in a
+scene belongs to. Historically, this problem was addressed by hand-engineering
+global and local descriptors as characteristic as possible, so that their
+presence or absence could be used as a proxy for the presence or absence of a
+specific class of objects. From 2012 onwards, handcrafted methods were
+abandoned in favour of convolutional neural networks (CNNs), after the
+CNN-based model presented in~\cite{Krizhevsky-2012} improved the state of the
+art by 10%. Since then CNNs-based models dominated the object classification
+%panorama.
 
-\section{New section}
-	\subsection{And also many sub}
-		\subsubsection{Or again more nested}
-			\begin{itemize}
-				\item item 1
-				\item item 2
-				\item item 3
-			\end{itemize}
+In~\cite{visin2015renet} we presented ReNet, an alternative to the ubiquitous
+CNNs for object classification. Our model is based on 4 RNNs that scan the
+image in 4 directions. RNNs have the potential to store in their memory any
+information that is relevant to retain the context of the part of the image
+they have seen up to that moment. The first two RNNs scan each line of the
+image reading one pixel (or patch, depending on the configuration) at the time
+from left to right and from right to left, respectively. The two resulting
+feature maps (i.e.  output of each of these RNNs) are concatenated in each
+position over the channel axis, yielding a composite feature map where each
+position has information on the context of the full row, as in each position it
+is a concatenation of an RNN reaching the position from the right and of an RNN
+reaching the same position from the left. The second two RNNs sweep over the
+composite feature map vertically, top-down and bottom-up respectively. By
+reading the composite feature map, each RNN has access in each position to a
+"summary" of the corresponding row. Once again, the two feature maps are
+concatenated, resulting in a final feature map where each position is specific
+to a pixel (or patch) of the image but has information on the full image. The
+ReNet architecture allow us to capture the full context of the image with just
+one layer (to be fair, two sublayers), as opposed to CNN based architectures
+that would need many layers to span the entire image. As usual, we can of
+course still stack multiple ReNet layers to increase the capacity of the
+network.
 
-\section{New section}
-This is an example of table. You can see it in Table~\ref{tab:TableName}.
+Encouraged by the results of ReNet and the positive feedback we received, we
+worked on a second model based on ReNet, to perform fine-grained Object
+Segmentation (i.e., to classify each pixel of the image as belonging to a
+specific class). Being able to classify objects without losing information on
+their position in the image can be exploited to allow very precise pixel-level
+Object Localization, which is essential to many applications and to a proper
+understanding of the image.
 
- \begin{table}[h!tb]
-   \centering \caption{Table caption}
-   \label{tab:TableName}
-   \vskip 0.2cm
-   %%
-   \scalebox{0.90}{
-	    %% The {|c|c|c|c|c|} define the number of columns.
-	    %% c means centered
-	    %% | defines a vertical line between two columns
-	    \begin{tabular}{|c|c|c|}
-	      \hline
-	      Col 1 & Col 2 & Col2  \\
-	      %% \\ force a newline without creating an horizontal line
-	      Dim C.1 & Dim C.3 & Dim C.3 \\
-	      %% \hline create an horizontal line between two rows
-	      \hline
-	      Data 1.1 & Data 1.2 & Data 1.3 \\
-	      \hline
-	      Data 2.1 & Data 2.2 & Data 2.3 \\
-	      \hline
-	      Data 3.1 & Data 3.2 & Data 3.3 \\
-	      \hline
-	    \end{tabular}
-	 }
- \end{table}
+In ReSeg~\citep{visin15} we take advantage of the inner structure of the ReNet
+layers that, in contrast to classical convolutional models, allow to propagate
+the information through several layers of computation retaining the topological
+structure of the input. To speed up training we first preprocess the image with
+a CNN pretrained on big datasets for object classification, to extract
+meaningful features and exploit the extra training data. On those rich features
+we apply several ReNet layers. The resulting intermediate feature map has
+smaller resolution than the image. To be able to classify each pixel we need to
+go back to the original size of the image, so we train one or more transposed
+convolutional layers~\citep{dumoulin2016guide} that upsample the feature map to
+the desired size. We obtained state of the art results on three datasets and
+the paper won the best paper award at the DeepVision Workshop at CVPR 2016.
 
-\section{You can do as many section as you want}
-The following equation has been created using \verb.$$.: $ y_1 = a*x + b$.
+The natural next step in the direction of visual scene understanding is the
+processing of videos, to exploit the temporal correlation between frames and
+improve the performance of the algorithm. It is not trivial to work with videos
+in the domain of semantic segmentation: big enough dataset are still lacking
+due to the very high cost of labelling each pixel of each frame of a video; in
+many cases labels are imprecise and noisy, or missing a well defined semantic
+(e.g. "porous" or "vertical mix"), and this makes learning harder. Still, it is
+a challenging but important problem to tackle and we believe there is room for
+improvement in the current state of the art. The model we are working on tries
+to combine the benefits of CNNs and RNNs, namely the exploitation of the
+topological structure in the images and the processing speed of CNNs and the
+ability to retain temporal and context information of RNNs. We build
+on~\cite{xingjian2015convolutional}that proposed an RNN whose internal state is
+convolutional. We extend~\cite{xingjian2015convolutional}  by stacking several
+convolutions inside the RNN state (as opposed to only one) and by introducing a
+deconvolutional RNN, whose state is a stack of multiple transposed
+convolutions. We are validating our model on three datasets, achieving so far
+state of the art results on two of them and encouraging results on the last
+one.
 
-%% \smallskip introduces a small vertical skip
-\smallskip
-
-%% \noindent is used to eliminate the blankline and the paragraph settings
-\noindent
-This is a more complex equation: \[ y_2 = a*x + b \], created using \verb.\[ \].
-
-%% \bigskip introduces a big vertical skip
-\bigskip
-
-\noindent
-This is, (\ref{eq:eeq1}), an enumerated equation:
-
-	\begin{equation}\label{eq:eeq1}
-		y_3 = a*x + b
-	\end{equation}
-
-, created using:
-
-	\begin{verbatim}
-		\begin{equation}\label{eq:eeq1}
-		    y_3 = a*x + b
-		\end{equation}
-	\end{verbatim}
-
+As future steps for this research, we plan to conclude the video segmentation
+paper in time to submit it to the CVPR conference 2017. We are also working on
+a follow-up of the ReSeg paper with more experiments and a detailed description
+of the model, to be published as a book chapter in an upcoming book on the
+DeepVision workshop. When this part of the research will be over, we plan
+to focus on two main topics of research: applications of ReSeg-like
+architectures to 3D data to predict depth from images coming from a single
+camera, as well as semantic segmentation in the medical domain. We are already
+in touch with a company working in the healthcare field (Imagia) that should
+provide us with suitable datasets to perform bowel polyps detection and
+classification and potentially commercialize our model.
