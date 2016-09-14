@@ -743,33 +743,83 @@ activation function of choice (see e.g.~\autoref{eq:logistic_derivative} and
 %================================== SECTION ==================================
 \section{Convolutional networks}\label{sec:cnn}
 
-Deep convolutional neural networks (CNNs) have been at the heart of spectacular
-advances in deep learning. Although CNNs have been used as early as the nineties
-to solve character recognition tasks \citep{le1997reading}, their current
-widespread application is due to much more recent work, when a deep CNN was used
-to beat state-of-the-art in the ImageNet image classification challenge
+Deep CNNs have been at the heart of spectacular advances in deep learning.
+Although CNNs have been used as early as the nineties to solve character
+recognition tasks \citep{le1997reading}, their current widespread application
+is due to much more recent work, when a deep CNN was used to beat
+state-of-the-art in the ImageNet image classification challenge
 \citep{krizhevsky2012imagenet}.
 
-Convolutional neural networks therefore constitute a very useful tool for
-machine learning practitioners.
-However, learning to use CNNs for the first time
-is generally an intimidating experience. A convolutional layer's output shape is
-affected by the shape of its input as well as the choice of kernel shape, zero
-padding and strides, and the relationship between these properties is not
-trivial to infer. This contrasts with fully-connected layers, whose output size
-is independent of the input size. Additionally, CNNs also usually feature a {\em
-pooling\/} stage, adding yet another level of complexity with respect to
-fully-connected networks.  Finally, so-called transposed convolutional layers
-(also known as fractionally strided convolutional layers) have been employed in
-more and more work as of late \citep{zeiler2011adaptive,zeiler2014visualizing,
+\autoref{sec:MLP} introduced MLPs, a powerful and very common kind of ANN that
+computes an affine transformation of its inputs followed by an activation
+function. One property of MLPs is that they are dense, in the sense that they
+connect all the units of one layer to all the units of the next layer (often
+referred to as being \emph{fully connected}. When the input has a structure, a
+dense connectivity pattern might be wasteful and it is usually preferable to be
+able to exploit the data structure. The reason for this is twofold: first,
+adapting the connectivity pattern to the structure of the data reduces the
+number of operations performed by the network and, consequently, the
+computation time; second, constraining the connectivity pattern has the effect
+of forcing the network to focus on what is important, yielding faster training
+and better performance.
+
+Convolutional neural networks (CNNs) are an example of model that exploits the
+structure of the data. The intuition behind CNNs is that many kinds of data --
+such as e.g. images or audio clips -- have a \emph{local} topological structure
+that does not depend on the specific location in the global reference system.
+In the case of images, for example, this means that a hand can appear in the
+center of the image as well as in one of the corners, and is not less of a hand
+in either cases. Similarly, the sound of the word \emph{hand} should be
+detected the same way when pronounced with a high or low pitch.
+
+CNNs exploit this understanding of the data by applying the same pattern
+detector on many locations of the image. This is formally done through a
+\emph{convolution} (hence the name CNN), a signal processing operation that
+superimposes a pattern detector -- usually called \emph{filter}, \emph{kernel}
+or \emph{mask} -- on different locations of the image and emits an activation
+in each position. In the previous example this would mean applying a "hand
+detector" on every location of the image to produce a matrix of activations,
+typically referred to as \emph{feature map}. In any real-world application
+though, it would be common to apply multiple kernels at once with the same
+convolution, hence obtaining a tensor of feature maps.
+
+The convolution operation can be seen as the repetition of two operations: the
+superimposition of one or more kernels, followed by a shift -- or \emph{stride}
+-- of the kernel to allow the subsequent applications of the filter. This
+system would work successfully in most cases, but it would fail to detect hands
+that are not completely contained in the image. The typical solution adopted to
+overcome this limitation is to \emph{pad} the image by adding a frame (usually
+of zeros) around it on every side. This ensures that on the borders of the
+image the convolution performs both a complete superimposition of the kernel on
+the image as well as a partial one.
+
+The elements described so far fully define a convolution. The shape of the
+feature maps produced by a convolutional layer is affected by the shape of its
+input as well as the choice of kernel shape, zero padding and strides, and the
+relationship between these properties is not always trivial to infer. This
+contrasts with fully-connected layers, whose output size is independent of the
+input size.
+
+Additionally, CNNs also usually feature {\em pooling\/} layers, adding yet
+another level of complexity with respect to fully-connected networks. Finally,
+so-called transposed convolutional layers (also known as fractionally strided
+convolutional layers) have been employed in more and more work as of late
+\citep{zeiler2011adaptive,zeiler2014visualizing,
 long2015fully,radford2015unsupervised,visin15,im2016generating}, and their
 relationship with convolutional layers has been explained with various degrees
 of clarity.
 
-For an in-depth treatment of the subject, see Chapter 9 of the Deep Learning
-textbook \citep{Goodfellow-et-al-2016-Book}.
+%Learning how to use CNNs for the first time can be an intimidating experience.
+The convolution operation will be formally introduced
+in~\autoref{sec:discrete_conv} followed by a description of pooling
+in~\autoref{sec:pooling}. The rest of this section will focus on the arithmetic
+to compute the output shape of a convolution given its parameters. In
+particular~\autoref{sec:transposed_conv} targets transposed convolutions, a
+smart application of convolutions to upsampling. For an in-depth treatment of
+the subject, see Chapter 9 of the Deep Learning
+textbook~\citep{Goodfellow-et-al-2016-Book}.
 
-\subsection{Discrete convolutions}
+\subsection{Discrete convolutions}\label{sec:discrete_conv}
 
 The bread and butter of neural networks is \emph{affine transformations}: a
 vector is received as input and is multiplied with a matrix to produce an
@@ -1022,7 +1072,7 @@ retaining only odd output elements (\autoref{fig:strides_subsampling}).
         one in $s = 2$ output elements is retained (right).}
 \end{figure}
 
-\subsection{Pooling}
+\subsection{Pooling}\label{sec:pooling}
 
 In addition to discrete convolutions themselves, {\em pooling\/} operations
 make up another important building block in CNNs. Pooling operations reduce
@@ -1390,7 +1440,7 @@ For any $i$, $k$ and $s$,
 
 \noindent This relationship holds for any type of pooling.
 
-\subsection{Transposed convolution arithmetic}
+\subsection{Transposed convolution arithmetic}\label{sec:transposed_conv}
 
 The need for transposed convolutions generally arises from the desire to use a
 transformation going in the opposite direction of a normal convolution, i.e.,
