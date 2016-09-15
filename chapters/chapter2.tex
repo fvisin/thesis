@@ -1,4 +1,4 @@
-\chapter{Background}
+\chapter{Background}\label{sec:background}
 
 %============================= INTRODUCTION =================================
 \section{Introduction}\label{sec:MLintro}
@@ -749,6 +749,13 @@ recognition tasks \citep{le1997reading}, their current widespread application
 is due to much more recent work, when a deep CNN was used to beat
 state-of-the-art in the ImageNet image classification challenge
 \citep{krizhevsky2012imagenet}.
+
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=0.8\textwidth]{img/lenet5.jpg}
+    \caption{\label{fig:lenet} The LeNet architecture for handwritten
+        characters recognition.}
+\end{figure}
 
 \autoref{sec:MLP} introduced MLPs, a powerful and very common kind of ANN that
 computes an affine transformation of its inputs followed by an activation
@@ -1827,7 +1834,7 @@ of the input, and its output size is
 \autoref{fig:padding_strides_odd_transposed} provides an example for $i = 6$, $k
 = 3$, $s = 2$ and $p = 1$.
 
-\begin{figure}[p]
+\begin{figure}[h]
     \centering
     \includegraphics[width=0.24\textwidth]{pdf/padding_strides_odd_transposed_00.pdf}
     \includegraphics[width=0.24\textwidth]{pdf/padding_strides_odd_transposed_01.pdf}
@@ -1846,18 +1853,19 @@ of the input, and its output size is
 
 %================================== SECTION ==================================
 \section{Recurrent networks}\label{sec:rnn}
-A biological neuron takes around $10^{-3}$ seconds to perform one operation,
-whereas a modern GPU can process up to NN DATA per second~\citep{NVIDIA}.
-Nonetheless, many tasks that are trivial for humans prove to be extremely
-complicated for computers. Why is that? The power of the brain lies in its
-large number of connections.\cite{SOMETHING}
-
-It is well known that the brain is organized in functional areas, each of them
-usually structured in \emph{layers} that process the incoming signal in an
-incremental fashion. These areas are usually connected both in a
+% A biological neuron takes around $10^{-3}$ seconds to perform one operation,
+% and the number of neurons
+% whereas a modern GPU can process up to NN DATA per second~\citep{NVIDIA}.
+% Nonetheless, many tasks that are trivial for humans prove to be extremely
+% complicated for computers. Why is that? The power of the brain lies in its
+% large number of connections.\cite{SOMETHING}
+%
+It is well known that the brain is organized in functional areas, usually
+further structured in sub-areas that process the incoming signal in an
+incremental fashion. These parts of the brain are typically connected both in a
 \emph{feedforward}, i.e. to neurons belonging to deeper (i.e., further away
-from the input) layers, and in a \emph{feedback} fashion (i.e. to previous
-layers in the hierarchy). Similarly, ANNs usually employ either feedforward or
-feedback connections.
+from the sensory input) layers, and in a \emph{feedback} fashion (i.e. to
+previous layers in the hierarchy). Similarly, ANNs are not constrained to
+process the data in a feedforward way, but can have feedback connections.
 
-Write something about RNNs, LSTMs, GRUs
+Recurrent Neural Networks (RNNs)

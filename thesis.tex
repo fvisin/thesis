@@ -80,9 +80,13 @@
 
 \usepackage[english,italian]{babel} % has to precede hyperref to set the language of \autoref
 \usepackage[bookmarks=true,pdftex=false,bookmarksopen=true,pdfborder={0,0,0}]{hyperref}
-% Change subsection to Section in autoref
+% Change subsection to Section (in autoref)
 \addto\extrasenglish{%
     \renewcommand{\subsectionautorefname}{Section \negthinspace}
+}
+% Change chapter to Chapter (in autoref)
+\addto\extrasenglish{%
+    \renewcommand{\chapterautorefname}{Chapter \negthinspace}
 }
 \hyphenation{}
 
@@ -149,7 +153,7 @@
     \end{tikzpicture}
 }
 
-\hypersetup{pdftitle={Deep Learning for Visual Structured Prediction}, pdfauthor={Visin Francesco}}
+\hypersetup{pdftitle={Deep Recurrent Neural Networks for visual scene understanding}, pdfauthor={Visin Francesco}}
 
 %\nobibliography*
 
@@ -157,11 +161,11 @@
 \phdprogram{Doctoral Programme In Computer Science}
 
 \author{Francesco Visin}
-\title{Deep Learning for Visual Structured Prediction}
+\title{Deep Recurrent Neural Networks for Visual Scene Understanding}
 \supervisor{Matteo Matteucci}
 \cosupervisor{Aaron Courville}
 \tutor{Andrea Bonarini}
-\chair{Coordinator Name}
+\chair{Andrea Bonarini}
 \titleimage{img/logopoli.png}
 \phdcycle{2016 -- XXVIII}
 
