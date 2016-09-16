@@ -72,10 +72,11 @@ exhibit the desired behavior~\citep{Rosenblatt57}.
     \caption{\label{fig:perceptron}A representation of the Perceptron.}
 \end{figure}
 
-The activation rule of the perceptron is very simple and is at the base of
-many modern neural networks. Given an $n$-dimensional input $\mathbf{x}$, the
-weighted sum of each dimension of the input $x_i$ and its corresponding weight
-$w_i$ -- often referred to as \emph{preactivation} -- is computed as
+\noindent The activation rule of the perceptron is very simple and is at the
+base of many modern neural networks. Given an $n$-dimensional input
+$\mathbf{x}$, the weighted sum of each dimension of the input $x_i$ and its
+corresponding weight $w_i$ -- often referred to as \emph{preactivation} -- is
+computed as
 
 \begin{equation*}
     z = \sum_{i=0}^{n}(w_i \cdot x_i)
@@ -381,12 +382,12 @@ introduced in the following section.
         and Leaky ReLU\label{fig:activations}}
 \end{figure}
 
-The activation function is one of the most important component of an ANN. As
-explained in the previous sections, to tackle nonlinearly separable problems it
-is imperative to map the input into a space that is linearly separable. The
-activation function does this by performing an \emph{element-wise nonlinear
-transformation} of the pre-activation that comes from the affine
-transformation.
+\noindent The activation function is one of the most important component of an
+ANN. As explained in the previous sections, to tackle nonlinearly separable
+problems it is imperative to map the input into a space that is linearly
+separable. The activation function does this by performing an
+\emph{element-wise nonlinear transformation} of the pre-activation that comes
+from the affine transformation.
 
 The affine transformation and the nonlinearity work together in a very tight
 interaction: the latter is fixed and does not evolve during training, but
@@ -1860,12 +1861,97 @@ of the input, and its output size is
 % complicated for computers. Why is that? The power of the brain lies in its
 % large number of connections.\cite{SOMETHING}
 %
-It is well known that the brain is organized in functional areas, usually
-further structured in sub-areas that process the incoming signal in an
-incremental fashion. These parts of the brain are typically connected both in a
-\emph{feedforward}, i.e. to neurons belonging to deeper (i.e., further away
-from the sensory input) layers, and in a \emph{feedback} fashion (i.e. to
-previous layers in the hierarchy). Similarly, ANNs are not constrained to
-process the data in a feedforward way, but can have feedback connections.
+It is well known that the brain is organized in functional areas and sub-areas
+that process the incoming signal in an incremental fashion. These areas of the
+brain are typically connected both in a \emph{feedforward}, i.e. to neurons
+belonging to deeper (i.e., further away from the sensory input) layers, and in
+a \emph{feedback} fashion (i.e. to previous layers in the hierarchy). This is
+believed to help processing temporal data and allow for an iterative refinement
+of the computation.
 
-Recurrent Neural Networks (RNNs)
+Similarly, ANNs are not constrained to process the input data in a feedforward
+way. Recurrent Neural Networks (RNNs) implement feedback loops
+(see~\autoref{fig:RNN_loop} \footnote{This and the following RNN figures, are
+    taken or modified from the awesome introduction to RNNs and LSTMs by Chris
+    Olah~\citep{olah2015rnns}}
+) that propagate some information from one step to
+the next. It is customary to refer to these steps as time-steps, as RNNs are
+often considered in the context of a discretized time evolving domain, but
+nothing prevents from using RNNs with any kind of sequential data.
+
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=0.15\textwidth]{pdf/RNN_loop.pdf}
+    \caption{A Recurrent Neural Network (RNN)\label{fig:RNN_loop}}
+\end{figure}
+
+Suppose to be modeling some sequential data $x_0, x_1, \dots , x_t, x_{t+1},
+\dots$ such as e.g., an English sentence. At time $t$ it is possible to model
+the probability distribution over a dictionary of English words, conditioned on
+the words seen up that moment -- namely $x_0, x_1, \dots , x_{t-1}$. This can
+be used, e.g., in a smart keyboard application to suggest the next most
+probable words to the user, or in an automatic help desk to generate a
+meaningful answer to a question.
+
+It might not be immediately obvious what it means in practice to put a loop in
+an ANN and how to backpropagate through it. To better comprehend how RNNs work
+it is useful to consider its behavior explicitly by \emph{unrolling} the RNN,
+as shown in~\autoref{fig:RNN_unrolled}
+
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=0.6\textwidth]{pdf/RNN_unrolled.pdf}
+    \caption{A Recurrent Neural Network unrolled for $t$%
+             steps\label{fig:RNN_unrolled}}
+\end{figure}
+
+\noindent An RNN applies the same model to each time step of the sequence or,
+equivalently, applies different models at each time step, which share their
+weights. This is similar to what CNNs do over space with convolutions, but is
+rather done over time with feedback connections.
+
+The activation of an RNN at time $t$ depends on the input at time $t$ as well
+as on the information coming from the previous step $t-1$. RNNs have a very
+simple internal structure, that usually amounts to applying some affine
+transformation to the input and to the previous output, and computing some
+non-linearity (typically a tanh) of their sum.
+
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=0.6\textwidth]{pdf/RNN_internals.pdf}
+    \caption{The internal structure of an RNN\label{fig:RNN_internals}}
+\end{figure}
+
+To train it it suffices to unroll the computation graph and use the
+backpropagation algorithm (see~\autoref{sec:backprop}) to proceed from the most
+recent time step, backward in time. This algorithm is usually referred to as
+\emph{Backpropagation through time (BPTT)}.
+
+The problem of BPTT is that it requires to apply the chain rule all the way
+from the current time step to $t = 0$ to propagate the gradients through time.
+This results in a long chain of products that can easily go to infinity or
+become zero if the elements of the multiplication are greater or smaller than
+$1$ respectively. These two issues are known in the literature as
+\emph{exploding gradient} and \emph{vanishing gradient} and have been studied
+extensively in the past~\citep[see e.g., ][]{Hochreiter91,Bengio-trnn93}. The first one
+can be partially addressed by \emph{clipping the gradient} when it becomes too
+large, but the second is not easy to overcome and can make training these kind
+of models very hard if not impossible.
+
+\subsection{Long Short Term Memory}
+Long Short Term Memory (LSTM) networks have been proposed to solve (or at least
+alleviate) the problems of RNNs with modeling long term dependencies. LSTMs
+have been designed to have an internal memory, or~\emph{state}, that can be
+updated and consulted at each time step. As opposed to vanilla RNNs, this
+allows LSTMs to separate their output from the information they want to carry
+over to future steps. As shown in \autoref{fig:LSTM_state}, the internal memory
+at the previous time step $C_{t-1}$ is carried over the current time step and
+concurs to determine the current state of the memory $C_t$, which again will be
+propagated to the next time step.
+
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=0.6\textwidth]{pdf/LSTM_state.pdf}
+    \caption{The internal state of LSTMs\label{fig:LSTM_state}}
+\end{figure}
+
