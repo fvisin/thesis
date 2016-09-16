@@ -1,2 +1,16 @@
 *.bib
 *.pdf
+..aux
+..fdb_latexmk
+_NN_example.tex
+thesis.ax
+thesis.bbl
+thesis.blg
+thesis.fdb_latexmk
+thesis.fls
+thesis.log
+thesis.out
+thesis.tex.latexmain
+thesis.toc
+thesis.aux
+                                
