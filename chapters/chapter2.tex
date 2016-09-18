@@ -327,9 +327,9 @@ output vector $\mathbf{y}$ and is equivalent to a composition of multiple
 functions
 
 \begin{equation}\label{eq:fn_composition}
-    \textbf{y} = h^{(L)}_{\boldsymbol{\theta}} \circ
-        h^{(L-1)}_{\boldsymbol{\theta}} \circ
-        \dots \circ h^{(1)}_{\boldsymbol{\theta}}
+    \textbf{y} = h^{(L)}_{\boldsymbol{\theta}} \composition
+        h^{(L-1)}_{\boldsymbol{\theta}} \composition
+        \dots \composition h^{(1)}_{\boldsymbol{\theta}}
 \end{equation}
 
 Although very common and widely used, the MLP is not the only architecture for
@@ -1933,25 +1933,160 @@ This results in a long chain of products that can easily go to infinity or
 become zero if the elements of the multiplication are greater or smaller than
 $1$ respectively. These two issues are known in the literature as
 \emph{exploding gradient} and \emph{vanishing gradient} and have been studied
-extensively in the past~\citep[see e.g., ][]{Hochreiter91,Bengio-trnn93}. The first one
-can be partially addressed by \emph{clipping the gradient} when it becomes too
-large, but the second is not easy to overcome and can make training these kind
-of models very hard if not impossible.
+extensively in the past~\citep[see e.g., ][]{Hochreiter91,Bengio-trnn93}. The
+first one can be partially addressed by \emph{clipping the gradient} when it
+becomes too large, but the second is not easy to overcome and can make training
+these kind of models very hard if not impossible.
 
 \subsection{Long Short Term Memory}
-Long Short Term Memory (LSTM) networks have been proposed to solve (or at least
-alleviate) the problems of RNNs with modeling long term dependencies. LSTMs
-have been designed to have an internal memory, or~\emph{state}, that can be
-updated and consulted at each time step. As opposed to vanilla RNNs, this
-allows LSTMs to separate their output from the information they want to carry
-over to future steps. As shown in \autoref{fig:LSTM_state}, the internal memory
-at the previous time step $C_{t-1}$ is carried over the current time step and
-concurs to determine the current state of the memory $C_t$, which again will be
-propagated to the next time step.
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=0.6\textwidth]{pdf/LSTM.pdf}
+    \caption{A Long Short Term Memory (LSTM)\label{fig:LSTM}}
+\end{figure}
 
 \begin{figure}[h]
     \centering
-    \includegraphics[width=0.6\textwidth]{pdf/LSTM_state.pdf}
+    \includegraphics[width=0.6\textwidth]{pdf/LSTM_notation.pdf}
+\end{figure}
+
+Long Short Term Memory (LSTM) networks (see~\autoref{fig:LSTM}) have been
+proposed to solve (or at least alleviate) the problems of RNNs with modeling
+long term dependencies. LSTMs have been designed to have an internal memory,
+or~\emph{state}, that can be updated and consulted at each time step. As
+opposed to vanilla RNNs, this allows LSTMs to separate their output from the
+information they want to carry over to future steps.
+
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=0.4\textwidth]{pdf/LSTM_state.pdf}
     \caption{The internal state of LSTMs\label{fig:LSTM_state}}
 \end{figure}
 
+\autoref{fig:LSTM_state} highlights the internal memory path. It can be seen
+how the internal memory of the previous time step $C_{t-1}$ is carried over to
+the current time step, where it is updated through a multiplicative and an
+additive interaction and concurs to determine the current state of the memory
+$C_t$. This is then, once again, propagated to the next time step.
+% The internal memory is updated at each time step
+% with the rest of the architecture.
+
+\begin{figure}[h!]
+\begin{minipage}{0.5\textwidth}
+    \centering
+    \includegraphics[width=0.8\textwidth]{pdf/LSTM_forget_gate.pdf}
+    \caption{The LSTM forget gate\label{fig:LSTM_forget_gate}}
+\end{minipage}
+\begin{minipage}{0.5\textwidth}
+    \setlength\abovedisplayshortskip{0pt}
+    \setlength\belowdisplayshortskip{0pt}
+    \strut
+    \begin{equation}\label{eq:LSTM_forget_gate}
+        f_t = \sigma\left(W_f \cdot \left[h_{t-1}, x_t\right] + b_f \right)
+    \end{equation}
+    \strut
+\end{minipage}
+\end{figure}
+
+LSTMs interact with memory through \emph{gates}, computational nodes that
+determine the behavior of the model. The \emph{forget~gate} determines how much
+of the previous step's memory to forget or, equivalently, how much of the
+previous state to retain (\autoref{fig:LSTM_forget_gate}). This is modeled
+through a sigmoid layer (depicted as $\sigma$) that takes the current input
+$x_t$ and the output of the previous step $h_{t-1}$ and produces an activation
+vector between $0$ and $1$. This activation is multiplied by the previous state
+$C_{t-1}$ and results in an intermediate memory state where some of the
+activations can be weaker than $C_{t-1}$ and some others are potentially zeroed
+out~(\autoref{eq:LSTM_forget_gate}).
+
+\begin{figure}[h!]
+\begin{minipage}{0.5\textwidth}
+    \centering
+    \includegraphics[width=0.8\textwidth]{pdf/LSTM_input_gate.pdf}
+    \caption{The LSTM input gate\label{fig:LSTM_input_gate}}
+\end{minipage}
+\begin{minipage}{0.5\textwidth}
+    \setlength\abovedisplayshortskip{0pt}
+    \setlength\belowdisplayshortskip{0pt}
+    \strut
+    \begin{equation}\label{eq:LSTM_input_gate}
+    \begin{split}
+        i_t &= \sigma\left(W_i \cdot \left[h_{t-1}, x_t\right] + b_i \right)\\
+        \tilde C_t &= tanh \left(W_C \cdot \left[h_{t-1}, x_t\right] + b_f \right)
+    \end{split}
+    \end{equation}
+    \strut
+\end{minipage}
+\end{figure}
+
+The forget gate (\autoref{fig:LSTM_input_gate}) allows the LSTM to discard
+information that is not relevant anymore. Symmetrically, LSTMs have a mechanism
+to add new information to the memory. This behavior is controlled by an
+\emph{input~gate} that modulates the amount of the current input that is going
+to be stored in the memory. This operation is split over two computation paths:
+similarly to the forget gate, the input gate takes the current input $x_t$ and
+the output of the previous step $h_{t-1}$ and exploits a sigmoid layer to
+produce an activation vector between $0$ and $1$. Simultaneously, a tanh layer
+generates a state update $\tilde C_t$ between $-1$ and $1$. This is governed by
+the equations reported in~\autoref{eq:LSTM_input_gate}.
+
+The input gate modulates how much of this state update will be applied to the
+old state to generate the current state. The forget gate $f_t$ and the input
+gate $i_t$, together with the previous state $C_{t-1}$ fully determine the
+state at time $t$ through~\autoref{eq:LSTM_state_update}.
+
+\begin{equation}\label{eq:LSTM_state_update}
+    C_t = f_t \hadamard C_{t-1} + i_t \hadamard \tilde C_t
+\end{equation}
+
+The last gate of LSTMs is the \emph{output~gate} $o_t$ that, as the name
+reveals, manipulates the output of the LSTM at time $t$
+(\autoref{fig:LSTM_output_gate}). The usual sigmoid layer determines the state
+of the output gate. The memory resulting from the transformations due to the
+forget and input gates goes through a tanh nonlinearity and is multiplied by
+the output gate to finally produce the output (\autoref{eq:LSTM_output_gate}).
+
+\begin{figure}[h!]
+\begin{minipage}{0.5\textwidth}
+    \centering
+    \includegraphics[width=0.8\textwidth]{pdf/LSTM_output_gate.pdf}
+    \caption{The LSTM output gate\label{fig:LSTM_output_gate}}
+\end{minipage}
+\begin{minipage}{0.5\textwidth}
+    \setlength\abovedisplayshortskip{0pt}
+    \setlength\belowdisplayshortskip{0pt}
+    \strut
+    \begin{equation}\label{eq:LSTM_output_gate}
+    \begin{split}
+        o_t &= \sigma\left(W_o \cdot \left[h_{t-1}, x_t\right] + b_o \right)\\
+        h_t &= o_t \hadamard tanh \left(C_t\right)
+    \end{split}
+    \end{equation}
+    \strut
+\end{minipage}
+\end{figure}
+
+
+\subsection{LSTMs with peepholes}
+
+\begin{figure}[h!]
+\begin{minipage}{0.5\textwidth}
+    \centering
+    \includegraphics[width=0.8\textwidth]{pdf/LSTM_peepholes.pdf}
+    \caption{The LSTM output gate\label{fig:LSTM_peepholes}}
+\end{minipage}
+\begin{minipage}{0.5\textwidth}
+    \setlength\abovedisplayshortskip{0pt}
+    \setlength\belowdisplayshortskip{0pt}
+    \strut
+    \begin{equation}\label{eq:LSTM_peepholes}
+    \begin{split}
+        o_t &= \sigma\left(W_o \cdot \left[h_{t-1}, x_t\right] + b_o \right)\\
+        h_t &= o_t \hadamard tanh \left(C_t\right)
+    \end{split}
+    \end{equation}
+    \strut
+\end{minipage}
+\end{figure}
+
+One variant of LSTMs \cite{gers2000recurrent}
