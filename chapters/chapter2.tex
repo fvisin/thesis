@@ -2067,13 +2067,13 @@ the output gate to finally produce the output (\autoref{eq:LSTM_output_gate}).
 \end{figure}
 
 
-\subsection{LSTMs with peepholes}
+\subsubsection{LSTMs with peepholes}
 
 \begin{figure}[h!]
 \begin{minipage}{0.5\textwidth}
     \centering
     \includegraphics[width=0.8\textwidth]{pdf/LSTM_peepholes.pdf}
-    \caption{The LSTM output gate\label{fig:LSTM_peepholes}}
+    \caption{LSTM with peepholes\label{fig:LSTM_peepholes}}
 \end{minipage}
 \begin{minipage}{0.5\textwidth}
     \setlength\abovedisplayshortskip{0pt}
@@ -2081,12 +2081,78 @@ the output gate to finally produce the output (\autoref{eq:LSTM_output_gate}).
     \strut
     \begin{equation}\label{eq:LSTM_peepholes}
     \begin{split}
-        o_t &= \sigma\left(W_o \cdot \left[h_{t-1}, x_t\right] + b_o \right)\\
-        h_t &= o_t \hadamard tanh \left(C_t\right)
+        f_t &= \sigma\left(W_f \cdot \left[h_{t-1}, x_t, C_{t-1}\right] + b_f \right)\\
+        i_t &= \sigma\left(W_i \cdot \left[h_{t-1}, x_t, C_{t-1}\right] + b_i \right)\\
+        o_t &= \sigma\left(W_o \cdot \left[h_{t-1}, x_t, C_{t}\right] + b_o \right)\\
     \end{split}
     \end{equation}
     \strut
 \end{minipage}
 \end{figure}
 
-One variant of LSTMs \cite{gers2000recurrent}
+\cite{gers2000recurrent} suggests one variant of LSTMs where the gates also
+have information about the state of the LSTM. Note that, as illustrated
+in~\autoref{fig:LSTM_peepholes}, the output gate peeps into $C_t$, the state
+after the input and forget gate updates (see the output gate equation
+in~\autoref{eq:LSTM_peepholes}).
+
+
+\subsubsection{LSTMs with coupled forget and input gates}\label{sec:LSTM_coupled}
+
+\begin{figure}[h!]
+\begin{minipage}{0.5\textwidth}
+    \centering
+    \includegraphics[width=0.8\textwidth]{pdf/LSTM_coupled.pdf}
+    \caption{LSTM with coupled forget and input gate\label{fig:LSTM_coupled}}
+\end{minipage}
+\begin{minipage}{0.5\textwidth}
+    \setlength\abovedisplayshortskip{0pt}
+    \setlength\belowdisplayshortskip{0pt}
+    \strut
+    \begin{equation}\label{eq:LSTM_coupled}
+        C_t = f_t \hadamard C_{t-1} + (1 - f_t) \hadamard \tilde C_t
+    \end{equation}
+    \strut
+\end{minipage}
+\end{figure}
+
+Another variant of LSTMs replaces the input gate with $1 - f_t$
+(see~\autoref{fig:LSTM_coupled}), so that the forget gate governs both
+behaviors. This boils down to forgetting only when a new input is going to be
+written. The modified state update equation is~\autoref{eq:LSTM_coupled}.
+
+\subsection{Gated Recurrent Unit (GRU)}
+
+\begin{figure}[ht]
+\begin{minipage}{0.5\textwidth}
+    \centering
+    \includegraphics[width=0.8\textwidth]{pdf/GRU.pdf}
+    \caption{Gated Recurrent Units (GRUs)\label{fig:GRU}}
+\end{minipage}
+\begin{minipage}{0.5\textwidth}
+    \setlength\abovedisplayshortskip{0pt}
+    \setlength\belowdisplayshortskip{0pt}
+    \strut
+    \begin{equation}\label{eq:GRU}
+    \begin{split}
+        z_t &= \sigma \left( W_z \cdot \left[h_{t-1}, x_t\right]\right) \\
+        r_t &= \sigma \left( W_r \cdot \left[h_{t-1}, x_t\right]\right) \\
+        \tilde h_t &= tanh \left(W_o \cdot \left[r_t \hadamard h_{t-1}, x_t\right]\right) \\
+        h_t &= (1-z_t) \hadamard h_{t-1} + (z_t) \hadamard \tilde h_t
+    \end{split}
+    \end{equation}
+    \strut
+\end{minipage}
+\end{figure}
+
+In 2014 \cite{Cho2014a} proposed a new kind of recurrent network called Gated
+Recurrent Unit (GRU) with less gates than LSTMs and a different internal
+structure. Along the lines of \autoref{sec:LSTM_coupled}, in GRUs the forget
+and input gates are coupled into an~\emph{update gate} $z_t$. The memory and
+output are also merged into a single state and the internal structure is
+modified to cope with these changes (see~\autoref{fig:GRU}
+
+The advantage of GRUs w.r.t. LSTMs is that having less gates they are less
+memory and computationally intense, which is often a critical aspect for ANNs.
+GRUs have been shown to perform as well as LSTMs in some settings
+(see~\cite{Chung-et-al-NIPSDL2014-small}).
