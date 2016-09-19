@@ -1,36 +1,43 @@
-% For printing in a4
-%\documentclass[a4,10pt,twoside,openright,italian,english]{book}% twoside!
+\input{shortcuts.tex}
 
-% For printing with the A5 format
-\documentclass[10pt,twoside,openright,english,italian]{book}% twoside!
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Document formatting
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% To print in a4
+\documentclass[a4,10pt,twoside,openright,english,italian]{book}% twoside!
+% To print in A5
+%\documentclass[10pt,twoside,openright,english,italian]{book}% twoside!
 
 % Set paper size
 \usepackage[twoside=true]{geometry}
-
-%For printing with the weird format
-\geometry{
-	paperwidth=17cm,
-	paperheight=24cm,
-	margin=2cm,
-	top=2.3cm,
-	bindingoffset=0.4cm
+% In the weird format
+% \geometry{
+% 	paperwidth=17cm,
+% 	paperheight=24cm,
+% 	margin=2cm,
+% 	top=2.3cm,
+% 	bindingoffset=0.4cm
+% }
+% A4
+\geometry{a4paper,
+  margin=3cm,
+  top=3.8cm,
+  bindingoffset=0.4cm
 }
-% For printing in a4
-%\geometry{a4paper,
-%  margin=3cm,
-%  top=3.8cm,
-%  bindingoffset=0.4cm
-%}
 
 %Uncomment this for final prints: this just enables printing on a4 paper
-\usepackage[cam,center,a4,pdflatex,axes]{crop}
+%\usepackage[cam,center,a4,pdflatex,axes]{crop}
 
 \usepackage{phdthesis}
 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Custom Packages
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \usepackage{pgf}
 \usepackage{pgfplots}
 %\pgfplotsset{compat=1.11}
 \usepackage{tikz}
+\pgfplotsset{compat=1.9} % set advanced options of tikz
 \usetikzlibrary{positioning}
 \usetikzlibrary{decorations.pathreplacing}
 \usetikzlibrary{shapes.geometric}
@@ -78,6 +85,9 @@
 \usepackage{todonotes}
 \setlength{\marginparwidth}{3cm}  % Set margin width for todonotes
 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Language and notation
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \usepackage[english,italian]{babel} % has to precede hyperref to set the language of \autoref
 \usepackage[bookmarks=true,pdftex=false,bookmarksopen=true,pdfborder={0,0,0}]{hyperref}
 % Change subsection to Section (in autoref)
@@ -96,11 +106,14 @@
 
 \newtheorem{Definition}{Definition}[section]
 
+
 \lstset{tabsize=2,basicstyle=\footnotesize,breaklines=true}
-
-
 \usepackage{ulem}
 \normalem
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Neural network customization
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 %%%% neural network (to draw figures)
 % Text on links
@@ -157,10 +170,9 @@
     \end{tikzpicture}
 }
 
-% NOTATION
-\newcommand{\composition}{\circ}
-\newcommand{\hadamard}{\odot}
-
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Title, names, etc, ..
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \hypersetup{pdftitle={Deep Recurrent Neural Networks for visual scene understanding}, pdfauthor={Visin Francesco}}
 
 %\nobibliography*
@@ -176,9 +188,6 @@
 \chair{Andrea Bonarini}
 \titleimage{img/logopoli.png}
 \phdcycle{2016 -- XXVIII}
-
-% define todocommand
-%\newcommand\todo[1]{\textcolor{red}{#1}}
 
 % From conv_arithmetic
 \definecolor{blue}{RGB}{38,139,210}
@@ -208,13 +217,13 @@
 \let\originalepigraph\epigraph
 \renewcommand\epigraph[2]{\originalepigraph{\textit{#1}}{\textsc{#2}}}
 
-
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Let's Start The Real Document
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \begin{document}
 \selectlanguage{english}
 
+\hypersetup{pageanchor=false}
 \maketitle
 
 \pagestyle{empty}
@@ -233,6 +242,7 @@
 
 \cleardoublepage
 \newpage
+\hypersetup{pageanchor=true}
 
 \pagestyle{fancy}
 % change numbering into Roman numbers for the introductory part
