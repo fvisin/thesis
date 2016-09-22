@@ -2,103 +2,139 @@
 
 \section{Introduction}\label{sec:renet_intro}
 
-%============================= SECTIONS =================================
+\emph{Classification} is a very broad task that consists in predicting to which
+category an input belongs to, out of some $k$ given categories. In this
+settings, the system is usually required to compute a function $f: \RR \to {0,
+\dots, k-1}$ that assigns each input to a class. This can be thought as a
+discrimination task, where the algorithm is expected to learn similarities and
+differences between categories in order to characterize each class.
 
+Some examples of classification are spam detection (classify a message as being
+spam or not), credit card fraud detection (identify if a transaction is legit
+or not), optical character recognition (OCR) (convert hand-written text to an
+electronic document, by classifying each character), speech understanding
+(given an utterance from a user, detect the sentence that was pronounced),
+medical diagnosis (given the symptoms predict the illness and suggest a cure),
+stock trading (determine if a stock should be bought, help or sold, from
+current and historical data), shape detection (classify a hand-drawn drawing
+from, e.g., a touch screen, as a specific shape), emotion classification (given
+a text, classify it as being positive, neutral or negative)
 
-\section{State of the art / Rationale}
-In this model, we propose a deep neural network architecture for object
-recognition based on recurrent neural networks. The proposed network, called
-ReNet, replaces the ubiquitous convolution+pooling layer of the deep
-convolutional neural network with four recurrent neural networks that sweep
-horizontally and vertically in both directions across the image. We evaluate
-the proposed ReNet on three widely-used benchmark datasets; MNIST, CIFAR-10
-and SVHN. The result suggests that ReNet is a viable alternative to the deep
-convolutional neural network, and that further investigation is needed.
+\emph{Object recognition} is an instance of this task that takes an image as an
+input and is expected to return the id of the main class represented in the
+image. This is usually achieved by computing the probability distribution over
+the classes -- i.e. the confidence of the algorithm for each class to be the
+main class in the scene -- and then picking the one with highest score.
 
-\section{Object classification state of the art}
+One downside of this method is that small and big mistakes are penalized the
+same, i.e., the prediction is considered wrong whether the right class is the
+second most probable class in the distribution or is considered extremely
+unlikely by the algorithm. For this reason, some competitions such as
+e.g.,~ImageNet~\citep{imagenet_cvpr09, ILSVRCarxiv14}, take this into account
+with challenges where the best out of $5$ guesses is considered, i.e. where an
+image is considered correctly predicted if the right class is in the top most
+probable $5$ classes.
+
+Traditionally the computer vision community used to address this task with
+heavily hand-engineered systems that typically resorted to finding easily
+detectable elements in the image -- such as e.g. edges or corners -- and
+computing a descriptor of the surrounding patch. Many detectors~\cite{
+dufournaud2000matching,harris1988combined,mikolajczyk2001indexing,
+lowe2004distinctive,mikolajczyk2005performance} and descriptors~\cite{
+lowe1999object,mikolajczyk2005performance,belongie2002shape} have been proposed
+to this end, until in 2012 a deep convolutional neural network shifted the
+balance toward learned ANNs indefinitely~\citep{Krizhevsky-2012}. Since then
+ANN-based models dominated the object recognition scene, mostly with variations
+and enhancements of state of the art models based on CNNs.
+
+This chapter presents ReNet, one of the main contributions of this thesis.
+The ReNet model is a deep neural network architecture for object recognition,
+based on recurrent neural networks. The model we proposed replaces the
+ubiquitous convolution+pooling layers of deep CNNs with four recurrent neural
+networks that sweep horizontally and vertically in both directions across the
+image. The results show that it is a viable alternative to the conventional
+deep convolutional neural network. The sections that follow motivate the model
+in the context of the state of the art at the time it was conceived, describe
+the ReNet model in detail and present the results of its evaluation on three
+widely-used benchmark datasets, namely MNIST, CIFAR-10 and SVHN.
+
+\section{Rationale}
 Convolutional neural networks~\cite[CNN,][]{Fukushima80,LeCun89} have become the
-method of choice for object recognition~\citep[see, e.g.,][]{Krizhevsky-2012}.
-They have proved to be successful at a variety of benchmark problems including,
-but not limited to, handwritten digit recognition~\citep[see,
-e.g.,][]{Ciresan-2012}, natural image classification~\citep[see,
-e.g.,][]{Lin2014,Simonyan2015,szegedy2014going}, house number
-recognition~\citep[see, e.g.,][]{Goodfellow+et+al-ICLR2014a}, traffic sign
-recognition~\citep[see, e.g.,][]{Ciresan-et-al-2012}, as well as for speech
-recognition~\citep[see, e.g.,][]{Hamid2012, sainath2013, toth2014combining}.
-Furthermore, image representations from CNNs trained to recognize objects on a
-large set of more than one million images~\citep{Simonyan2015,szegedy2014going}
-have been found to be extremely helpful in performing other computer vision
-tasks such as image caption generation~\citep[see,
-e.g.,][]{Vinyals-et-al-arxiv2014,Xu-et-al-arxiv2015}, video description
-generation~\citep[see, e.g.,][]{Li2015} and object
+method of choice for object recognition after the impressive improvement on the
+state of the art of~\cite{Krizhevsky-2012}. CNNs have proved to be successful
+at a variety of benchmark problems including, but not limited to, handwritten
+digit recognition~\citep[see, e.g.,][]{Ciresan-2012}, natural image
+classification~\citep[see, e.g.,][]{Lin2014,Simonyan2015,szegedy2014going},
+house number recognition~\citep[see, e.g.,][]{Goodfellow+et+al-ICLR2014a},
+traffic sign recognition~\citep[see, e.g.,][]{Ciresan-et-al-2012}, as well as
+for speech recognition~\citep[see, e.g.,][]{Hamid2012, sainath2013,
+toth2014combining}.  Furthermore, image representations from CNNs trained to
+recognize objects on a large set of more than one million
+images~\citep{Simonyan2015,szegedy2014going} have been found to be extremely
+helpful in performing other computer vision tasks such as image caption
+generation~\citep[see, e.g.,][]{Vinyals-et-al-arxiv2014,Xu-et-al-arxiv2015},
+video description generation~\citep[see, e.g.,][]{Li2015} and object
 localization/detection~\citep[see, e.g.,][]{Sermanet14}.
 
 While the CNN has been especially successful in computer vision, recurrent
 neural networks (RNN) have become the method of choice for modeling sequential
 data, such as text and sound. Natural language processing (NLP) applications
-include language modeling~\citep[see, e.g.,][]{Mikolov-thesis-2012}, and machine
-translation~\citep{Sutskever-et-al-NIPS2014,Cho2014,bahdanau2014neural}.  Other
-popular areas of application include offline handwriting
-recognition/generation~\citep{Graves+Schmidhuber-2009,Graves-et-al-NIPS2007,Graves-arxiv2013}
-and speech recognition~\citep{Chorowski-et-al-arxiv2014,Graves+Jaitly-ICML2014}.
-RNNs have also been used together with CNNs in speech
-recognition~\citep{sainath2015}.  The recent revival of RNNs has largely been
-due to advances in learning
+include language modeling~\citep[see, e.g.,][]{Mikolov-thesis-2012}, and
+machine translation~\citep{Sutskever-et-al-NIPS2014,Cho2014,
+bahdanau2014neural}. Other popular areas of application include offline
+handwriting recognition/generation~\citep{Graves+Schmidhuber-2009,
+Graves-et-al-NIPS2007,Graves-arxiv2013} and speech recognition~\citep{
+Chorowski-et-al-arxiv2014,Graves+Jaitly-ICML2014}. RNNs have also been used
+together with CNNs in speech recognition~\citep{sainath2015}. The recent
+revival of RNNs has largely been due to advances in learning
 algorithms~\citep{Pascanu+al-ICML2013-small,Martens+Sutskever-ICML2011} and
-model
-architectures~\citep{Pascanu-et-al-ICLR2014,Hochreiter+Schmidhuber-1997,Cho2014}.
+model architectures~\citep{Pascanu-et-al-ICLR2014,Hochreiter+Schmidhuber-1997,
+Cho2014}.
 
-%RNNs have previously been extended to multi-dimensional tasks and applied to
-%object recognition~\citep{Graves+Schmidhuber-2009} and texture
-%classification~\citep{byeon2014texture}.
-
-The architecture proposed here is
-related and inspired by this earlier work, but our model relies on purely
-uni-dimensional RNNs coupled in a novel way, rather than on a multi-dimensional
-RNN. The basic idea behind the proposed ReNet architecture is to replace each
-convolutional layer (with convolution+pooling making up a layer) in the CNN with
-four RNNs that sweep over lower-layer features in different directions: (1)
-bottom to top, (2) top to bottom, (3) left to right and (4) right to left.
-% This recurrent layer ensures that each feature activation from the
-% layer is an activation at the specific location with respect to the whole image,
-% in contrast to the usual convolution+pooling layer which only has the local
-% context window.
+The architecture of ReNet is related and inspired by this earlier work, but it
+relies on purely uni-dimensional RNNs coupled in a novel way, rather than on a
+multi-dimensional RNN. The basic idea behind the ReNet model is to replace each
+convolutional layer (with convolution+pooling making up a layer) in the CNN
+with four RNNs that sweep over lower-layer features in different directions:
+(1) bottom to top, (2) top to bottom, (3) left to right and (4) right to left.
 The recurrent layer ensures that each feature activation in its output is an
 activation at the specific location \emph{with respect to the whole image}, in
 contrast to the usual convolution+pooling layer which only has a local context
-window.  The lowest layer of the model sweeps over the input image, with
+window. The lowest layer of the model sweeps over the input image, with
 subsequent layers operating on extracted representations from the layer below,
 forming a hierarchical representation of the input.
 
 \citet{Graves+Schmidhuber-2009} have demonstrated an RNN-based object
-recognition system for offline Arabic handwriting recognition.  The main
+recognition system for offline Arabic handwriting recognition. The main
 difference between ReNet and the model of \citet{Graves+Schmidhuber-2009} is
-that we use the usual sequence RNN, instead of the multidimensional RNN. We make
-the latter two parts of a single layer, usually (horizontal) RNNs or one
-(horizontal) bidirectional RNN, work on the hidden states computed by the first
-two (vertical) RNNs, or one (vertical) bidirectional RNN. This allows us to use
-a plain RNN, instead of the more complex multidimensional RNN, while making each
-output activation of the layer be computed with respect to the whole input
-image.
+that it uses the usual sequence RNN, instead of the multidimensional RNN. The
+way ReNet has been conceived allows in fact to capture the context of the
+image without being forced to resort to multidimensional RNNs: the latter two
+RNNs (or, equivalently, the last bidirectional RNN), work on the hidden states
+computed by the first two RNNs (or the first bidirectional RNN). This allows
+to use plain RNNs instead of the more complex multidimensional ones, while
+making each output activation of the layer be computed with respect to the
+whole input image.
 
 One important consequence of the proposed approach compared to the
-multidimensional RNN is that the number of RNNs at each layer scales now linearly
+multidimensional RNN is that the number of RNNs at each layer scales linearly
 with respect to the number of dimensions $d$ of the input image ($2d$). A
-multidimensional RNN, on the other hand, requires the exponential number of RNNs
+multidimensional RNN, on the other hand, requires an exponential number of RNNs
 at each layer ($2^d$). Furthermore, the proposed variant is more easily
 parallelizable, as each RNN is dependent only along a horizontal or vertical
-sequence of patches. This architectural distinction results in our model being
-much more amenable to distributed computing than that of
-\citet{Graves+Schmidhuber-2009}.
+sequence of patches. This architectural distinction results in the ReNet model
+being much more amenable to distributed computing than that
+of~\citet{Graves+Schmidhuber-2009}.
 
 In this work, we test the proposed ReNet on several widely used object
 recognition benchmarks, namely  MNIST~\citep{Lecun99objectrecognition},
 CIFAR-10~\citep{KrizhevskyHinton2009} and SVHN~\citep{Netzer-wkshp-2011}. Our
 experiments reveal that the model performs comparably to convolutional neural
 networks on all these datasets,
-%with only cursory expoloration of hyperparameters
+%with only cursory exploration of hyperparameters
 suggesting the potential of RNNs as a competitive alternative to CNNs for image
 related tasks.
+\vfill
 
 \section{Model Description}
 
@@ -159,6 +195,27 @@ image. After any number of recurrent layers are applied to an input image,
 the activation at the last recurrent layer may be flattened and fed into a
 differentiable classifier. In our experiments we used several
 fully-connected layers followed by a softmax classifier (as shown in Fig.~\ref{fig:network}).
+
+RNNs have the potential to store in their memory any information that is
+relevant to retain the context of the part of the image they have seen up to
+that moment. The first two RNNs scan each line of the image reading one pixel
+(or patch, depending on the configuration) at the time from left to right and
+from right to left, respectively. The two resulting feature maps (i.e., output
+of each of these RNNs) are concatenated in each position over the channel axis,
+yielding a composite feature map where each position has information on the
+context of the full row, as in each position it is a concatenation of an RNN
+reaching the position from the right and of an RNN reaching the same position
+from the left. The second two RNNs sweep over the composite feature map
+vertically, top-down and bottom-up respectively. By reading the composite
+feature map, each RNN has access in each position to a "summary" of the
+corresponding row. Once again, the two feature maps are concatenated, resulting
+in a final feature map where each position is specific to a pixel (or patch) of
+the image but has information on the full image. The ReNet architecture allow
+us to capture the full context of the image with just one layer (to be fair,
+two sublayers), as opposed to CNN based architectures that would need many
+layers to span the entire image. As usual, it is still possible to stack
+multiple ReNet layers to increase the capacity of the network. ReNet obtained
+comparable results to the CNN state of the art on three widely used datasets.
 
 The deep ReNet is a smooth, continuous function, and the parameters (those from
 the RNNs as well as from the fully-connected layers) can be estimated by the
