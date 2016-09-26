@@ -2,12 +2,12 @@
 
 \section{Introduction}\label{sec:renet_intro}
 
-\emph{Classification} is a very broad task that consists in predicting to which
-category an input belongs to, out of some $k$ given categories. In this
-settings, the system is usually required to compute a function $f: \RR \to {0,
-\dots, k-1}$ that assigns each input to a class. This can be thought as a
-discrimination task, where the algorithm is expected to learn similarities and
-differences between categories in order to characterize each class.
+\emph{Classification} is a broad task that consists in predicting to which
+category an input belongs to, out of some $k$ given categories. The system is
+usually required to compute a function $f: \RR \to {0, \dots, k-1}$ that
+assigns each input to a class. This can be thought as a discrimination task,
+where the algorithm is expected to learn similarities and differences between
+categories in order to characterize each class.
 
 Some examples of classification are spam detection (classify a message as being
 spam or not), credit card fraud detection (identify if a transaction is legit
@@ -17,7 +17,7 @@ electronic document, by classifying each character), speech understanding
 medical diagnosis (given the symptoms predict the illness and suggest a cure),
 stock trading (determine if a stock should be bought, help or sold, from
 current and historical data), shape detection (classify a hand-drawn drawing
-from, e.g., a touch screen, as a specific shape), emotion classification (given
+from, e.g., a touch screen, as a specific shape) and emotion recognition (given
 a text, classify it as being positive, neutral or negative)
 
 \emph{Object recognition} is an instance of this task that takes an image as an
@@ -30,10 +30,10 @@ One downside of this method is that small and big mistakes are penalized the
 same, i.e., the prediction is considered wrong whether the right class is the
 second most probable class in the distribution or is considered extremely
 unlikely by the algorithm. For this reason, some competitions such as
-e.g.,~ImageNet~\citep{imagenet_cvpr09, ILSVRCarxiv14}, take this into account
-with challenges where the best out of $5$ guesses is considered, i.e. where an
-image is considered correctly predicted if the right class is in the top most
-probable $5$ classes.
+e.g.,~ImageNet~\citep{imagenet_cvpr09, ILSVRCarxiv14}, propose multiple
+challenges where the top-3 or top-5 guesses are considered, i.e., where an
+image is considered correctly predicted if the correct class is in the top
+$3$ or $5$ guesses of the network.
 
 Traditionally the computer vision community used to address this task with
 heavily hand-engineered systems that typically resorted to finding easily
@@ -44,19 +44,26 @@ lowe2004distinctive,mikolajczyk2005performance} and descriptors~\cite{
 lowe1999object,mikolajczyk2005performance,belongie2002shape} have been proposed
 to this end, until in 2012 a deep convolutional neural network shifted the
 balance toward learned ANNs indefinitely~\citep{Krizhevsky-2012}. Since then
-ANN-based models dominated the object recognition scene, mostly with variations
-and enhancements of state of the art models based on CNNs.
+CNN-based models dominated the object recognition scene.
 
 This chapter presents ReNet, one of the main contributions of this thesis.
 The ReNet model is a deep neural network architecture for object recognition,
-based on recurrent neural networks. The model we proposed replaces the
-ubiquitous convolution+pooling layers of deep CNNs with four recurrent neural
-networks that sweep horizontally and vertically in both directions across the
-image. The results show that it is a viable alternative to the conventional
-deep convolutional neural network. The sections that follow motivate the model
-in the context of the state of the art at the time it was conceived, describe
-the ReNet model in detail and present the results of its evaluation on three
-widely-used benchmark datasets, namely MNIST, CIFAR-10 and SVHN.
+based on recurrent neural networks. The main idea behind this project was to
+propose an alternative to the typical CNN-based approach to object
+classification problems. The ReNet model replaces in fact the ubiquitous
+convolution+pooling layers of deep CNNs with four recurrent neural networks
+that sweep horizontally and vertically in both directions across the image.
+
+The following sections motivate the model in the context of the state of the
+art at the time it was conceived, describe the ReNet model in detail and
+present the results of its evaluation on three widely-used object recognition
+benchmarks, namely  MNIST~\citep{Lecun99objectrecognition},
+CIFAR-10~\citep{KrizhevskyHinton2009} and SVHN~\citep{Netzer-wkshp-2011}. The
+experiments reveal that the ReNet model performs comparably to convolutional
+neural networks on all these datasets, suggesting the potential of RNNs as a
+competitive alternative to the conventional deep convolutional neural networks
+for image related tasks.
+
 
 \section{Rationale}
 Convolutional neural networks~\cite[CNN,][]{Fukushima80,LeCun89} have become the
@@ -91,7 +98,7 @@ algorithms~\citep{Pascanu+al-ICML2013-small,Martens+Sutskever-ICML2011} and
 model architectures~\citep{Pascanu-et-al-ICLR2014,Hochreiter+Schmidhuber-1997,
 Cho2014}.
 
-The architecture of ReNet is related and inspired by this earlier work, but it
+The architecture of ReNet is related and inspired by this earlier work, but
 relies on purely uni-dimensional RNNs coupled in a novel way, rather than on a
 multi-dimensional RNN. The basic idea behind the ReNet model is to replace each
 convolutional layer (with convolution+pooling making up a layer) in the CNN
@@ -126,14 +133,6 @@ sequence of patches. This architectural distinction results in the ReNet model
 being much more amenable to distributed computing than that
 of~\citet{Graves+Schmidhuber-2009}.
 
-In this work, we test the proposed ReNet on several widely used object
-recognition benchmarks, namely  MNIST~\citep{Lecun99objectrecognition},
-CIFAR-10~\citep{KrizhevskyHinton2009} and SVHN~\citep{Netzer-wkshp-2011}. Our
-experiments reveal that the model performs comparably to convolutional neural
-networks on all these datasets,
-%with only cursory exploration of hyperparameters
-suggesting the potential of RNNs as a competitive alternative to CNNs for image
-related tasks.
 \vfill
 
 \section{Model Description}
@@ -156,7 +155,7 @@ and $p_{i,j} \in \RR^{w_p \times h_p \times c}$ is the $(i,j)$-th patch of the
 input image. The first index $i$ is the horizontal index and the other index
 $j$ is the vertical index.
 
-First, we sweep the image vertically with two RNNs, with one RNN working in
+First, the image is swept vertically with two RNNs, with one RNN working in
 a bottom-up direction and the other working in a top-down direction.
 Each RNN takes as an input one (flattened) patch at a time and updates its
 hidden state, working \emph{along each column} $j$ of the split input image $X$.
@@ -172,29 +171,40 @@ recurrent hidden state, and may be implemented either as a simple $\tanh$ layer,
 as a gated recurrent layer~\citep{Cho2014} or as a long short-term memory
 layer~\citep{Hochreiter+Schmidhuber-1997}.
 
-After this vertical, bidirectional sweep, we concatenate the intermediate hidden
-states $v^F_{i,j}$ and $v^R_{i,j}$ at each location $(i,j)$ to get a composite
-feature map $V= \left\{ v_{i,j} \right\}_{i=1,\ldots,I}^{j=1,\ldots,J}$, where
-$v_{i,j} \in \RR^{2d}$ and $d$ is the number of recurrent units.
-Each $v_{i,j}$ is now the activation of a feature detector at the location
-$(i,j)$ with respect to all the patches in the $j$-th column of the original
-input ($p_{i, j}$ for all $i$).
+After this vertical, bidirectional sweep, the intermediate hidden states
+$v^F_{i,j}$ and $v^R_{i,j}$ are concatenated at each location $(i,j)$ to get a
+composite feature map $V= \left\{ v_{i,j} \right\}_{i=1,\ldots,I}^{
+j=1,\ldots,J}$, where $v_{i,j} \in \RR^{2d}$ and $d$ is the number of recurrent
+units.  Each $v_{i,j}$ is now the activation of a feature detector at the
+location $(i,j)$ with respect to all the patches in the $j$-th column of the
+original input ($p_{i, j}$ for all $i$).
 
-Next we sweep over the obtained feature map $V$ horizontally with two RNNs
-($f_{\text{HFWD}}$ and $f_{\text{HREV}}$).
-In a similar manner as the vertical sweep, these RNNs work along each row
-of $V$ resulting in the output feature map $H = \left\{ h_{i,j} \right\}$, where
-$h_{i,j} \in \RR^{2d}$. Now, each vector $h_{i,j}$ represents the features of
-the original image patch $p_{i,j}$ \emph{in the context of the whole image}.
+Next, the obtained composite feature map $V$ is swept horizontally with two
+different RNNs ($f_{\text{HFWD}}$ and $f_{\text{HREV}}$). In a similar manner
+as for the vertical sweep, these RNNs work along each row of $V$ and produce an
+output feature map $H = \left\{ h_{i,j} \right\}$, where $h_{i,j} \in
+\RR^{2d}$.
 
-Let us denote by $\phi$ the function from the input image map of $X$ to
-the output feature map $H$ (see Fig.~\ref{fig:networklayer} for a graphical
-illustration.) Clearly, we can stack multiple $\phi$'s to make the
-proposed ReNet deeper and capture increasingly complex features of the input
-image. After any number of recurrent layers are applied to an input image,
-the activation at the last recurrent layer may be flattened and fed into a
-differentiable classifier. In our experiments we used several
-fully-connected layers followed by a softmax classifier (as shown in Fig.~\ref{fig:network}).
+In this representation, each vector $h_{i,j}$ represents the features of the
+original image patch $p_{i,j}$ \emph{in the context of the whole image}. This
+is a critical feature of this model, in fact just one layer (to be precise, two
+sub-layers) allows to capture the full context of the image, irrespective of
+the image size. Conversely, to span over the whole image with CNN-based
+architectures would require many more layers, whose number depend on the size
+of the input image.
+
+Of course this does not mean that it is not possible to stack multiple ReNet
+layers on top of each other. Let us denote by $\phi$ the function from the
+input image or feature map $X$ of one ReNet layer to the output feature map $H$
+(see Fig.~\ref{fig:networklayer} for a graphical illustration). It is possible
+to compute a composition of functions $\Phi = \phi_1(\phi_2(\phi_3(\dots)))$ by
+stacking multiple ReNet layers into a deep network, to capture increasingly
+complex features of the input image. After any number of recurrent layers are
+applied to an input image, the activation at the last recurrent layer may be
+flattened and fed into a differentiable classifier to solve an object
+recognition task. The experiments that will be presented
+in~\autoref{sec:renet_results} used several fully-connected layers
+followed by a softmax classifier, as shown in Fig.~\ref{fig:network}.
 
 RNNs have the potential to store in their memory any information that is
 relevant to retain the context of the part of the image they have seen up to
@@ -284,7 +294,7 @@ explored. We note that this limitation on parallelization applies only to
 model parallelism, and any technique for data parallelism may be used for both
 the proposed ReNet and the LeNet.
 
-\section{Experiments}
+\section{Experiments}\label{sec:renet_results}
 
 \subsection{Datasets}
 
