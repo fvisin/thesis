@@ -1,5 +1,5 @@
 *.bib
-..aux
+*.aux
 ..fdb_latexmk
 _NN_example.tex
 thesis.ax
