@@ -183,49 +183,38 @@ Next, the obtained composite feature map $V$ is swept horizontally with two
 different RNNs ($f_{\text{HFWD}}$ and $f_{\text{HREV}}$). In a similar manner
 as for the vertical sweep, these RNNs work along each row of $V$ and produce an
 output feature map $H = \left\{ h_{i,j} \right\}$, where $h_{i,j} \in
-\RR^{2d}$.
+\RR^{2d}$. In this representation, each vector $h_{i,j}$ represents the
+features of the original image patch $p_{i,j}$ \emph{in the context of the
+whole image}.
 
-In this representation, each vector $h_{i,j}$ represents the features of the
-original image patch $p_{i,j}$ \emph{in the context of the whole image}. This
-is a critical feature of this model, in fact just one layer (to be precise, two
-sub-layers) allows to capture the full context of the image, irrespective of
-the image size. Conversely, to span over the whole image with CNN-based
-architectures would require many more layers, whose number depend on the size
-of the input image.
+This is a critical feature of this model, in fact just one layer (to be
+precise, two sub-layers) allows to capture the full context of the image,
+irrespective of the image size. This is possible thanks to the (potential)
+ability of RNNs to store in their memory any information that is relevant to
+retain the context of the part of the image that has been processed. The first
+two RNNs capture the horizontal dependencies in both directions. By reading
+their composite feature map, the second pair of RNNs has access in each
+position to a "summary" of the corresponding row. This is processed vertically,
+to capture the missing dependencies between rows. This intra- and inter-row
+processing results in a final composite feature map where each position is
+specific to a pixel (or patch) of the image but has information on the full
+image. Conversely, to span over the whole image with CNN-based architectures
+would require many more layers, whose number depend on the size of the input
+image.
 
-Of course this does not mean that it is not possible to stack multiple ReNet
-layers on top of each other. Let us denote by $\phi$ the function from the
-input image or feature map $X$ of one ReNet layer to the output feature map $H$
-(see Fig.~\ref{fig:networklayer} for a graphical illustration). It is possible
+Even if each ReNet layer captures the full input context, it is clearly still
+possible to stack multiple ReNet layers on top of each other into a deep
+network. Let us denote by $\phi$ the function from the input image (or feature
+map) $X$ of one ReNet layer to the output feature map $H$
+(see~\autoref{fig:networklayer} for a graphical illustration). It is possible
 to compute a composition of functions $\Phi = \phi_1(\phi_2(\phi_3(\dots)))$ by
-stacking multiple ReNet layers into a deep network, to capture increasingly
-complex features of the input image. After any number of recurrent layers are
-applied to an input image, the activation at the last recurrent layer may be
-flattened and fed into a differentiable classifier to solve an object
-recognition task. The experiments that will be presented
-in~\autoref{sec:renet_results} used several fully-connected layers
-followed by a softmax classifier, as shown in Fig.~\ref{fig:network}.
-
-RNNs have the potential to store in their memory any information that is
-relevant to retain the context of the part of the image they have seen up to
-that moment. The first two RNNs scan each line of the image reading one pixel
-(or patch, depending on the configuration) at the time from left to right and
-from right to left, respectively. The two resulting feature maps (i.e., output
-of each of these RNNs) are concatenated in each position over the channel axis,
-yielding a composite feature map where each position has information on the
-context of the full row, as in each position it is a concatenation of an RNN
-reaching the position from the right and of an RNN reaching the same position
-from the left. The second two RNNs sweep over the composite feature map
-vertically, top-down and bottom-up respectively. By reading the composite
-feature map, each RNN has access in each position to a "summary" of the
-corresponding row. Once again, the two feature maps are concatenated, resulting
-in a final feature map where each position is specific to a pixel (or patch) of
-the image but has information on the full image. The ReNet architecture allow
-us to capture the full context of the image with just one layer (to be fair,
-two sublayers), as opposed to CNN based architectures that would need many
-layers to span the entire image. As usual, it is still possible to stack
-multiple ReNet layers to increase the capacity of the network. ReNet obtained
-comparable results to the CNN state of the art on three widely used datasets.
+stacking multiple ReNet layers, to capture increasingly complex features of the
+input image.  After any number of recurrent layers are applied to an input
+image, the activation at the last recurrent layer may be flattened and fed into
+a differentiable classifier to solve an object recognition task. The
+experiments on this model, presented in~\autoref{sec:renet_results}, used
+several fully-connected layers followed by a softmax classifier, as shown
+in~\autoref{fig:network}.
 
 The deep ReNet is a smooth, continuous function, and the parameters (those from
 the RNNs as well as from the fully-connected layers) can be estimated by the
@@ -236,10 +225,18 @@ log-likelihood.
 \section{Differences between LeNet and ReNet}
 \label{sec:lenetrenet}
 
-There are many similarities and differences between the proposed ReNet and a
-convolutional neural network. In this section we use LeNet to refer to the
-canonical convolutional neural network as shown by \citet{LeCun89}. Here we
-highlight a few key points of comparison between ReNet and LeNet.
+\begin{figure}
+    \centering
+    \includegraphics[width=0.9\textwidth]{img/lenet5.jpg}
+    \caption{The LeNet network}
+    \label{fig:lenet}
+    \vspace{-3mm}
+\end{figure}
+
+This section will use LeNet (see~\autoref{fig:lenet}) to refer to the canonical
+convolutional neural network as shown by \citet{LeCun89}. There are many
+similarities and differences between the ReNet model and a convolutional neural
+network. The main key points of comparison will be highlighted in what follows.
 
 At each layer, both networks apply the same set of filters to patches of the
 input image or of the feature map from the layer below. ReNet, however,
@@ -249,11 +246,9 @@ should help extract a more compact feature representation of the input image at
 each layer, which can be accomplished by the lateral connections
 removing/resolving redundant features at different locations of the image. This
 should allow ReNet resolve small displacements of features across multiple
-consecutive patches.
-%Also, the lack of
-%this type of lateral connection in LeNet may lead to many more levels of
-%convolution+pooling layers in order to detect redundant features from different
-%parts of the image.
+consecutive patches. Also, the lack of this type of lateral connection in LeNet
+may lead to many more levels of convolution+pooling layers in order to detect
+redundant features from different parts of the image.
 
 LeNet max-pools the activations of each filter over a small region to achieve
 local translation invariance. In contrast, the proposed ReNet does not use any
@@ -290,17 +285,17 @@ hand, is highly parallelizable due to the independence of computing activations
 at each layer. The introduction of sequential, lateral connections, however, may
 result in more efficient parametrization, requiring a smaller number of
 parameters with overall fewer computations, although this needs to be further
-explored. We note that this limitation on parallelization applies only to
-model parallelism, and any technique for data parallelism may be used for both
-the proposed ReNet and the LeNet.
+explored. Note that this limitation on parallelization applies only to model
+parallelism, and any technique for data parallelism may be used for both the
+proposed ReNet and the LeNet.
 
 \section{Experiments}\label{sec:renet_results}
 
 \subsection{Datasets}
 
-We evaluated the proposed ReNet on three widely-used benchmark datasets; MNIST,
-CIFAR-10 and the Street View Housing Numbers (SVHN). In this section we describe
-each dataset in detail.
+The ReNet model has been evaluated on three widely-used benchmark datasets;
+MNIST, CIFAR-10 and the Street View Housing Numbers (SVHN). This section
+describes each dataset in detail.
 
 \paragraph{MNIST}
 The MNIST dataset~\citep{Lecun99objectrecognition} consists of 70,000
@@ -549,15 +544,6 @@ Furthermore, we can use many parallelization tricks widely used for training
 convolutional neural networks such as parallelizing fully-connected layers
 ~\citep{krizhevsky2014one}, having separate sets of kernels/features in
 different processors~\citep{Krizhevsky-2012} and exploiting data parallelism.
-
-\section*{Acknowledgments}
-
-The authors would like to thank the developers of
-Theano~\citep{Bergstra2010,Bastien2012}. We acknowledge the support of the
-following organizations for research funding and computing support: NSERC,
-Samsung, Calcul Qu\'{e}bec, Compute Canada, the Canada Research Chairs and
-CIFAR.  F.V. was funded by the AI*IA Young Researchers Mobility Grant
-and the Politecnico di Milano PHD School International Mobility Grant.
 
 % Model options for MNIST - mnist_004
 %{'activ': 'lambda x: tensor.maximum(0.,x)',
