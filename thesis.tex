@@ -90,11 +90,13 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \usepackage[english,italian]{babel} % has to precede hyperref to set the language of \autoref
 \usepackage[bookmarks=true,pdftex=false,bookmarksopen=true,pdfborder={0,0,0}]{hyperref}
-% Change subsection to Section (in autoref)
+% Change section, subsection and subsubsection to Section (in autoref)
+\addto\extrasenglish{%
+    \renewcommand{\sectionautorefname}{Section \negthinspace}
+}
 \addto\extrasenglish{%
     \renewcommand{\subsectionautorefname}{Section \negthinspace}
 }
-% Change subsubsection to Section (in autoref)
 \addto\extrasenglish{%
     \renewcommand{\subsubsectionautorefname}{Section \negthinspace}
 }
