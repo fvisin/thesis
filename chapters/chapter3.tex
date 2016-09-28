@@ -212,7 +212,7 @@ stacking multiple ReNet layers, to capture increasingly complex features of the
 input image.  After any number of recurrent layers are applied to an input
 image, the activation at the last recurrent layer may be flattened and fed into
 a differentiable classifier to solve an object recognition task. The
-experiments on this model, presented in~\autoref{sec:renet_results}, used
+experiments on this model, presented in~\autoref{sec:renet_experiments}, used
 several fully-connected layers followed by a softmax classifier, as shown
 in~\autoref{fig:network}.
 
@@ -225,7 +225,7 @@ log-likelihood.
 \section{Differences between LeNet and ReNet}
 \label{sec:lenetrenet}
 
-\begin{figure}
+\begin{figure}[h]
     \centering
     \includegraphics[width=0.9\textwidth]{img/lenet5.jpg}
     \caption{The LeNet network}
@@ -289,7 +289,7 @@ explored. Note that this limitation on parallelization applies only to model
 parallelism, and any technique for data parallelism may be used for both the
 proposed ReNet and the LeNet.
 
-\section{Experiments}\label{sec:renet_results}
+\section{Experiments}\label{sec:renet_experiments}
 
 \subsection{Datasets}
 
@@ -298,58 +298,84 @@ MNIST, CIFAR-10 and the Street View Housing Numbers (SVHN). This section
 describes each dataset in detail.
 
 \paragraph{MNIST}
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=0.5\textwidth]{img/mnist_digits.png}
+    \caption{Some digits from the MNIST dataset}
+    \label{fig:mnist_digits}
+\end{figure}
 The MNIST dataset~\citep{Lecun99objectrecognition} consists of 70,000
-handwritten digits from 0 to 9, centered on a $28\times 28$ square canvas. Each
-pixel represents the grayscale in the range of $\left[0, 255\right]$.\footnote{
-    We scaled each pixel by dividing it with $255$.
-}
-We split the dataset into 50,000 training samples, 10,000 validation
-samples and 10,000 test samples, following the standard split.
+handwritten digits from 0 to 9, centered on a $28\times 28$ square
+canvas~(see~\autoref{fig:mnist_digits} for some samples). Each pixel represents
+the grayscale in the range of $\left[0, 255\right]$.\footnote{Each pixel has
+been scaled to $[0, 1]$ by dividing it with $255$.} It is customary to split
+this dataset into 50,000 training samples, 10,000 validation samples and 10,000
+test samples. For a fair comparison, the results reported
+in~\autoref{sec:renet_results} were obtained following the standard split.
 
 \paragraph{CIFAR-10}
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=0.5\textwidth]{img/cifar-10.png}
+    \caption{Some samples of the 10 classes of the CIFAR-10 dataset}
+    \label{fig:cifar}
+\end{figure}
 The CIFAR-10 dataset~\citep{KrizhevskyHinton2009} is a curated subset of the 80
-million tiny images dataset, originally released by
-\citet{Torralba+Fergus+Freeman-2008}. CIFAR-10 contains 60,000 images each of which
-belongs to one of ten categories; airplane, automobile, bird, cat, deer, dog,
-frog, horse, ship and truck. Each image is 32 pixels wide and 32 pixels high
-with 3 color channels (red, green and blue.) Following the standard procedure,
-we split the dataset into 40,000 training, 10,000 validation and 10,000 test
-samples. We applied zero-phase component analysis (ZCA) and normalized each pixel
-to have zero-mean and unit-variance across the training
-samples, as suggested by \citet{KrizhevskyHinton2009}.
+million tiny images dataset~(see~\autoref{fig:cifar} for some samples),
+originally released by \citet{Torralba+Fergus+Freeman-2008}. CIFAR-10 contains
+60,000 images each of which belongs to one of ten categories; airplane,
+automobile, bird, cat, deer, dog, frog, horse, ship and truck. Each image is 32
+pixels wide and 32 pixels high with 3 color channels (red, green and blue.)
+Following the standard procedure, in the reported experiments the dataset
+was split into 40,000 training, 10,000 validation and 10,000 test samples.
+Furthermore, zero-phase component analysis (ZCA) was applied and the each pixel
+was normalized to have zero-mean and unit-variance across the training samples,
+as suggested by \citet{KrizhevskyHinton2009}.
 
 \paragraph{Street View House Numbers}
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=0.5\textwidth]{img/SVHN.png}
+    \caption{Some samples of housing numbers from the SVHN dataset}
+    \label{fig:svhn}
+\end{figure}
 The Street View House Numbers (SVHN) dataset~\citep{Netzer-wkshp-2011} consists
 of cropped images representing house numbers captured by Google StreetView
 vehicles as a part of the Google Maps mapping process. These images consist of
 digits 0 through 9 with values in the range of [0, 255] in each of 3
-red-green-blue color channels. Each image is 32 pixels wide and 32 pixels
-high giving a sample dimensionality (32, 32, 3). The number of samples we used for
-training, valid, and test sets is 543,949, 60,439, and 26,032 respectively. We
-normalized each pixel to have zero-mean and unit-variance across the training
-samples.
+red-green-blue color channels~(see~\autoref{fig:svhn} for some samples). Each
+image is 32 pixels wide and 32 pixels high giving a sample dimensionality (32,
+32, 3). The number of samples used for the training, validation, and test sets
+is 543,949, 60,439, and 26,032 respectively. Each pixel was normalized to have
+zero-mean and unit-variance across the training samples.
 
 \subsubsection{Data Augmentation}
 
-It has been known that augmenting training data often leads to better
-generalization~\citep[see, e.g.,][]{Krizhevsky-2012}. We decided to employ
-two primary data augmentations in the following experiments: {\it flipping} and
-{\it shifting}.
+It has been long known that augmenting training data often leads to better
+generalization~\citep[see, e.g.,][]{Krizhevsky-2012}. The results reported
+in~\autoref{sec:renet_results} were all obtained employing two primary data
+augmentations: {\it flipping} and {\it shifting}.
 
-For flipping, we either flipped each sample horizontally with 25\% chance,
-flipped it vertically with 25\% chance, or left it unchanged. This allows lets
-the model observe ``mirror images'' of the original image during training.
-In the case of shifting, we either shifted the image by 2 pixels to the left
-(25\% chance), 2 pixels to the right (25\% chance) or left it as it was. After
-this first processing, we further either shifted it by 2 pixels to the top
-(25\% chance), 2 pixels to the bottom (25\% chance) or left it as it was. This
-two-step procedure makes the model more robust to slight shifting of an object
-in the image. The shifting was done without padding the borders of the image,
-preserving the original size but dropping the pixels which are shifted out of
-the input while shifting in zeros.
+For the flipping data augmentation, the model was presented with samples that
+were either flipped horizontally with 25\% chance, or vertically with 25\%
+chance, or left unchanged. This technique allows the model to observe ``mirror
+images'' of the original images of the dataset during training, increasing the
+amount of training data. On SVHN and MNIST only horizontal flipping was used
+to prevent the case were an image labelled $6$ is flipped in both direction,
+becoming a $9$.
 
-The choice of whether to apply these augmentation procedures on each dataset was
-chosen on a per-case basis in order to maximize validation performance.
+In the case of shifting two policies were adopted. The images were either
+shifted by 2 pixels to the left (25\% chance), 2 pixels to the right (25\%
+chance) or left as they were. After this first processing, the images were
+further shifted either by 2 pixels to the top (25\% chance), 2 pixels to the
+bottom (25\% chance) or left as they were. This two-step procedure makes the
+model more robust to slight shifting of an object in the image. The shifting
+was done without pre-padding the borders of the image, but rather preserving
+the original size by dropping the pixels which are shifted out of the input
+and shifting in zeros on the opposite side.
+
+The choice of whether to apply these augmentation procedures on each dataset
+was chosen on a per-case basis in order to maximize validation performance.
 
 \begin{figure}[t]
     \centering
@@ -501,8 +527,7 @@ many potential areas of exploration for future work.
     \end{minipage}
 \end{table}
 
-\section{Results and Analysis}
-
+\section{Results and Analysis}\label{sec:renet_results}
 In Table~\ref{tbl:result}, we present the results on three datasets,
 along with previously reported results.
 
