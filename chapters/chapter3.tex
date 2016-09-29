@@ -222,7 +222,7 @@ stochastic gradient descent algorithm with the gradient computed by
 backpropagation algorithm~\citep[see, e.g.,][]{BP86} to maximize the
 log-likelihood.
 
-\section{Differences between LeNet and ReNet}
+\subsection{Differences between LeNet and ReNet}
 \label{sec:lenetrenet}
 
 \begin{figure}[h]
@@ -298,12 +298,14 @@ MNIST, CIFAR-10 and the Street View Housing Numbers (SVHN). This section
 describes each dataset in detail.
 
 \paragraph{MNIST}
+
 \begin{figure}[h]
     \centering
     \includegraphics[width=0.5\textwidth]{img/mnist_digits.png}
     \caption{Some digits from the MNIST dataset}
     \label{fig:mnist_digits}
 \end{figure}
+
 The MNIST dataset~\citep{Lecun99objectrecognition} consists of 70,000
 handwritten digits from 0 to 9, centered on a $28\times 28$ square
 canvas~(see~\autoref{fig:mnist_digits} for some samples). Each pixel represents
@@ -314,16 +316,18 @@ test samples. For a fair comparison, the results reported
 in~\autoref{sec:renet_results} were obtained following the standard split.
 
 \paragraph{CIFAR-10}
+
 \begin{figure}[h]
     \centering
     \includegraphics[width=0.5\textwidth]{img/cifar-10.png}
     \caption{Some samples of the 10 classes of the CIFAR-10 dataset}
     \label{fig:cifar}
 \end{figure}
+
 The CIFAR-10 dataset~\citep{KrizhevskyHinton2009} is a curated subset of the 80
 million tiny images dataset~(see~\autoref{fig:cifar} for some samples),
 originally released by \citet{Torralba+Fergus+Freeman-2008}. CIFAR-10 contains
-60,000 images each of which belongs to one of ten categories; airplane,
+60,000 images each of which belongs to one of ten categories: airplane,
 automobile, bird, cat, deer, dog, frog, horse, ship and truck. Each image is 32
 pixels wide and 32 pixels high with 3 color channels (red, green and blue.)
 Following the standard procedure, in the reported experiments the dataset
@@ -333,12 +337,14 @@ was normalized to have zero-mean and unit-variance across the training samples,
 as suggested by \citet{KrizhevskyHinton2009}.
 
 \paragraph{Street View House Numbers}
+
 \begin{figure}[h]
     \centering
     \includegraphics[width=0.5\textwidth]{img/SVHN.png}
     \caption{Some samples of housing numbers from the SVHN dataset}
     \label{fig:svhn}
 \end{figure}
+
 The Street View House Numbers (SVHN) dataset~\citep{Netzer-wkshp-2011} consists
 of cropped images representing house numbers captured by Google StreetView
 vehicles as a part of the Google Maps mapping process. These images consist of
@@ -349,7 +355,7 @@ image is 32 pixels wide and 32 pixels high giving a sample dimensionality (32,
 is 543,949, 60,439, and 26,032 respectively. Each pixel was normalized to have
 zero-mean and unit-variance across the training samples.
 
-\subsubsection{Data Augmentation}
+\subsection{Data Augmentation}
 
 It has been long known that augmenting training data often leads to better
 generalization~\citep[see, e.g.,][]{Krizhevsky-2012}. The results reported
@@ -379,26 +385,23 @@ was chosen on a per-case basis in order to maximize validation performance.
 
 \begin{figure}[t]
     \centering
-    \includegraphics[height=.135\textheight,width=\columnwidth]{pdf/renet_svhn.pdf}
+    \includegraphics[height=.14\textheight,width=\columnwidth]{pdf/renet_svhn.pdf}
     \caption{The ReNet network used for SVHN classification}
     \label{fig:network}
 \end{figure}
 
 \subsection{Model Architectures}
 
-The principal parameters that define the architecture of the proposed ReNet are
-the number of ReNet layers ($N_{\text{RE}}$), their corresponding receptive field
-sizes ($w_p \times h_p$) and feature dimensionality ($d_{\text{RE}}$),
+The principal parameters that define the architecture of the ReNet model are
+the number of ReNet layers ($N_{\text{RE}}$), their corresponding receptive
+field sizes ($w_p \times h_p$) and feature dimensionality ($d_{\text{RE}}$),
 the number of fully-connected layers ($N_{\text{FC}}$) and their corresponding
 numbers ($d_{\text{FC}}$) and types ($f_{\text{FC}}$) of hidden units.
 
-In this introductory work, we did not focus on extensive hyperparameter
-search to find the optimal validation set
-performance. We chose instead to focus the experiments on a small set of
-hyperparameters, with the only aim to show the potential of the proposed model.
-Refer to Table~\ref{tbl:architectures} for a summary of the settings that performed
-best on the validation set of the studied datasets and to Fig.~\ref{fig:network}
-for a graphical illustration of the model we selected for SVHN.
+Table~\ref{tbl:architectures} summarizes the settings of these hyperparameters
+that performed best on the validation set of the studied datasets.
+\autoref{fig:network} is a graphical illustration of the model selected with
+this metric for the SVHN dataset.
 
 \begin{table}[t]
     \centering
@@ -432,21 +435,26 @@ for a graphical illustration of the model we selected for SVHN.
     \label{tbl:architectures}
 \end{table}
 
-\subsection{Training}
+\subsubsection{Training}
 
-To train the networks we used a recently proposed adaptive learning rate
-algorithm, called Adam~\citep{Kingma2014}. In order to reduce overfitting we
-applied dropout~\citep{Srivastava14} after each layer, including both the
-proposed ReNet layer (after the horizontal and vertical sweeps) and the
-fully-connected layers. The input was also corrupted by masking out each variable
-with probability $0.2$. Finally, each optimization run was early stopped based
+All the networks have been trained using a recently proposed adaptive learning
+rate algorithm, called Adam~\citep{Kingma2014}. In order to reduce overfitting
+dropout~\citep{Srivastava14} was applied after each layer, including both the
+ReNet layers (after the horizontal and vertical sweeps) and the fully-connected
+layers. The input layer was also corrupted by masking out each pixel with
+probability $0.2$. Finally, each optimization run was early stopped based
 on validation error.
 
-Note that unlike many previous works, we did not retrain the model (selected
-based on the validation performance) using both the training and validation
-samples. This experiment design choice is consistent with our declared goal to
-show a proof of concept rather than stressing absolute performance. There are
-many potential areas of exploration for future work.
+Note that the results reported in~\autoref{sec:renet_results} were obtained
+without retraining on the joint training and validation sets. This is a common
+technique exploited by many works in the literature to boost the performance
+of the best model, selected after a full training on the training set early
+stopping on the validation performance. There is no reason not to think that
+this would further improve the reported results, but this work was mainly
+conceived as a proof of concept rather than to stress on the absolute
+performance. This, as well as e.g., ensembling multiple models, can be seen as
+one of the many potential areas of exploration for further work in case maximum
+performance is sought.
 
 \begin{table}[ht]
     \centering
@@ -515,39 +523,39 @@ many potential areas of exploration for future work.
         (c) SVHN
     \end{minipage}
     \hfill
-    \begin{minipage}{0.45\textwidth}
-        \caption{Generalization errors obtained by the
-            proposed ReNet along with those reported by previous works
-            on each of the three datasets. $\star$ denotes a
-            convolutional neural network. We only list the results reported by a single
-            model, i.e., no ensembling of multiple models.
-            In the case of SVHN, we report results from models trained on
-            the Format 2 (cropped digit) dataset only.}
+    \begin{minipage}{0.51\textwidth}
+        \caption{Generalization errors obtained by the proposed ReNet along
+            with those reported by previous works on each of the three
+            datasets. For a fair comparison, only results obtained by a single
+            model are listed, i.e., no ensembling of multiple models. In the
+            case of SVHN, only models trained on the Format 2 (cropped digits)
+            dataset are reported. $\star$ denotes a convolutional neural
+            network.}
         \label{tbl:result}
     \end{minipage}
 \end{table}
 
-\section{Results and Analysis}\label{sec:renet_results}
-In Table~\ref{tbl:result}, we present the results on three datasets,
-along with previously reported results.
+\subsection{Results}\label{sec:renet_results}
+Table~\ref{tbl:result}, presents the results of ReNet on three datasets, along
+with previously reported results.
 
-It is clear that the proposed ReNet performs comparably to deep convolutional
-neural networks which are the {\it de facto} standard for object recognition.
-This suggests that the proposed ReNet is a viable alternative to convolutional
-neural networks (CNN), even on tasks where CNNs have historically dominated.
-However, it is important to notice that the proposed ReNet does not outperform
-state-of-the-art convolutional neural networks on any of the three benchmark
-datasets, which calls for more research in the future.
+It is clear that ReNet performs comparably to deep convolutional neural
+networks which are the {\it de facto} standard for object recognition. This
+suggests that ReNet is a viable alternative to convolutional neural networks
+(CNN), even on tasks where CNNs have historically dominated. However, it is
+important to notice that ReNet does not outperform state-of-the-art
+convolutional neural networks on any of the three benchmark datasets, which
+calls for more research in the future.
 
-\section{Discussion}
+\section{Conclusions/Discussion}
 
 \paragraph{Choice of Recurrent Units}
 Note that the proposed architecture is independent of the chosen recurrent
-units. We observed in preliminary experiments that gated
-recurrent units, either the GRU or the LSTM, outperform a usual sigmoidal unit
-(affine transformation followed by an element-wise sigmoid function.) This
-indirectly confirms that the model utilizes long-term dependencies across an
-input image, and the gated recurrent units help capture these dependencies.
+units. The preliminary experiments on this model showed that gated recurrent
+units, either the GRU or the LSTM, outperform a usual sigmoidal unit (affine
+transformation followed by an element-wise sigmoid function.) This indirectly
+confirms that the model utilizes long-term dependencies across an input image,
+and the gated recurrent units help capture these dependencies.
 
 \paragraph{Analysis of the Trained ReNet}
 In this paper, we evaluated the proposed ReNet only quantitatively. However, the
@@ -570,172 +578,47 @@ convolutional neural networks such as parallelizing fully-connected layers
 ~\citep{krizhevsky2014one}, having separate sets of kernels/features in
 different processors~\citep{Krizhevsky-2012} and exploiting data parallelism.
 
-% Model options for MNIST - mnist_004
-%{'activ': 'lambda x: tensor.maximum(0.,x)',
-% 'batch_size': 256,
-% 'concat_dirs': True,
-% 'data_sym': False,
-% 'dataset': 'mnist',
-% 'decay_c': 0.0,
-% 'dim_proj': [256, 256],
-% 'dim_proj_fc': 4096,
-% 'dispFreq': 1,
-% 'do_random_flip': False,
-% 'do_random_shift': True,
-% 'dropout_x_rate': 0.5,
-% 'encoder': 'gru',
-% 'height': 28,
-% 'lrate': 0.0001,
-% 'max_epochs': 5000,
-% 'maxlen': 600,
-% 'n_channels': 1,
-% 'n_fc_layers': 2,
-% 'n_layers': 2,
-% 'noise_std': 0.0,
-% 'normalization': False,
-% 'optimizer': 'adam',
-% 'patience': 100,
-% 'pheight': [2, 2],
-% 'pwidth': [2, 2],
-% 'reload_': False,
-% 'reorder': [0, 1, 2],
-% 'rereorder': [0, 1, 2],
-% 'reshape': [28, 28, 1],
-% 'saveFreq': -1,
-% 'saveto': 'model_recrec_mnist.npz',
-% 'shift_pixels': 2,
-% 'shuffle': True,
-% 'use_dropout': True,
-% 'use_dropout_x': True,
-% 'validFreq': -1,
-% 'valid_batch_size': 256,
-% 'width': 28,
-% 'ydim': 10}
 
-% Model options for CIFAR10 - cifar_005
-%{'activ': 'lambda x: tensor.maximum(0.,x)',
-% 'batch_size': 256,
-% 'concat_dirs': True,
-% 'data_sym': False,
-% 'dataset': 'cifar10zca',
-% 'decay_c': 0.0,
-% 'dim_proj': [320, 320, 320],
-% 'dim_proj_fc': 4096,
-% 'dispFreq': 1,
-% 'do_random_flip': True,
-% 'do_random_shift': True,
-% 'dropout_x_rate': 0.5,
-% 'encoder': 'gru',
-% 'height': 32,
-% 'lrate': 0.0001,
-% 'max_epochs': 5000,
-% 'maxlen': 600,
-% 'n_channels': 3,
-% 'n_fc_layers': 1,
-% 'n_layers': 3,
-% 'noise_std': 0.0,
-% 'normalization': False,
-% 'optimizer': 'adam',
-% 'patience': 100,
-% 'pheight': [2, 2, 2],
-% 'pwidth': [2, 2, 2],
-% 'reload_': False,
-% 'reorder': [1, 2, 0],
-% 'rereorder': [2, 0, 1],
-% 'reshape': [3, 32, 32],
-% 'saveFreq': -1,
-% 'saveto': 'model_recrec_cifar10.npz',
-% 'shift_pixels': 2,
-% 'shuffle': True,
-% 'use_dropout': True,
-% 'use_dropout_x': True,
-% 'validFreq': -1,
-% 'valid_batch_size': 256,
-% 'width': 32,
-% 'ydim': 10}
-
-% Model options for SVHN - SVHN/001/
-%{'activ': 'lambda x: tensor.maximum(0.,x)',
-% 'batch_size': 128,
-% 'concat_dirs': True,
-% 'data_sym': False,
-% 'dataset': 'svhn',
-% 'decay_c': 0.0,
-% 'dim_proj': [256, 256, 256],
-% 'dim_proj_fc': 4096,
-% 'dispFreq': 1,
-% 'do_random_flip': False,
-% 'do_random_shift': True,
-% 'dropout_x_rate': 0.5,
-% 'encoder': 'lstm',
-% 'height': 32,
-% 'lrate': 0.0001,
-% 'max_epochs': 5000,
-% 'maxlen': 600,
-% 'n_channels': 3,
-% 'n_fc_layers': 2,
-% 'n_layers': 3,
-% 'noise_std': 0.0,
-% 'optimizer': 'adam',
-% 'patience': 100,
-% 'pheight': [2, 2, 2],
-% 'pwidth': [2, 2, 2],
-% 'reload_': False,
-% 'reorder': [0, 1, 2],
-% 'rereorder': [0, 1, 2],
-% 'reshape': [32, 32, 3],
-% 'saveFreq': -1,
-% 'saveto': 'model_recrec_svhn.npz',
-% 'shift_pixels': 2,
-% 'shuffle': True,
-% 'use_dropout': True,
-% 'use_dropout_x': True,
-% 'validFreq': -1,
-% 'valid_batch_size': 128,
-% 'width': 32,
-% 'ydim': 11
-
-%\begin{tabular}{ll}
-%0.35\% & Deep Big Simple Neural Nets Excel on Handwritten Digit Recognition \citep{DBLP:journals/corr/abs-1003-0358} \\
-%0.39\% & Convolutional Kernel Networks \citep{DBLP:conf/nips/MairalKHS14} \\
-%0.39\% & Deeply-Supervised Nets \citep{DBLP:journals/corr/LeeXGZT14} \\
-%0.4\% & Best Practices for Convolutional Neural Networks Applied to Visual Document Analysis \citep{DBLP:conf/icdar/SimardSP03} \\
-%0.45\% & Maxout Networks \citep{Goodfellow2013} \\
-%\bf{0.45\%} & \bf{ReNet} \\
-%0.47\% & Network in Network \citep{Lin2014} \\
-%0.52\% & Trainable COSFIRE filters for keypoint detection and pattern recognition \citep{DBLP:journals/pami/AzzopardiA13} \\
-%\end{tabular}
-%\end{table}
+% \begin{table}[h]
+% \begin{tabular}{ll}
+% 0.35\% & Deep Big Simple Neural Nets Excel on Handwritten Digit Recognition \citep{DBLP:journals/corr/abs-1003-0358} \\
+% 0.39\% & Convolutional Kernel Networks \citep{DBLP:conf/nips/MairalKHS14} \\
+% 0.39\% & Deeply-Supervised Nets \citep{DBLP:journals/corr/LeeXGZT14} \\
+% 0.4\% & Best Practices for Convolutional Neural Networks Applied to Visual Document Analysis \citep{DBLP:conf/icdar/SimardSP03} \\
+% 0.45\% & Maxout Networks \citep{Goodfellow2013} \\
+% \bf{0.45\%} & \bf{ReNet} \\
+% 0.47\% & Network in Network \citep{Lin2014} \\
+% 0.52\% & Trainable COSFIRE filters for keypoint detection and pattern recognition \citep{DBLP:journals/pami/AzzopardiA13} \\
+% \end{tabular}
+% \end{table}
 %
-%\alert{TBD}
+% MNIST (talk about why we don't compare to dropconnect/multicolumn?)
 %
-%MNIST (talk about why we don't compare to dropconnect/multicolumn?)
+% CIFAR-10 (briefly mention ZCA, flipping, pixel shift)
+% \begin{table}[h]
+% \begin{tabular}{ll}
+% 8.8\% & Network In Network \citep{Lin2014} \\
+% 9.32\% & Regularization of Neural Networks using DropConnect \citep{DBLP:conf/icml/WanZZLF13} \\
+% 9.35\% & Maxout Networks \citep{Goodfellow2013} \\
+% 9.39\% & Improving Deep Neural Networks with Probabilistic Maxout Units \citep{DBLP:journals/corr/SpringenbergR13} \\
+% 9.5\% & Practical Bayesian Optimization of Machine Learning Algorithms \citep{DBLP:conf/nips/SnoekLA12} \\
+% 11\% & ImageNet Classification with Deep Convolutional Neural Networks \citep{Krizhevsky-2012} \\
+% 11.21\% & Multi-Column Deep Neural Networks for Image Classification \citep{Ciresan-2012} \\
+% \bf{12.35\%} & \bf{ReNet} \\
+% 15.13\% & Stochastic Pooling for Regularization of Deep Convolutional Neural Networks \citep{DBLP:journals/corr/abs-1301-3557} \\
+% 15.6\% & Improving neural networks by preventing co-adaptation of feature detectors \citep{DBLP:journals/corr/abs-1207-0580} \\
+% \end{tabular}
+% \end{table}
 %
-%CIFAR-10 (briefly mention ZCA, flipping, pixel shift)
-%\begin{table}[h]
-%\begin{tabular}{ll}
-%8.8\% & Network In Network \citep{Lin2014} \\
-%9.32\% & Regularization of Neural Networks using DropConnect \citep{DBLP:conf/icml/WanZZLF13} \\
-%9.35\% & Maxout Networks \citep{Goodfellow2013} \\
-%9.39\% & Improving Deep Neural Networks with Probabilistic Maxout Units \citep{DBLP:journals/corr/SpringenbergR13} \\
-%9.5\% & Practical Bayesian Optimization of Machine Learning Algorithms \citep{DBLP:conf/nips/SnoekLA12} \\
-%11\% & ImageNet Classification with Deep Convolutional Neural Networks \citep{Krizhevsky-2012} \\
-%11.21\% & Multi-Column Deep Neural Networks for Image Classification \citep{Ciresan-2012} \\
-%\bf{12.35\%} & \bf{ReNet} \\
-%15.13\% & Stochastic Pooling for Regularization of Deep Convolutional Neural Networks \citep{DBLP:journals/corr/abs-1301-3557} \\
-%15.6\% & Improving neural networks by preventing co-adaptation of feature detectors \citep{DBLP:journals/corr/abs-1207-0580} \\
-%\end{tabular}
-%\end{table}
-%
-%SVHN (briefly mention flipping, pixel shift)
-%\begin{table}[h]
-%\begin{tabular}{ll}
-%1.92\% & Deeply Supervised Nets \citep{DBLP:journals/corr/LeeXGZT14} \\
-%1.94\% & Regularization of Neural Networks using DropConnect \citep{DBLP:conf/icml/WanZZLF13} \\
-%2.16\% & Multi-digit Number Recognition from Street View Imagery using Deep Convolutional Neural Networks \citep{Goodfellow+et+al-ICLR2014a} \\
-%2.35\% & Network in Network \citep{Lin2014} \\
-%\bf{2.38\%} & \bf{ReNet} \\
-%2.47\% & Maxout Networks \citep{Goodfellow2013} \\
-%2.8\% & Stochastic Pooling for Regularization of Deep Convolutional Neural Networks \citep{DBLP:journals/corr/abs-1301-3557} \\
-%\end{tabular}
-%\end{table}
+% SVHN (briefly mention flipping, pixel shift)
+% \begin{table}[h]
+% \begin{tabular}{ll}
+% 1.92\% & Deeply Supervised Nets \citep{DBLP:journals/corr/LeeXGZT14} \\
+% 1.94\% & Regularization of Neural Networks using DropConnect \citep{DBLP:conf/icml/WanZZLF13} \\
+% 2.16\% & Multi-digit Number Recognition from Street View Imagery using Deep Convolutional Neural Networks \citep{Goodfellow+et+al-ICLR2014a} \\
+% 2.35\% & Network in Network \citep{Lin2014} \\
+% \bf{2.38\%} & \bf{ReNet} \\
+% 2.47\% & Maxout Networks \citep{Goodfellow2013} \\
+% 2.8\% & Stochastic Pooling for Regularization of Deep Convolutional Neural Networks \citep{DBLP:journals/corr/abs-1301-3557} \\
+% \end{tabular}
+% \end{table}
