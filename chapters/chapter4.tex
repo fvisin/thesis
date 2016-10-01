@@ -1,6 +1,128 @@
 \chapter{ReSeg}\label{sec:reseg}
 
 \section{Introduction}\label{sec:reseg_intro}
+\autoref{sec:renet} introduced the ReNet model, a Recurrent Neural Network
+based model for object recognition. The ReNet model scans the image
+horizontally and vertically with $4$ RNNs at each layer and is able to capture
+the full context of the input with just one layer thanks to a sophisticated
+interaction of the inner RNNs. This allows activations to be local yet
+conditioned on global information, an ideal setting for semantic segmentation.
+
+\emph{Semantic segmentation} is the task of labeling each pixel of an image
+with the class it belongs to. In, e.g., an urban scene scenario, this would
+mean to label all the pixels of all the cars in the image as belonging to the
+"car class", every pixel of all the pedestrians in the image as belonging to
+the pedestrian class, and so on.
+
+This is a very difficult task for many reasons: classifying pixels requires to
+acquire both a global understanding of the scene, as well as a very detailed
+and spatially precise characterization of each object; drawing segmentation
+masks is very time consuming, which makes difficult and expensive to collect
+big datasets; labels are often subject to personal judgement, in fact different
+people tend to have different degrees of accuracy on small details and
+contours and at the same time, it is hard to define a clear separation path
+between the object and the background sometimes (e.g., the leafs of a tree)
+
+% WRITE SOMETHING ABOUT HOW TACKLED HISTORICALLY
+
+This chapter introduces the second main contribution of this work. The ReSeg
+model builds on ReNet~(see~\autoref{sec:renet}) to tackle the task of semantic
+segmentation. The primary motivation behind ReSeg is to exploit the peculiar
+structure of ReNet in order to capture the underlying semantic of the input
+image and use it to drive the prediction in each location. Thanks to the strong
+lateral connections built in the model, ReSeg is able to capture the
+\emph{global} scene depicted in the image and exploit it to perform fine,
+high resolution, semantic segmentation focusing on \emph{local} details.
+
+The following sections motivate the model in the context of the state of the
+art at the time it was conceived, describe the ReNet model in detail and
+present the results of its evaluation on three widely-used object recognition
+benchmarks, namely  MNIST~\citep{Lecun99objectrecognition},
+CIFAR-10~\citep{KrizhevskyHinton2009} and SVHN~\citep{Netzer-wkshp-2011}. The
+experiments reveal that the ReNet model performs comparably to convolutional
+neural networks on all these datasets, suggesting the potential of RNNs as a
+competitive alternative to the conventional deep convolutional neural networks
+for image related tasks.
+
+\section{Rationale}
+
+In recent years, Convolutional Neural Networks (CNN) have become the {\em de
+facto} standard in many computer vision tasks, such as image classification and
+object detection \cite{Krizhevsky-2012,Erhan2014}. Top performing image
+classification architectures usually involve {\em very} deep CNN trained in a
+supervised fashion on a large datasets~\cite{Lin2014,Simonyan2015,
+szegedy2014going} and have been shown to produce generic hierarchical visual
+representations that perform well on a wide variety of vision tasks.
+
+Similarly, in the semantic segmentation panorama there is a tendency to convert
+the standard deep CNN classifier into Fully Convolutional Networks (FCN) (see
+e.g.,~\cite{long2014fully,noh2015learning, badrinarayanan2015segnet,
+Ronneberger2015}) to obtain coarse image representations, which are
+subsequently upsampled to recover the lost resolution. However, these deep CNNs
+heavily reduce the input resolution through successive applications of pooling
+or subsampling layers. While these layers seem to contribute significantly to
+the desirable invariance properties of deep CNNs, they also make it challenging
+to use these pre-trained CNNs for tasks such as semantic segmentation, where a
+per pixel prediction is required.
+
+%% Upsampling
+The information recovery problem has been tackled in a large variety of ways.
+For instance, Eigen et al. proposed in~\cite{Eigen2015} a multi-scale
+architecture that extracts coarse predictions, which are then refined using
+finer scales. Farabet et al. introduced in~\cite{Farabet:2013} a multi-scale
+CNN architecture; Hariharan et al.~\cite{Hariharan2015} combine the information
+distributed over all layers to make accurate predictions. Other methods such
+as~\cite{long2014fully,badrinarayanan2015segnet} use simple bilinear
+interpolation to upsample the feature maps of increasingly abstract layers and
+\cite{Ronneberger2015} concatenate the feature maps of the downsampling layers
+with the feature maps of the upsampling layers to help recover finer
+information. Furthermore, more sophisticated upsampling methods, such as
+unpooling~\cite{noh2015learning,badrinarayanan2015segnet} or
+deconvolution~\cite{long2014fully} are well established in the literature.
+
+One common issue of all these methods is that they are not specifically
+designed to take into account and preserve both \emph{local} and \emph{global}
+contextual dependencies, which have shown to be useful for semantic
+segmentation tasks~\cite{Singh2013,Gatta14-deepvision}. Rather, these models
+often employ Conditional Random Fields (CRFs) as a post-processing step to
+locally smooth the model predictions, but how to tackle long-range contextual
+dependencies remain relatively unexploited.
+
+Recurrent Neural Networks (RNN) have been used in a variety of tasks for years
+and have been particularly successful in natural language
+processing~\citep[see, e.g.,][]{Mikolov-thesis-2012,Sutskever-et-al-NIPS2014,
+Cho2014}, handwriting recognition and generation~\citep{Graves+Schmidhuber-2009,
+Graves-et-al-NIPS2007,Graves-arxiv2013} and speech recognition~\citep{
+Chorowski-et-al-arxiv2014,Graves+Jaitly-ICML2014},
+but only recently have been introduced in the computer vision literature to
+retrieve global spatial dependencies with the goal to improve semantic
+segmentation~\cite{Pinheiro:2014, Gatta14-deepvision, chen2015semantic,
+byeon2015scene}. However, training spatially recurrent neural networks
+typically tends to be computationally intensive.
+%The literature on this subject shows that some effort has been devoted to
+%mitigate this problem~\cite{visin2015renet,stollenga2015parallel}.
+
+ReSeg aims at an {\em efficient} application of Recurrent Neural
+Networks RNN to retrieve contextual information from images. We propose to
+extend the ReNet architecture~\cite{visin2015renet}, originally designed for
+image classification, to deal with the more ambitious task of semantic
+segmentation. ReNet layers can efficiently capture contextual dependencies from
+images by first sweeping the image horizontally, and then sweeping the output
+of hidden states vertically.  The output of a ReNet layer is therefore
+implicitly encoding the local features at each pixel position with respect to
+the whole input image, providing relevant global information. Moreover, in
+order to {\em fully} exploit local and global pixel dependencies, we stack the
+ReNet layers on top of the output of a FCN, i.e. the intermediate convolutional
+output of VGG-16~\cite{Simonyan2015}, to benefit from generic local features.
+We validate our method on Weizmann~Horse and Oxford~Flower
+foreground/background segmentation datasets as a proof of concept for the
+proposed architecture.  Then, we evaluate the performance in the standard
+benchmark of urban scenes CamVid; achieving state-of-the-art in all three
+datasets.~\footnote{Subsequent but independent
+work~\cite{DBLP:journals/corr/YanZJBY16} investigated the combination of ReSeg
+with Fully Convolutional Network (FCN) and CRFs, reporting state of the art
+results on Pascal VOC.}
+
 We propose a structured prediction architecture, which exploits the local
 generic features extracted by Convolutional Neural Networks and the capacity of
 Recurrent Neural Networks (RNN) to retrieve distant dependencies. The proposed
@@ -24,84 +146,9 @@ hyperparameters are available on
 %recurrent neural networks.
 %, noting that the avoidance of pooling can greatly simplify pixel-wise tasks for images.
 
-\section{Rationale}
-
-In recent years, Convolutional Neural Networks (CNN) have become the {\em de
-facto} standard in many computer vision tasks, such as image classification and
-object detection \cite{Krizhevsky-2012,Erhan2014}. Top performing image
-classification architectures usually involve {\em very} deep CNN trained in a
-supervised fashion on a large datasets
-\cite{Lin2014,Simonyan2015,szegedy2014going} and have been shown to
-produce generic hierarchical visual representations that perform well on a
-wide variety of vision tasks. However, these deep CNNs heavily reduce the
-input resolution through successive applications of
-pooling or subsampling layers. While these layers seem to contribute
-significantly to the desirable invariance properties of deep CNNs, they
-also make it challenging to use these pre-trained CNNs for tasks such as
-semantic segmentation, where a per pixel prediction is required.
-
-Recent advances in semantic segmentation tend to convert the standard deep
-CNN classifier into Fully Convolutional Networks
-(FCN)~\cite{long2014fully,noh2015learning,badrinarayanan2015segnet,
-Ronneberger2015} to obtain coarse image representations, which are subsequently
-upsampled to recover the lost resolution. However, these methods are not
-designed to take into account and preserve both \emph{local} and \emph{global} contextual dependencies,
-which has shown to be useful for semantic segmentation
-tasks~\cite{Singh2013,Gatta14-deepvision}.
-%Thus, they often require a Conditional Random Field (CRF) as
-%post-processing step to exploit distant contextual dependencies.
-These models often employ Conditional Random Fields (CRFs) as a
-post-processing step to locally smooth the model predictions, however the
-long-range contextual dependencies remain relatively unexploited.
-
-Recurrent Neural Networks (RNN) have been introduced in the literature to
-retrieve global spatial dependencies and further improve semantic
-segmentation~\cite{Pinheiro:2014, Gatta14-deepvision, chen2015semantic,
-byeon2015scene}. However, training spatially recurrent neural networks tends to
-be computationally intensive.
-%The literature on this subject shows that some effort has been devoted to
-%mitigate this problem~\cite{visin2015renet,stollenga2015parallel}.
-
-In this paper, we aim at the {\em efficient} application of Recurrent Neural
-Networks RNN to retrieve contextual information from images. We propose to
-extend the ReNet architecture~\cite{visin2015renet}, originally designed for
-image classification, to deal with the more ambitious task of semantic
-segmentation. ReNet layers can efficiently capture contextual dependencies from
-images by first sweeping the image horizontally, and then sweeping the output
-of hidden states vertically.  The output of a ReNet layer is therefore
-implicitly encoding the local features at each pixel position with respect to
-the whole input image, providing relevant global information. Moreover, in
-order to {\em fully} exploit local and global pixel dependencies, we stack the
-ReNet layers on top of the output of a FCN, i.e. the intermediate convolutional
-output of VGG-16~\cite{Simonyan2015}, to benefit from generic local features.
-We validate our method on Weizmann~Horse and Oxford~Flower
-foreground/background segmentation datasets as a proof of concept for the
-proposed architecture.  Then, we evaluate the performance in the standard
-benchmark of urban scenes CamVid; achieving state-of-the-art in all three
-datasets.~\footnote{Subsequent but independent
-work~\cite{DBLP:journals/corr/YanZJBY16} investigated the combination of ReSeg
-with Fully Convolutional Network (FCN) and CRFs, reporting state of the art
-results on Pascal VOC.}
-
 %-------------------------------------------------------------------------
 
 \section{Related Work}
-
-%% CNN for semantic segmentation
-Methods based on FCN tackle the information recovery (upsampling) problem in a
-large variety of ways. For instance, Eigen et al.~\cite{Eigen2015} introduce a
-multi-scale architecture, which extracts coarse predictions, which are then
-refined using finer scales. Farabet et al.~\cite{Farabet:2013} introduce a
-multi-scale CNN architecture; Hariharan et al.~\cite{Hariharan2015} combine the
-information distributed over all layers to make accurate predictions. Other
-methods such as~\cite{long2014fully,badrinarayanan2015segnet} use simple
-bilinear interpolation to upsample the feature maps of increasingly abstract
-layers. More sophisticated upsampling methods, such as
-unpooling~\cite{badrinarayanan2015segnet,noh2015learning} or
-deconvolution~\cite{long2014fully}, are introduced in the literature. Finally,
-\cite{Ronneberger2015} concatenate the feature maps of the downsampling layers
-with the feature maps of the upsampling layers to help recover finer
-information.
 
 %% What we propose
 RNN and RNN-like models have become increasingly popular in the semantic
