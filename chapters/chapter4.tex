@@ -34,17 +34,27 @@ lateral connections built in the model, ReSeg is able to capture the
 \emph{global} scene depicted in the image and exploit it to perform fine,
 high resolution, semantic segmentation focusing on \emph{local} details.
 
-The following sections motivate the model in the context of the state of the
-art at the time it was conceived, describe the ReNet model in detail and
-present the results of its evaluation on three widely-used object recognition
-benchmarks, namely  MNIST~\citep{Lecun99objectrecognition},
-CIFAR-10~\citep{KrizhevskyHinton2009} and SVHN~\citep{Netzer-wkshp-2011}. The
-experiments reveal that the ReNet model performs comparably to convolutional
-neural networks on all these datasets, suggesting the potential of RNNs as a
-competitive alternative to the conventional deep convolutional neural networks
-for image related tasks.
+This work extends the preliminary results of~\cite{visin2015renet} modifying
+and extending the ReNet model to the more ambitious task of object
+segmentation. \autoref{sec:reseg_rationale} motivates the model in the context
+of the state of the art at the time it was conceived, \autoref{sec:reseg_model}
+describe the ReSeg model in detail and \autoref{sec:reseg_experiments} presents
+the performances of the model in the object segmentation domain on some of the
+historically most used datasets in this field, namely the
+Weizmann~Horse~dataset~\cite{Borenstein04combiningtop-down}, the
+Oxford~Flowers~17 dataset~\cite{Nilsback06} and the more recent and challenging
+Camvid dataset~\citep{Brostow2010semantic,BrostowECCV08}.
 
-\section{Rationale}
+The experiments show that the proposed adaptation of the ReNet for pixel-level
+object segmentation performs successfully on the object segmentation task.
+Furthermore, the proposed architectures could be easily merged into a joint
+network to perform both tasks at the same time, sharing most of the
+computation. This could be interesting in application domains where object
+classification and segmentation have to be performed simultaneously, such as,
+e.g., autonomous driving and object retrieval.
+
+
+\section{Rationale}\label{sec:reseg_rationale}
 
 In recent years, Convolutional Neural Networks (CNN) have become the {\em de
 facto} standard in many computer vision tasks, such as image classification and
@@ -99,19 +109,19 @@ retrieve global spatial dependencies with the goal to improve semantic
 segmentation~\cite{Pinheiro:2014, Gatta14-deepvision, chen2015semantic,
 byeon2015scene}. However, training spatially recurrent neural networks
 typically tends to be computationally intensive.
-%The literature on this subject shows that some effort has been devoted to
-%mitigate this problem~\cite{visin2015renet,stollenga2015parallel}.
 
 ReSeg aims at an {\em efficient} application of Recurrent Neural
-Networks RNN to retrieve contextual information from images. We propose to
-extend the ReNet architecture~\cite{visin2015renet}, originally designed for
-image classification, to deal with the more ambitious task of semantic
-segmentation. ReNet layers can efficiently capture contextual dependencies from
-images by first sweeping the image horizontally, and then sweeping the output
-of hidden states vertically.  The output of a ReNet layer is therefore
-implicitly encoding the local features at each pixel position with respect to
-the whole input image, providing relevant global information. Moreover, in
-order to {\em fully} exploit local and global pixel dependencies, we stack the
+Networks RNN to retrieve contextual information from images. The goal of this
+model is to extend the ReNet architecture~\cite{visin2015renet}, originally
+designed for image classification, to deal with the more ambitious task of
+semantic segmentation. ReNet layers can efficiently capture contextual
+dependencies from images by first sweeping the image horizontally, and then
+sweeping the output of hidden states vertically. The output of a ReNet layer
+is therefore implicitly encoding the local features at each pixel position with
+respect to the whole input image, providing relevant global information.
+
+Moreover, in order to {\em fully} exploit local and global pixel dependencies,
+we stack the
 ReNet layers on top of the output of a FCN, i.e. the intermediate convolutional
 output of VGG-16~\cite{Simonyan2015}, to benefit from generic local features.
 We validate our method on Weizmann~Horse and Oxford~Flower
@@ -170,23 +180,8 @@ even more easily parallelizable, as each RNN is dependent only along a horizonta
 vertical sequence of pixels; i.e., all rows/columns of pixels can be processed
 at the same time.
 
-%In this work we extend the preliminary results of~\cite{visin2015renet} modifying
-%and extending the ReNet model to the more ambitious task of object segmentation.
-%We test the performances of the model in the object segmentation domain on one
-%of the historically most used datasets in this field, the
-%Weizmann~Horse~dataset~\cite{Borenstein04combiningtop-down}, the
-%Oxford~Flowers~17~dataset~\cite{Nilsback06}  and the more recent
-%Fashionista~dataset~\cite{Fashionista}.
-%
-%Our experiments show that the proposed adaptation of the ReNet for pixel-level
-%object segmentation can perform successfully on the object segmentation task. The proposed
-%architecture can be easily merged into a joint network to perform both tasks at
-%the same time, sharing most of the computation.  This could be interesting in
-%application domains where object classification and segmentation have to be
-%performed simultaneously, such as, autonomous driving and object retrieval.
-
 %-------------------------------------------------------------------------
-\section{Model Description}
+\section{Model Description}\label{sec:reseg_model}
 
 The proposed ReSeg model builds on top of ReNet~\cite{visin2015renet} and
 extends it to address the task of semantic segmentation. The model
@@ -355,7 +350,7 @@ popular libraries for neural networks. For an in-depth and comprehensive
 analysis of each alternative, we refer the interested reader
 to~\cite{dumoulin2016guide}.
 
-\section{Experiments}\label{sec:Experiments}
+\section{Experiments}\label{sec:reseg_experiments}
 
 \subsection{Datasets}
 We evaluated the proposed ReSeg architecture on several benchmark datasets.
