@@ -1,6 +1,5 @@
 \chapter{ReSeg}\label{sec:reseg}
 
-\section{Introduction}\label{sec:reseg_intro}
 \autoref{sec:renet} introduced the ReNet model, a Recurrent Neural Network
 based model for object recognition. The ReNet model scans the image
 horizontally and vertically with $4$ RNNs at each layer and is able to capture
@@ -39,7 +38,7 @@ and extending the ReNet model to the more ambitious task of object
 segmentation. \autoref{sec:reseg_rationale} motivates the model in the context
 of the state of the art at the time it was conceived, \autoref{sec:reseg_model}
 describe the ReSeg model in detail and \autoref{sec:reseg_experiments} presents
-the performances of the model in the object segmentation domain on some of the
+the performance of the model in the object segmentation domain on some of the
 historically most used datasets in this field, namely the
 Weizmann~Horse~dataset~\cite{Borenstein04combiningtop-down}, the
 Oxford~Flowers~17 dataset~\cite{Nilsback06} and the more recent and challenging
@@ -103,22 +102,23 @@ and have been particularly successful in natural language
 processing~\citep[see, e.g.,][]{Mikolov-thesis-2012,Sutskever-et-al-NIPS2014,
 Cho2014}, handwriting recognition and generation~\citep{Graves+Schmidhuber-2009,
 Graves-et-al-NIPS2007,Graves-arxiv2013} and speech recognition~\citep{
-Chorowski-et-al-arxiv2014,Graves+Jaitly-ICML2014},
-but only recently have been introduced in the computer vision literature to
-retrieve global spatial dependencies with the goal to improve semantic
+Chorowski-et-al-arxiv2014,Graves+Jaitly-ICML2014}, but only recently have been
+introduced in the computer vision literature to retrieve global spatial
+dependencies with the goal to improve semantic
 segmentation~\cite{Pinheiro:2014, Gatta14-deepvision, chen2015semantic,
 byeon2015scene}. However, training spatially recurrent neural networks
 typically tends to be computationally intensive.
 
-ReSeg aims at an {\em efficient} application of Recurrent Neural
-Networks RNN to retrieve contextual information from images. The goal of this
-model is to extend the ReNet architecture~\cite{visin2015renet}, originally
-designed for image classification, to deal with the more ambitious task of
-semantic segmentation. ReNet layers can efficiently capture contextual
-dependencies from images by first sweeping the image horizontally, and then
-sweeping the output of hidden states vertically. The output of a ReNet layer
-is therefore implicitly encoding the local features at each pixel position with
-respect to the whole input image, providing relevant global information.
+ReSeg aims to an {\em efficient} application of Recurrent Neural Networks RNN
+to retrieve contextual information from images. The goal of this model is to
+extend the ReNet architecture~\cite{visin2015renet}, originally designed for
+image classification, to deal with the more ambitious task of semantic
+segmentation. As explained in~\autoref{sec:renet_model} the ReNet layers can
+efficiently capture contextual dependencies from images by first sweeping the
+image horizontally, and then sweeping vertically the feature maps produced by
+the horizontal processing. The output of a ReNet layer is therefore implicitly
+encoding the local features at each pixel position with respect to the whole
+input image, providing relevant global information.
 
 Moreover, in order to {\em fully} exploit local and global pixel dependencies,
 we stack the
