@@ -57,10 +57,10 @@ computation. This could be interesting in application domains where object
 classification and segmentation have to be performed simultaneously, such as,
 e.g., autonomous driving and object retrieval.
 
-\autoref{sec:reseg_rationale} motivates the model in the context
-of the state of the art at the time it was conceived, \autoref{sec:reseg_model}
-describe the ReSeg model in detail and \autoref{sec:reseg_experiments} presents
-the
+In the following of this chapter, \autoref{sec:reseg_rationale} motivates the
+model in the context of the state of the art at the time it was conceived,
+\autoref{sec:reseg_model} describe the ReSeg model in detail and
+\autoref{sec:reseg_experiments} presents the results of the experiments.
 
 
 
@@ -108,38 +108,56 @@ often employ Conditional Random Fields (CRFs) as a post-processing step to
 locally smooth the model predictions, but how to tackle long-range contextual
 dependencies remain relatively unexploited.
 
+%% What we propose
 Recurrent Neural Networks (RNN) have been used in a variety of tasks for years
 and have been particularly successful in natural language
 processing~\citep[see, e.g.,][]{Mikolov-thesis-2012,Sutskever-et-al-NIPS2014,
 Cho2014}, handwriting recognition and generation~\citep{Graves+Schmidhuber-2009,
 Graves-et-al-NIPS2007,Graves-arxiv2013} and speech recognition~\citep{
-Chorowski-et-al-arxiv2014,Graves+Jaitly-ICML2014}, but only recently have been
-introduced in the computer vision literature to retrieve global spatial
-dependencies with the goal to improve semantic
-segmentation~\cite{Pinheiro:2014, Gatta14-deepvision, chen2015semantic,
-byeon2015scene}. However, training spatially recurrent neural networks
-typically tends to be computationally intensive.
+Chorowski-et-al-arxiv2014,Graves+Jaitly-ICML2014}. Only recently RNN and
+RNN-like models have become popular in the semantic segmentation literature to
+capture long distance pixel dependencies with the goal to improve semantic
+segmentation~\cite{Pinheiro:2014,Gatta14-deepvision,chen2015semantic,
+byeon2015scene,stollenga2015parallel}.
 
-The proposed ReSeg model aims to an {\em efficient} application of Recurrent
-Neural Networks RNN to retrieve contextual information from images. The goal of
-this model is to extend the ReNet architecture~\cite{visin2015renet},
-originally designed for image classification, to deal with the more ambitious
-task of semantic segmentation. As explained in~\autoref{sec:renet_model} the
-ReNet layers can efficiently capture contextual dependencies from images by
-first sweeping the image horizontally, and then sweeping vertically the feature
-maps produced by the horizontal processing. The output of a ReNet layer is
-therefore implicitly encoding the local features at each pixel position with
-respect to the whole input image, providing a rich feature map of local
-features conditioned on global information.
+For instance, in~\cite{Pinheiro:2014, Gatta14-deepvision}, CNN are unrolled
+through different time steps to include semantic feedback connections.
+In~\cite{byeon2015scene}, 2-dimensional Long Short Term Memory (LSTM), which
+consist of 4 LSTM blocks scanning all directions of an image (left-bottom,
+left-top, right-top, right-bottom), are introduced to learn long range spatial
+dependencies. Following a similar direction, in~\cite{stollenga2015parallel},
+multi-dimensional LSTM are swept along different image directions; however, in
+this case, computations are re-arranged in a pyramidal fashion for efficiency
+reasons. Finally, in~\cite{visin2015renet}, ReNet is proposed to model pixel
+dependencies in the context of image classification. It is worth noting that
+an important consequence of the adoption of the ReNet spatial sequences is
+that they are even more easily parallelizable, as each RNN is dependent only
+along a horizontal or vertical sequence of pixels; i.e., all rows/columns of
+pixels can be processed at the same time.
 
-%Moreover, in order to fully exploit local and global pixel dependencies,
+The proposed ReSeg model, that is the subject of this chapter, aims to an {\em
+efficient} application of Recurrent Neural Networks RNN to retrieve contextual
+information from images. The goal of this model is to extend the ReNet
+architecture~\cite{visin2015renet}, originally designed for image
+classification, to deal with the more ambitious task of semantic segmentation.
 
-To decrease the training time and benefit from generic local features, the
-input is first preprocessed by a FCN, i.e. the intermediate convolutional
-output of VGG-16~\cite{Simonyan2015}. Multiple ReNet layers work on this
-generic feature map to extract meaningful local and global pixel dependencies
-and finally a transposed convolutional layer is trained to upsample the
-intermediate feature map back to the original image size.
+As explained in~\autoref{sec:renet_model} the ReNet layers can efficiently
+capture contextual dependencies from images by first sweeping the image
+horizontally, and then sweeping vertically the feature maps produced by the
+horizontal processing. The output of a ReNet layer is therefore implicitly
+encoding the local features at each pixel position with respect to the whole
+input image, providing a rich feature map of local features conditioned on
+global information. The intuition behind the proposed ReSeg model is that this
+can be exploited for more fine detailed tasks than the object recognition
+originally proposed in ReNet, such as to address the pixel-level task of
+semantic segmentation.
+
+In the ReSeg model, to decrease the training time and benefit from generic
+local features, the input is first preprocessed by a FCN, i.e. the intermediate
+convolutional output of VGG-16~\cite{Simonyan2015}. Multiple ReNet layers then
+work on this generic feature map to extract meaningful local and global pixel
+dependencies and finally a transposed convolutional layer is trained to
+upsample the intermediate feature map back to the original image size.
 
 We propose a structured prediction architecture, which exploits the local
 generic features extracted by Convolutional Neural Networks and the capacity of
@@ -163,30 +181,6 @@ hyperparameters are available on
 % to segment images for images centered around deep
 %recurrent neural networks.
 %, noting that the avoidance of pooling can greatly simplify pixel-wise tasks for images.
-
-%-------------------------------------------------------------------------
-
-\section{Related Work}
-
-%% What we propose
-RNN and RNN-like models have become increasingly popular in the semantic
-segmentation literature to capture long distance pixel
-dependencies~\cite{Pinheiro:2014, Gatta14-deepvision,
-byeon2015scene,stollenga2015parallel}. For instance, in~\cite{Pinheiro:2014,
-Gatta14-deepvision}, CNN are unrolled through different time steps to include
-semantic feedback connections. In~\cite{byeon2015scene}, 2-dimensional Long
-Short Term Memory (LSTM), which consist of 4 LSTM blocks
-scanning all directions of an image (left-bottom, left-top, right-top, right-bottom),
-are introduced to learn long range spatial dependencies. Following a similar direction,
-in~\cite{stollenga2015parallel}, multi-dimensional LSTM are swept along
-different image directions; however, in this case, computations are re-arranged
-in a pyramidal fashion for efficiency reasons. Finally,
-in~\cite{visin2015renet}, ReNet is proposed to model pixel dependencies in the
-context of image classification. It is worth noting that one important
-consequence of the adoption of the ReNet spatial sequences is that they are
-even more easily parallelizable, as each RNN is dependent only along a horizontal or
-vertical sequence of pixels; i.e., all rows/columns of pixels can be processed
-at the same time.
 
 %-------------------------------------------------------------------------
 \section{Model Description}\label{sec:reseg_model}
