@@ -35,22 +35,33 @@ high resolution, semantic segmentation focusing on \emph{local} details.
 
 This work extends the preliminary results of~\cite{visin2015renet} modifying
 and extending the ReNet model to the more ambitious task of object
-segmentation. \autoref{sec:reseg_rationale} motivates the model in the context
-of the state of the art at the time it was conceived, \autoref{sec:reseg_model}
-describe the ReSeg model in detail and \autoref{sec:reseg_experiments} presents
-the performance of the model in the object segmentation domain on some of the
-historically most used datasets in this field, namely the
-Weizmann~Horse~dataset~\cite{Borenstein04combiningtop-down}, the
-Oxford~Flowers~17 dataset~\cite{Nilsback06} and the more recent and challenging
-Camvid dataset~\citep{Brostow2010semantic,BrostowECCV08}.
+segmentation. The performance of the proposed model are tested on some of the
+historically most used datasets in this field, namely the Weizmann~Horse
+dataset~\cite{Borenstein04combiningtop-down}, the Oxford~Flowers~17
+dataset~\cite{Nilsback06} and the more recent and challenging Camvid
+dataset~\citep{Brostow2010semantic,BrostowECCV08}. The first two are
+tackled in a foreground/background segmentation setting as a proof of concept
+for the proposed ReSeg architecture. The performance of the model is then
+tested on the full segmentation task on Camvid, a standard benchmark of urban
+scenes.
 
 The experiments show that the proposed adaptation of the ReNet for pixel-level
-object segmentation performs successfully on the object segmentation task.
-Furthermore, the proposed architectures could be easily merged into a joint
-network to perform both tasks at the same time, sharing most of the
+object segmentation performs successfully on the object segmentation task
+achieving state-of-the-art in all three datasets.~\footnote{
+    Subsequent but independent work~\cite{DBLP:journals/corr/YanZJBY16} further
+    confirmed the effectiveness of ReSeg, combining a variation of it with CRFs
+    and reporting state of the art results on Pascal VOC~\cite{Everingham15}.}
+Furthermore, the ReNet and ReSeg architectures could be easily merged into a
+joint network to perform both tasks at the same time, sharing most of the
 computation. This could be interesting in application domains where object
 classification and segmentation have to be performed simultaneously, such as,
 e.g., autonomous driving and object retrieval.
+
+\autoref{sec:reseg_rationale} motivates the model in the context
+of the state of the art at the time it was conceived, \autoref{sec:reseg_model}
+describe the ReSeg model in detail and \autoref{sec:reseg_experiments} presents
+the
+
 
 
 \section{Rationale}\label{sec:reseg_rationale}
@@ -85,9 +96,9 @@ as~\cite{long2014fully,badrinarayanan2015segnet} use simple bilinear
 interpolation to upsample the feature maps of increasingly abstract layers and
 \cite{Ronneberger2015} concatenate the feature maps of the downsampling layers
 with the feature maps of the upsampling layers to help recover finer
-information. Furthermore, more sophisticated upsampling methods, such as
+information. Finally, more sophisticated upsampling methods, such as
 unpooling~\cite{noh2015learning,badrinarayanan2015segnet} or
-deconvolution~\cite{long2014fully} are well established in the literature.
+deconvolution~\cite{long2014fully} are now well established in the literature.
 
 One common issue of all these methods is that they are not specifically
 designed to take into account and preserve both \emph{local} and \emph{global}
@@ -109,29 +120,26 @@ segmentation~\cite{Pinheiro:2014, Gatta14-deepvision, chen2015semantic,
 byeon2015scene}. However, training spatially recurrent neural networks
 typically tends to be computationally intensive.
 
-ReSeg aims to an {\em efficient} application of Recurrent Neural Networks RNN
-to retrieve contextual information from images. The goal of this model is to
-extend the ReNet architecture~\cite{visin2015renet}, originally designed for
-image classification, to deal with the more ambitious task of semantic
-segmentation. As explained in~\autoref{sec:renet_model} the ReNet layers can
-efficiently capture contextual dependencies from images by first sweeping the
-image horizontally, and then sweeping vertically the feature maps produced by
-the horizontal processing. The output of a ReNet layer is therefore implicitly
-encoding the local features at each pixel position with respect to the whole
-input image, providing relevant global information.
+The proposed ReSeg model aims to an {\em efficient} application of Recurrent
+Neural Networks RNN to retrieve contextual information from images. The goal of
+this model is to extend the ReNet architecture~\cite{visin2015renet},
+originally designed for image classification, to deal with the more ambitious
+task of semantic segmentation. As explained in~\autoref{sec:renet_model} the
+ReNet layers can efficiently capture contextual dependencies from images by
+first sweeping the image horizontally, and then sweeping vertically the feature
+maps produced by the horizontal processing. The output of a ReNet layer is
+therefore implicitly encoding the local features at each pixel position with
+respect to the whole input image, providing a rich feature map of local
+features conditioned on global information.
 
-Moreover, in order to {\em fully} exploit local and global pixel dependencies,
-we stack the
-ReNet layers on top of the output of a FCN, i.e. the intermediate convolutional
-output of VGG-16~\cite{Simonyan2015}, to benefit from generic local features.
-We validate our method on Weizmann~Horse and Oxford~Flower
-foreground/background segmentation datasets as a proof of concept for the
-proposed architecture.  Then, we evaluate the performance in the standard
-benchmark of urban scenes CamVid; achieving state-of-the-art in all three
-datasets.~\footnote{Subsequent but independent
-work~\cite{DBLP:journals/corr/YanZJBY16} investigated the combination of ReSeg
-with Fully Convolutional Network (FCN) and CRFs, reporting state of the art
-results on Pascal VOC.}
+%Moreover, in order to fully exploit local and global pixel dependencies,
+
+To decrease the training time and benefit from generic local features, the
+input is first preprocessed by a FCN, i.e. the intermediate convolutional
+output of VGG-16~\cite{Simonyan2015}. Multiple ReNet layers work on this
+generic feature map to extract meaningful local and global pixel dependencies
+and finally a transposed convolutional layer is trained to upsample the
+intermediate feature map back to the original image size.
 
 We propose a structured prediction architecture, which exploits the local
 generic features extracted by Convolutional Neural Networks and the capacity of
