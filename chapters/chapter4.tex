@@ -332,18 +332,19 @@ nothing prevents from using different kinds of RNN layers.
 
 \subsection{Upsampling layer}\label{sec:upsampling}
 Since by design each recurrent layer processes non-overlapping patches, the
-size of the last composite feature map will be smaller than the size of the
+size of the last composite feature map is smaller than the size of the
 initial input $\mathbf{X}$, whenever the patch size is greater than one. To be
 able to compute a segmentation mask at the same resolution as the ground truth,
-the prediction should be expanded back before applying the softmax non-linearity.
+the prediction has to be expanded back before applying the softmax
+non-linearity.
 
 Several different methods can be used to this end, e.g., fully connected
 layers, full convolutions and transposed convolutions. The first is not a good
 candidate in this domain as it does not take into account the topology of the
 input, which is essential for this task; the second is not optimal either, as
-it would require large kernels and stride sizes to upsample by the
-required factor. Transposed convolutions are both memory and
-computation efficient, and are the ideal method to tackle this problem.
+it would require large kernels and stride sizes to upsample by the required
+factor. Transposed convolutions are both memory and computation efficient, and
+are the ideal method to tackle this problem.
 
 Transposed convolutions -- also known as \emph{fractionally strided
 convolutions} -- have been employed in many works in recent
@@ -360,8 +361,9 @@ with respect to the original direct convolution. A very efficient implementation
 this operation can be obtained exploiting the gradient operation of the
 convolution -- whose optimized implementation can be found in many of the most
 popular libraries for neural networks. For an in-depth and comprehensive
-analysis of each alternative, we refer the interested reader
-to~\cite{dumoulin2016guide}.
+analysis of each alternative,
+%we refer the interested reader to~\cite{dumoulin2016guide}.
+see~\autoref{sec:transposed_conv}.
 
 \section{Experiments}\label{sec:reseg_experiments}
 
