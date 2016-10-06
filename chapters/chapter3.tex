@@ -556,14 +556,14 @@ confirms that the model utilizes long-term dependencies across an input image,
 and the gated recurrent units help capture these dependencies.
 
 \paragraph{Analysis of the Trained ReNet}
-In this paper, we evaluated the proposed ReNet only quantitatively. However, the
+The ReNet model has been only evaluated in a quantitative fashion. However, the
 accuracies on the test sets do not reveal what kind of image structures the
 ReNet has captured in order to perform object recognition. Due to the large
-differences between ReNet and LeNet discussed in
-Sec.~\ref{sec:lenetrenet}, we expect that the internal behavior of ReNet
-will differ from that of LeNet significantly. Further investigation along
-the line of \citep{ZeilerFergus14} will be needed, as well exploring ensembles
-which combine RNNs and CNNs for bagged prediction.
+differences between ReNet and LeNet discussed in Sec.~\ref{sec:lenetrenet}, it
+can be expected that the internal behavior of ReNet will differ from that of
+LeNet significantly. Further investigation along the line of
+\citep{ZeilerFergus14} is needed, as well as exploring ensembles that combine
+RNNs and CNNs for bagged prediction.
 
 \paragraph{Computationally Efficient Implementation}
 As discussed in Sec.~\ref{sec:lenetrenet}, the proposed ReNet is less
@@ -571,10 +571,11 @@ parallelizable due to the sequential nature of the recurrent neural network
 (RNN). Although this sequential nature cannot be addressed directly, our
 construction of ReNet allows the forward and backward RNNs to be run
 independently from each other, which allows for parallel computation.
-Furthermore, we can use many parallelization tricks widely used for training
-convolutional neural networks such as parallelizing fully-connected layers
-~\citep{krizhevsky2014one}, having separate sets of kernels/features in
-different processors~\citep{Krizhevsky-2012} and exploiting data parallelism.
+Furthermore, it is possible to exploit the many parallelization tricks widely
+used for training convolutional neural networks such as parallelizing
+fully-connected layers ~\citep{krizhevsky2014one}, having separate sets of
+kernels/features in different processors~\citep{Krizhevsky-2012} and exploiting
+data parallelism.
 
 
 % \begin{table}[h]
