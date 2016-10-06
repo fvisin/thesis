@@ -107,7 +107,7 @@ contextual dependencies, which have shown to be useful for semantic
 segmentation tasks~\cite{Singh2013,Gatta14-deepvision}. Rather, these models
 often employ Conditional Random Fields (CRFs) as a post-processing step to
 locally smooth the model predictions, but how to tackle long-range contextual
-dependencies remain relatively unexploited.
+dependencies remains relatively unexplored.
 
 %% What we propose
 Recurrent Neural Networks (RNN) have been used in a variety of tasks for years
@@ -136,7 +136,7 @@ that they are even more easily parallelizable, as each RNN is dependent only
 along a horizontal or vertical sequence of pixels; i.e., all rows/columns of
 pixels can be processed at the same time.
 
-The proposed ReSeg model, that is the subject of this chapter, aims to an {\em
+The ReSeg model, that is the subject of this chapter, aims to an {\em
 efficient} application of Recurrent Neural Networks RNN to retrieve contextual
 information from images. The goal of this model is to extend the ReNet
 architecture~\cite{visin2015renet}, originally designed for image
@@ -157,22 +157,23 @@ To decrease the training time and benefit from generic local features, the
 ReSeg model first preprocesses the input with a FCN, i.e. the intermediate
 convolutional output of VGG-16~\cite{Simonyan2015}. Multiple ReNet layers then
 work on this generic feature map to extract meaningful local and global pixel
-dependencies. Each ReNet layer is composed of four RNN that sweep the image
-horizontally and vertically in both directions, encoding patches or
-activations, and providing relevant global information. The resulting
-structured prediction architecture exploits the local generic features
-extracted by the CNNs and the ability of RNNs to retrieve distant dependencies
-to produce a rich encoding of the input. Finally, one or more transposed
-convolutional layer are stacked on top of the ReNet layers to upsample the
-intermediate feature maps back to the image size, in order to allow predictions
-at the pixel level.
+dependencies.
+% Each ReNet layer is composed of four RNN that sweep the image
+% horizontally and vertically in both directions, encoding patches or
+% activations, and providing relevant global information.
+The resulting structured prediction architecture exploits the local generic
+features extracted by the CNNs and the ability of RNNs to retrieve distant
+dependencies to produce a rich encoding of the input. Finally, one or more
+transposed convolutional layer are stacked on top of the ReNet layers to
+upsample the intermediate feature maps back to the image size, in order to
+allow predictions at the pixel level.
 
-The proposed ReSeg architecture is efficient, flexible and suitable for a
-variety of pixel-level, fine grained tasks, e.g., detecting road signs, cars,
-pedestrians, in autonomous navigation settings; detecting tumors in fMRI scans
-or surgical videos; guide autonomous surgical robots by detecting medical
-instruments in operations; detect faces and other parts of the human body for
-end users applications such as interactive games or camera autofocus.
+The ReSeg architecture is efficient, flexible and suitable for a variety of
+pixel-level, fine grained tasks, e.g., detecting road signs, cars, pedestrians,
+in autonomous navigation settings; detecting tumors in fMRI scans or surgical
+videos; guide autonomous surgical robots by detecting medical instruments in
+operations; detect faces and other parts of the human body for end users
+applications such as interactive games or camera autofocus.
 %The model is evaluated on the semantic segmentation tasks on several
 %widely-used datasets: Weizmann~Horse, Oxford~Flower, and CamVid; achieving
 %state-of-the-art performance in all of them.
@@ -181,34 +182,30 @@ end users applications such as interactive games or camera autofocus.
 The source code and model hyperparameters are available on
 \href{https://github.com/fvisin/reseg}{https://github.com/fvisin/reseg}.
 
+
 %-------------------------------------------------------------------------
 \section{Model Description}\label{sec:reseg_model}
 
-The proposed ReSeg model builds on top of ReNet~\cite{visin2015renet} and
-extends it to address the task of semantic segmentation. The model
-pipeline involves multiple stages.
+The architecture of the ReSeg model, motivated in~\autoref{%
+sec:reseg_rationale}, will be described in detail in this section.
 
-First, the input image is processed with the first layers of
-VGG-16~\cite{Simonyan2015} network, pre-trained on
-ImageNet~\cite{imagenet_cvpr09} and not fine-tuned, and is set such that the
-image resolution does not become too small. The resulting feature maps are then
-fed into one or more \emph{ReNet layers} that sweep over the image. Finally,
-one or more \emph{upsampling layers} are employed to resize the last feature
-maps to the same resolution as the input and a softmax non-linearity is applied
-to predict the probability distribution over the classes for each pixel.
+ReSeg builds on top of ReNet~\cite{visin2015renet} and extends it to address
+the task of semantic segmentation.  The model pipeline involves multiple
+stages. First, the input image is processed with the VGG-16~\cite{Simonyan2015}
+network, pre-trained on ImageNet~\cite{imagenet_cvpr09} and not further
+fine-tuned. By design, only the first layers of VGG-16 have been used to
+prevent the resolution of the intermediate feature maps to become too small.
+The result of this preprocessing is then fed into one or more \emph{ReNet
+layers} that sweep over the image horizontally and vertically. Finally, one or
+more \emph{upsampling layers} are employed to resize the last feature maps to
+the same resolution as the input and a softmax non-linearity is applied to
+predict the probability distribution over the classes for each pixel.
 
-The recurrent layer is the core of our architecture and is composed by multiple
-RNN that can be implemented as a vanilla $\tanh$ RNN layer, a Gated Recurrent
-Unit~(GRU)~layer~\cite{Cho2014} or a
-LSTM~layer~\cite{Hochreiter+Schmidhuber-1997}. Previous work has shown that
-the ReNet model can perform well with little concern for the specific recurrent
-unit used, therefore, we have chosen to use GRU units as they strike a good
-balance between memory usage and computational power.
+The following sections analyze in detail each component of the processing
+pipeline
 
-In the following section we will define the recurrent and the upsampling layers
-in more detail.
 
-\subsection{Recurrent layer}
+\subsection{ReNet layer}
 As depicted in~\autoref{fig:first_layer}, each recurrent layer is composed
 by 4 RNNs coupled together in such a way to capture the local and global
 spatial structure of the input data.
@@ -251,24 +248,26 @@ spatial structure of the input data.
 \end{figure}
 
 
-Specifically, we take as an input an image (or the feature map of the previous
-layer) $\mathbf{X}$ of elements $x \in \RR^{H \times W \times C}$, where $H$,
-$W$ and $C$ are respectively the height, width and number of channels (or
-features) and we split it into $I \times J$ patches $p_{i,j} \in \RR^{H_p
-\times W_p \times C}$. We then sweep %over each of its columns $X_{i,\Cdot}$ a
-vertically a first time with two RNNs $f^{\downarrow}$ and $f^{\uparrow}$,
-with $U$ recurrent units each, that move top-down and bottom-up respectively.
-Note that the processing of each column is independent and can be done in
-parallel.
+Specifically, the model takes as an input an image (or the feature map of the
+previous layer) $\mathbf{X}$ of elements $x \in \RR^{H \times W \times C}$,
+where $H$, $W$ and $C$ are respectively the height, width and number of
+channels (or features) and splits it into $I \times J$ patches $p_{i,j} \in
+\RR^{H_p \times W_p \times C}$. It then sweeps along each of its columns
+$p_{i,\cdot}$ vertically a first time with two RNNs $f^{\downarrow}$ and
+$f^{\uparrow}$, with $U$ recurrent units each, that move top-down and bottom-up
+respectively. Note that the processing of each column is independent and can be
+done in parallel. This is a very important performance difference of the ReSeg
+model w.r.t. to other architectures in the literature that enforce to handle
+the data in a more constrainedly sequential nature.
 
 \begin{figure*}[t]
     \advance\leftskip-0.2\textwidth
     \centering
     \makebox[\textwidth][c]{\includegraphics
     	[height=.135\textheight,width=\textwidth]{pdf/reseg_base.pdf}}
-    \caption{The ReSeg network. For space reasons we do not represent the
-        pretrained VGG-16 convolutional layers that we use to preprocess
-        the input to ReSeg. The first 2 RNNs (blue and green) are applied on
+    \caption{The ReSeg network. For space reasons the pretrained VGG-16
+        convolutional layers used to preprocess the input to ReSeg are
+        not represented. The first 2 RNNs (blue and green) are applied on
         2x2x3 patches of the image, their 16x16x256 feature maps are
         concatenated and fed as input to the next two RNNs (red and yellow)
         which read 1x1x512 patches and emit the output of the first ReNet
@@ -277,38 +276,42 @@ parallel.
     \label{fig:ReSeg}
 \end{figure*}
 
-At every time step each RNN reads the next non-overlapping patch
-$p_{i,j}$ and, based on its previous
-state, emits a projection $o_{i,j}^{\star}$ and updates its state
-$z_{i,j}^{\star}$:
+At every time step each RNN reads the next non-overlapping patch $p_{i,j}$ and,
+based on its previous state, emits a projection $o_{i,j}^{\star}$ and updates
+its state $z_{i,j}^{\star}$:
 \begin{align}
     o^{\downarrow}_{i,j} = f^{\downarrow}(z^{\downarrow}_{i-1,j},p_{i,j}),
         &\text{ for }i=1,\cdots, I\\
     o^{\uparrow}_{i,j} = f^{\uparrow}(z^{\uparrow}_{i+1,j},p_{i,j}),
         &\text{ for }i=I,\cdots,1
 \end{align}
-We stress that the decision to read non-overlapping patches is a modeling
-choice to increase the image scan speed and lower the memory usage, but is not
-a limitation of the architecture.
+It has to be stressed that the decision to read non-overlapping patches is a
+modeling choice to increase the image scan speed and lower the memory usage,
+but is not a limitation of the architecture.
 
-Once the first two vertical RNNs have processed the whole input $X$, we
-concatenate their projections $o^{\downarrow}_{i,j}$ and $o^{\uparrow}_{i,j}$
-to obtain a composite feature map $\mathbf{O^{\updownarrow}}$ whose elements
+Once the first two vertical RNNs have processed the whole input $X$, their
+projections $o^{\downarrow}_{i,j}$ and $o^{\uparrow}_{i,j}$ are concatenated to
+obtain a composite feature map $\mathbf{O^{\updownarrow}}$ whose elements
 $o^{\updownarrow}_{i,j} \in \RR^{2U}$ can be seen as the activation of a
 feature detector at the location $(i,j)$ with respect to all the patches in the
-$j$-th column of the input. We denote what we described so far as the
-\emph{vertical recurrent sublayer}.
+$j$-th column of the input. For simplicity, in the rest of this manuscript
+this part of the model will be referred to as \emph{vertical recurrent
+sublayer}.
 
-After obtaining the concatenated feature map $\mathbf{O^{\updownarrow}}$, we
-sweep over each of its rows with a pair of new RNNs, $f^{\rightarrow}$ and
-$f^{\leftarrow}$. We chose not to split $\mathbf{O^{\updownarrow}}$ into
-patches so that the second recurrent sublayer has the same granularity as the
-first one, but this is not a constraint of the model and different
-architectures can be explored.  With a similar but specular procedure as the
-one described before, we proceed reading one element $o^\updownarrow_{i,j}$ at
-each step, to obtain a concatenated feature map
+After obtaining the concatenated feature map $\mathbf{O^{\updownarrow}}$, the
+model sweeps over each of its rows with a pair of new RNNs $f^{\rightarrow}$ and
+$f^{\leftarrow}$. Each element of $\mathbf{O^{\updownarrow}}$ is processed
+individually, rather than grouping them into patches as was done in the vertical
+recurrent sublayer. This was chosen so that the second recurrent sublayer has
+the same spatial granularity as the first one, but this is not a constraint of
+the model and different architectures can be explored.
+
+With a similar but specular procedure as the one adopted for the first
+sublayer, the network reads one element of the intermediate feature map
+$o^\updownarrow_{i,j}$ at each step and emits two activations coming from two
+new RNNs that are concatenated into a unique feature map
 $\mathbf{O^\leftrightarrow}~=~\left\{ h^\leftrightarrow_{i,j} \right\}
-_{i=1\dots I}^{j=1\dots J}$, once again with $o^\leftrightarrow_{i,j} \in
+_{i=1\dots I}^{j=1\dots J}$, with $o^\leftrightarrow_{i,j} \in
 \RR^{2U}$. Each element $o^\leftrightarrow_{i,j}$ of this \emph{horizontal
 recurrent sublayer} represents the features of one of the input image patches
 $p_{i,j}$ \emph{with contextual information from the whole image}.
@@ -317,6 +320,15 @@ It is trivial to note that it is possible to concatenate many recurrent layers
 $\mathbf{O^{(1 \cdots L)}}$ one after the other and train them with any
 optimization algorithm that performs gradient descent, as the composite model
 is a smooth, continuous function.
+
+The recurrent layers that are the core of this architecture, can be either
+implemented as vanilla $\tanh$ RNN layers, Gated Recurrent Unit~(GRU)
+layers~\cite{Cho2014} or LSTM~layers~\cite{Hochreiter+Schmidhuber-1997}.
+Previous work has shown that the ReNet model can perform well with little
+concern for the specific recurrent unit used~\cite{visin2015renet}. The ReSeg
+model was tested choosing GRU units over alternative implementations, as
+they strike a good balance between memory usage and computational power, but
+nothing prevents from using different kinds of RNN layers.
 
 \subsection{Upsampling layer}\label{sec:upsampling}
 Since by design each recurrent layer processes non-overlapping patches, the
