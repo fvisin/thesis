@@ -25,13 +25,14 @@ between the object and the background sometimes (e.g., the leafs of a tree)
 % WRITE SOMETHING ABOUT HOW TACKLED HISTORICALLY
 
 This chapter introduces the second main contribution of this work. The ReSeg
-model builds on ReNet~(see~\autoref{sec:renet}) to tackle the task of semantic
-segmentation. The primary motivation behind ReSeg is to exploit the peculiar
-structure of ReNet in order to capture the underlying semantic of the input
-image and use it to drive the prediction in each location. Thanks to the strong
-lateral connections built in the model, ReSeg is able to capture the
-\emph{global} scene depicted in the image and exploit it to perform fine,
-high resolution, semantic segmentation focusing on \emph{local} details.
+model~\cite{Visin_2016_CVPR_Workshops} builds on
+ReNet~(see~\autoref{sec:renet}) to tackle the task of semantic segmentation.
+The primary motivation behind ReSeg is to exploit the peculiar structure of
+ReNet in order to capture the underlying semantic of the input image and use it
+to drive the prediction in each location. Thanks to the strong lateral
+connections built in the model, ReSeg is able to capture the \emph{global}
+scene depicted in the image and exploit it to perform fine, high resolution,
+semantic segmentation focusing on \emph{local} details.
 
 This work extends the preliminary results of~\cite{visin2015renet} modifying
 and extending the ReNet model to the more ambitious task of object
@@ -368,24 +369,25 @@ see~\autoref{sec:transposed_conv}.
 \section{Experiments}\label{sec:reseg_experiments}
 
 \subsection{Datasets}
-We evaluated the proposed ReSeg architecture on several benchmark datasets.
-We proceeded by first assessing the performances of the model on the Weizmann
-Horse and the Oxford Flowers datasets and then focused on the more challenging
-Camvid dataset. We will describe each dataset in detail in this section.
+The ReSeg architecture has been evaluated on several benchmark datasets. The
+model has been first tested on the easier case of background/foreground
+segmentation, where the algorithm is only requested to distinguish between the
+main subject in the scene and the rest of the image. These preliminary
+experiments were conducted on the Weizmann Horse and the Oxford Flowers
+datasets, to then focus on the full task of semantic segmentation on the more
+challenging Camvid dataset. The rest of this section proceeds as follows: each
+dataset is briefly introduced, the settings of each experiment are then
+outlined and finally the results are presented and discussed.
 
 \subsubsection{Weizmann Horse}
 The Weizmann Horse dataset, introduced in~\cite{Borenstein04combiningtop-down},
-is an image
-segmentation dataset consisting of 329 variable size images in both RGB and
-gray scale
-format, matched with an equal number of groundtruth segmentation images, of
-the same size as the corresponding image.
-The groundtruth segmentations contain a foreground/background mask of the
-focused horse, encoded as a real-value between 0 and 255. To convert this into
-a boolean mask, we threshold in the center of the range setting all smaller
-values to 0, and all greater values to 1.
-%This dataset is one of the primary
-%small-scale benchmarks found in existing image segmentation literature.
+is an image segmentation dataset consisting of 329 variable size images in both
+RGB and gray scale format, matched with an equal number of groundtruth
+segmentation images, of the same size as the corresponding image. The
+groundtruth segmentations contain a foreground/background mask of the focused
+horse, encoded as a real-value between 0 and 255. To convert this into a
+boolean mask, the data has been thresholded in the center of the range setting
+all smaller values to 0, and all greater values to 1.
 
 % \subsubsection{Fashionista}
 % The Fashionista dataset from ~\cite{Fashionista} contains 685 RGB images of
@@ -401,31 +403,31 @@ values to 0, and all greater values to 1.
 \subsubsection{Oxford Flowers 17}
 The Oxford Flowers 17 class dataset from~\cite{Nilsback06} contains 1363
 variable size RGB images, with 848 image segmentations maps associated with
-a subset of
-the RGB images. There are 8 unique segmentation classes defined over all maps,
-including flower, sky, and grass. To build a foreground/background mask,
-we take the original segmentation maps, and set any pixel not belonging to
-class 38 (flower class) to 0, and setting the flower class pixels to 1.
-This binary segmentation task for Oxford Flowers 17 is further described
-in~\cite{Xiaomeng14}.
+a subset of the RGB images. There are 8 unique segmentation classes defined
+over all maps, including flower, sky, and grass. To build a
+foreground/background mask, the original segmentation maps have been merged
+together setting any pixel not marked as class 38 (the flower class) to 0, and
+setting all the flower class pixels to 1. This binary segmentation task for
+Oxford Flowers 17 is described in detail in~\cite{Xiaomeng14}.
 %A larger 102 class Oxford Flowers dataset is available from the same authors.
 
 \subsubsection{CamVid Dataset}
-The Cambridge-driving Labeled Video Database
-(CamVid)~\cite{Brostow2010semantic} is a real-world dataset which consists of
-images recorded from a car with an internally mounted camera, capturing frames
-of $960 \times 720$ RGB pixels per frame, with a recording frame rate of 30
-frames per second. A total of ten minutes of video was recorded, and
-approximately one frame per second has been manually annotated with per pixel
-class labels, from one of 32 possible classes.  A small number of pixels were
-labelled as void in the original dataset. These do not belong to any of the 32
-classes prescribed in the original data, and are ignored during evaluation.  We
-used the same subset of 11 class categories as~\cite{badrinarayanan2015segnet}
-for experimental analysis.  The CamVid dataset itself is split into 367
-training, 101 validation and 233 test images, and in order to make our
-experimental setup fully comparable to~\cite{badrinarayanan2015segnet}, we
-downsampled all the images by a factor of 2 resulting in a final $480 \times
-360$ resolution.
+The Cambridge-driving Labeled Video Database (CamVid)~\cite{
+Brostow2010semantic} is a real-world dataset which consists of images recorded
+from a car with an internally mounted camera, capturing frames of $960 \times
+720$ RGB pixels per frame, with a recording frame rate of 30 frames per second.
+A total of ten minutes of video was recorded, and approximately one frame per
+second has been manually annotated with per pixel class labels, from one of 32
+possible classes. A small number of pixels were labelled as void in the
+original dataset. These do not belong to any of the 32 classes prescribed in
+the original data, and are ignored during evaluation. The CamVid dataset is
+split into 367 training, 101 validation and 233 test images for a total of 701
+images with corresponding annotations. The results presented in this section
+used the same subset of 11 class categories
+as~\cite{badrinarayanan2015segnet} and in order to make the experimental setup
+fully comparable to~\cite{badrinarayanan2015segnet}, were obtained downsampling
+all the images by a factor of 2 resulting in a final $480 \times 360$
+resolution.
 
 % \subsection{Preprocessing}\label{sec:data_preprocessing}
 % \subsubsection{Data Augmentation}

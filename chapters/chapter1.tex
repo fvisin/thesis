@@ -28,7 +28,7 @@ in the last decade the field experienced outstanding advancements and has been
 object of increasing interest. Machine Learning (ML) settled the state of art
 in many fields, such as e.g., image classification~\cite{Krizhevsky-2012,
 szegedy2016inception, visin2015renet}, semantic
-segmentation~\cite{chen2015semantic, visin15}, video
+segmentation~\cite{chen2015semantic, Visin_2016_CVPR_Workshops}, video
 understanding~\citep{srivastava2015unsupervised, Xu-et-al-arxiv2015}, natural
 language processing and machine translation~\citep{Bahdanau-et-al-arxiv2014}.
 Much of this research is already in commercial products we use every day, such
@@ -97,13 +97,13 @@ information on their position in the image can be exploited to allow very
 precise pixel-level Object Localization, which is essential to many
 applications and to a proper understanding of the image.
 
-ReSeg~\citep{visin15} takes advantage of the inner structure of the ReNet
-layers that, in contrast to classical convolutional models, allow to propagate
-the information through several layers of computation retaining the topological
-structure of the input. To speed up training the image is first preprocessed
-with a CNN pretrained on big datasets for object classification, to extract
-meaningful features and exploit the extra training data. Those rich features
-are then processed by several ReNet layers. This results though in an
+ReSeg~\citep{Visin_2016_CVPR_Workshops} takes advantage of the inner structure
+of the ReNet layers that, in contrast to classical convolutional models, allow
+to propagate the information through several layers of computation retaining
+the topological structure of the input. To speed up training the image is first
+preprocessed with a CNN pretrained on big datasets for object classification,
+to extract meaningful features and exploit the extra training data. Those rich
+features are then processed by several ReNet layers. This results though in an
 intermediate feature map that has a smaller resolution than the image. To be
 able to classify each pixel, the original resolution has to be recovered. To
 this aim, one or more transposed convolutional layers~\citep{dumoulin2016guide}
