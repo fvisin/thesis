@@ -475,55 +475,47 @@ truth and not the opposite, not to misrepresent the segmentation accuracy.
 This is not a problem for validation and test, as the images are not resized in
 those cases.
 
-\begin{table*}[t]
-    % HORSES
-    \begin{minipage}{0.45\textwidth}
-        \centering
-        \small{%
-            \begin{tabular}{c|c|c||c|c|c}
-                \multicolumn{1}{c}{Method} & \multicolumn{1}{c}{Global acc} & \multicolumn{1}{c}{\textbf{Avg IoU}}\\ \hline \hline
+% HORSES
+\begin{table}[t]
+    \centering{
+        \small
+        \begin{tabular}{l|c||c}
+            Method & Global & \textbf{Avg IoU}\\
 
-                All foreground baseline & 25.4 & 79.9 \\ \hline
-                All background baseline & 74.7 & 0.0 \\ \hline
-                Kernelized structural SVM \cite{bertelli2011kernelized} & 94.6 & 80.1 \\ \hline
-                ReSeg (no VGG) & 94.9 & 79.9 \\ \hline
-                CRF learning \cite{liu2015crf} & 95.7 & 84.0 \\ \hline
-                PatchCut \cite{yang2015patchcut} & 95.8 & 84.0 \\ \hline
-                \textbf{ReSeg} & 96.8 & \textbf{91.6} \\ \hline
+            All foreground baseline & 25.4 & 79.9 \\
+            All background baseline & 74.7 & 0.0 \\
+            Kernelized structural SVM \cite{bertelli2011kernelized} & 94.6 & 80.1 \\
+            ReSeg (no VGG) & 94.9 & 79.9 \\
+            CRF learning \cite{liu2015crf} & 95.7 & 84.0 \\
+            PatchCut \cite{yang2015patchcut} & 95.8 & 84.0 \\
+            \textbf{ReSeg} & 96.8 & \textbf{91.6} \\
+        \end{tabular}
+    }
+    \caption{Weizmann Horses. Per pixel accuracy and average IoU are reported.}
+    \label{tbl:WeizmannHorses_SOTA}
+\end{table}
 
-            \end{tabular}
-            \vspace*{0.1cm}
-        }
-        \caption{Weizmann Horses. Per pixel accuracy and IoU are
-            reported.}
-        \label{tbl:WeizmannHorses_SOTA}
-    \end{minipage}
-    \quad
-    % FLOWERS
-    \begin{minipage}{0.45\textwidth}
-        \centering
-        \small{%
-            \begin{tabular}{c|c|c||c|c|c}
-                \multicolumn{1}{c}{Method} & \multicolumn{1}{c}{Global acc} & \multicolumn{1}{c}{\textbf{Avg IoU}}\\ \hline \hline
+% FLOWERS
+\begin{table}[t]
+    \centering{
+    \small
+        \begin{tabular}{l|c||c}
+            Method & Global & \textbf{Avg IoU}\\
 
-                All background baseline & 71.0 & 0.0 \\ \hline
-                All foreground baseline & 29.0 & 29.2 \\ \hline
-                % \textbf{ReSeg (no VGG)} & 86.9 & \textbf{65.8} \\ \hline
-                GrabCut \cite{rother2004grabcut} & 95.9 & 89.3 \\ \hline
-                Tri-map \cite{Xiaomeng14} & 96.7 & 91.7 \\ \hline
-                \textbf{ReSeg} & 98 & \textbf{93.7} \\ \hline
-
-            \end{tabular}
-            \vspace*{0.1cm}
-        }
-        \caption{Oxford Flowers. Per pixel accuracy and IoU are
-            reported.}
-        \label{tbl:OxfordFlowers_SOTA}
-    \end{minipage}
-\end{table*}
+            All background baseline & 71.0 & 0.0 \\
+            All foreground baseline & 29.0 & 29.2 \\
+            % \textbf{ReSeg (no VGG)} & 86.9 & \textbf{65.8} \\
+            GrabCut \cite{rother2004grabcut} & 95.9 & 89.3 \\
+            Tri-map \cite{Xiaomeng14} & 96.7 & 91.7 \\
+            \textbf{ReSeg} & 98 & \textbf{93.7} \\
+        \end{tabular}
+    }
+    \caption{Oxford Flowers. Per pixel accuracy and average IoU are reported.}
+    \label{tbl:OxfordFlowers_SOTA}
+\end{table}
 
 % CAMVID RESULTS
-\begin{table*}[t]
+\begin{table}[t]
 	\resizebox{\textwidth}{!}{%
 		\small{%
             \begin{tabular}{c|c|c|c|c|c|c|c|c|c|c|c||c|c|c}
@@ -554,14 +546,14 @@ those cases.
         CamVid. The table reports the per-class accuracy, the average per-class
         accuracy, the global accuracy and the average intersection over union.
         The best values and the values within $1$ point from the best are
-        highlighted in bold for each column. For completeness we report the
-        Bayesian Segnet models even if they are not directly comparable to the
-        others as they perform a form of model averaging.}
+        highlighted in bold for each column. For completeness the Bayesian
+        Segnet models are reported even if they are not directly comparable to
+        the others as they perform a form of model averaging.}
     \label{tbl:camvid_SOTA}
-\end{table*}
+\end{table}
 
 % CAMVID PARAMS
-\begin{table*}[t]
+\begin{table}[t]
     \resizebox{\textwidth}{!}{%
         \small{%
             \begin{tabular}{c|c|c|c|c|c|c|c|c|c|c|c|c|c|c|c||c|c|c}
@@ -578,14 +570,14 @@ those cases.
         Comparison of the performance of different hyperparameter on CamVid.
     }
     \label{tbl:camvid_params}
-\end{table*}
+\end{table}
 
 \subsection{Experimental settings}
 To gain confidence with the sensitivity of the model to the different
-hyperparameters, we decided to evaluate it first on the Weissman Horse and
-Oxford Flowers datasets on a binary segmentation task; we then focused the most
-of our efforts on the more challenging semantic segmentation task on the CamVid
-dataset.
+hyperparameters, ReSeg was first evaluated on the Weissman Horse and Oxford
+Flowers datasets on a binary foreground/background segmentation task. Once a
+good initial setting of the hyperparameters was found, most of the efforts were
+spent on the more challenging semantic segmentation task on the CamVid dataset.
 
 The number of hyperparameters of this model is potentially very high, as for
 each ReNet layer different implementations are possible (namely vanilla RNN,
@@ -593,17 +585,23 @@ GRU or LSTM), each one with its specific parameters. Furthermore, the number of
 features, the size of the patches and the initialization scheme have to be
 defined for each ReNet layer as well as for each transposed convolutional
 layer. To make it feasible to explore the hyperparameter space, some of the
-hyperparameters have been fixed by design and the remaining have been finetuned.
-In the rest of this section, the architectural choices for both sets of
-parameters will be detailed.
+hyperparameters have been fixed by design and the remaining have been
+finetuned.
+In the rest of this section, the architectural choices for both
+sets of parameters will be detailed.
+
+Initial experiments on the upsampling showed that transposed convolutional
+layers seem to provide a better performance w.r.t. less sophisticated (not
+learned) tiling strategies such as nearest neighbor tiling or bilinear
+interpolation when there is enough data to learn the transformation.
 
 All the transposed convolution upsampling layers were followed by a
 ReLU~\cite{Krizhevsky2012-alexnet} non-linearity and initialized with the
 fan-in plus fan-out initialization scheme described
 in~\cite{glorot2010understanding}. The recurrent weight matrices were instead
 initialized to be orthonormal, following the procedure defined
-in~\cite{Saxe2014}. We also constrained the stride of the upsampling transposed
-convolutional layers to be tied to their filter size.
+in~\cite{Saxe2014}. Finally, the stride of the upsampling transposed
+convolutional layers was constrained to be tied to their filter size.
 
 In the segmentation task, each training image carries classification
 information for all of its pixels. Differently from the image classification
@@ -628,19 +626,19 @@ by the number of features $d_{\text{RE}}(l)$ and $d_{\text{UP}}(l)$,
 the size of the input patches (or equivalently of the filters)
 ${ps}_{\text{RE}}(l)$ and ${fs}_{\text{UP}}(l)$.
 
-% \begin{table}[ht]
+% \begin{table}[t]
+%     \centering{
+%         \small
+%         \begin{tabular}{l|c|c|c|c|c|c}
+%             Dataset & $b$ & $d_{\text{RE}}$ & $w_p$ & $h_p$ & $a_c$ & upscaling\\
 %
-%     \centering
-%     \caption{Hyperparameters} \label{tbl:hyperparams}
-%     \begin{tabular}{l | l | l | l | l | l | l | l}
-%         Dataset & $b$ & $d_{\text{RE}}$ & $w_p$ & $h_p$ & $a_c$ &
-%         upscaling\\
-%         \hline
-% Weissman horses & 1 & [1100, 1300] & 2 & 2 & tanh & grad \\
-% Fashonista & 1 & [400, 400] & 2 & 2 & tanh & linear \\
-% Oxford Flowers & 5 & [150, 150] & 2 & 2 & tanh & linear
-%     \end{tabular}
-%     \vspace{2mm}
+%             Weissman horses & 1 & [1100, 1300] & 2 & 2 & tanh & grad \\
+%             Fashonista & 1 & [400, 400] & 2 & 2 & tanh & linear \\
+%             Oxford Flowers & 5 & [150, 150] & 2 & 2 & tanh & linear \\
+%         \end{tabular}
+%     }
+%     \caption{Hyperparameters}
+%     \label{tbl:hyperparams}
 % \end{table}
 
 
