@@ -429,48 +429,53 @@ fully comparable to~\cite{badrinarayanan2015segnet}, were obtained downsampling
 all the images by a factor of 2 resulting in a final $480 \times 360$
 resolution.
 
-% \subsection{Preprocessing}\label{sec:data_preprocessing}
-% \subsubsection{Data Augmentation}
-% Adding prior knowledge by augmenting the given data with transformed versions is
-% well known to help generalization ~\cite[see, e.g.,][]{Krizhevsky-2012}. In light
-% of this, we decided to employ several methods of data augmentation:
-% {\it flipping}, {\it shifting}, {\it color flipping}, and {\it resizing}.
-%
-% For each sample there was a 50\% chance to flip the image horizontally.
-% This mirrors the intuition that images which are inverted horizontally
-% generally seem like the same scene visually.
-%
-% The shifting procedure was as follows: we either move 2 pixels to the left with
-% 25\% chance, 2 pixels to the right with 25\% chance, or perform no shifting.
-% After this step, we then shift up with 25\% chance, shift down with 25\% chance,
-% or leave the image as is was before this step. This augmentation should make
-% the model more robust to slight shifts of the object in the image.
-%
-% When working with gray-scale images, another augmentation which can be useful
-% is to randomly invert the color of the image by changing darker colors into lighter
-% colors, and vice-versa. This proved to be especially helpful
-% when working with greyscale versions of the Weizmann Horse dataset to improve the segmentation
-% performance of light horses that are less represented in the dataset.
-%
-% Resizing of images can also be of benefit, as eliminating unnecessary and
-% easily explained variance can help the model focus on harder to model
-% characteristics, which generally leads to better performance on the task at hand,
-% especially in the case of segmentation where object scale between images has little
-% impact on the class category. A common choice for resizing is to resize every image
-% to the mean width and height, calculated over the entire dataset of variable size
-% images.
-%
-% It should be noted that all transformations which involve changes in dimensionality
-% or position must also be applied in some form to the segmentation mask, and great
-% care must be taken (especially during resizing/shifting) not to introduce unexpected
-% errors. It is also paramount to highlight that it is the prediction that
-% should be resized to the ground truth size and not the opposite, not
-% to misrepresent the segmentation accuracy.
-%
-% All of these possible augmentation procedures were treated as hyperparameters for
-% training, and selected based on the best validation performance per dataset.
+\subsection{Preprocessing}\label{sec:data_preprocessing}
+The ReNet model adopted some data augmentation methods to enlarge the dataset
+by adding synthetic data randomly flipping and shifting the images. In ReSeg
+instead, this kinds of data augmentation were not employed.
 
-\begin{table*}[!ht]
+The only data augmentation technique exploited was to randomly invert the
+colors by changing darker colors into lighter colors with probability 0.5, and
+vice-versa. This kind of data augmentation technique is only meaningful when
+working with gray-scale images and was employed for the Weizmann Horse dataset
+only to improve the segmentation performance on light coloured horses, that in
+that dataset are much less represented than darker ones. This allowed to
+significantly improve the performance on Weizmann Horse, probably due to the
+very limited number of images that caused the loss due to even a single image
+misclassification to be significant. The same technique would probably not be
+as effective on bigger and more balanced datasets.
+
+The only other data manipulation technique adopted was to resize the
+\emph{training} images to allow for training on batches of multiple images with
+the effect of speeding up the training. The performance loss due to the
+difference in training and validation/test size was negligible, probably thanks
+to the adoption of the pretrained VGG-16 layers that can extract meaningful
+features from the typical image sizes of the adopted datasets.
+
+On the contrary, training benefitted a little from resizing the images on some
+of the datasets, probably because eliminating unnecessary and easily explained
+variance can help the model focus on harder characteristics, which generally
+leads to better performance on the task at hand.
+%especially in the case of segmentation where object scale between images has little
+%impact on the class category.
+
+A common choice for resizing is to resize every image to the mean width and
+height, calculated over the entire dataset of variable size images. This was
+the strategy adopted for the Weizmann Horse and Oxford Flowers dataset, while
+for the Camvid dataset the standard~\cite{badrinarayanan2015segnet}
+downsampling factor of 2 was adopted, resulting in a final $480 \times 360$
+resolution.
+
+It should be noted that all transformations that involve changes in
+dimensionality or position must also be applied in the same form to the
+segmentation mask, and great care must be taken (especially during
+resizing/shifting) not to introduce unexpected errors. It is particularly
+important to resize the network prediction to the original size of the ground
+truth and not the opposite, not to misrepresent the segmentation accuracy.
+This is not a problem for validation and test, as the images are not resized in
+those cases.
+
+\begin{table*}[t]
     % HORSES
     \begin{minipage}{0.45\textwidth}
         \centering
@@ -518,7 +523,7 @@ resolution.
 \end{table*}
 
 % CAMVID RESULTS
-\begin{table*}[!ht]
+\begin{table*}[t]
 	\resizebox{\textwidth}{!}{%
 		\small{%
             \begin{tabular}{c|c|c|c|c|c|c|c|c|c|c|c||c|c|c}
@@ -556,7 +561,7 @@ resolution.
 \end{table*}
 
 % CAMVID PARAMS
-\begin{table*}[!ht]
+\begin{table*}[t]
     \resizebox{\textwidth}{!}{%
         \small{%
             \begin{tabular}{c|c|c|c|c|c|c|c|c|c|c|c|c|c|c|c||c|c|c}
