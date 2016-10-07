@@ -63,12 +63,13 @@ competitive alternative to the conventional deep convolutional neural networks
 for image related tasks.
 
 
-\section{Rationale}
-Convolutional neural networks~\cite[CNN,][]{Fukushima80,LeCun89} have become the
-method of choice for object recognition after the impressive improvement on the
-state of the art of~\cite{Krizhevsky-2012}. CNNs have proved to be successful
-at a variety of benchmark problems including, but not limited to, handwritten
-digit recognition~\citep[see, e.g.,][]{Ciresan-2012}, natural image
+\section{Motivation}
+
+Convolutional neural networks~\cite[CNN,][]{Fukushima80,LeCun89} have become
+the method of choice for object recognition after the impressive improvement on
+the state of the art of~\cite{Krizhevsky-2012}. CNNs have proved to be
+successful at a variety of benchmark problems including, but not limited to,
+handwritten digit recognition~\citep[see, e.g.,][]{Ciresan-2012}, natural image
 classification~\citep[see, e.g.,][]{Lin2014,Simonyan2015,szegedy2014going},
 house number recognition~\citep[see, e.g.,][]{Goodfellow+et+al-ICLR2014a},
 traffic sign recognition~\citep[see, e.g.,][]{Ciresan-et-al-2012}, as well as
@@ -131,15 +132,15 @@ sequence of patches. This architectural distinction results in the ReNet model
 being much more amenable to distributed computing than that
 of~\citet{Graves+Schmidhuber-2009}.
 
-\vfill
 
 \section{Model Description}\label{sec:renet_model}
 
-\begin{figure}
+\begin{figure}[t]
     \centering
     \includegraphics[width=0.3\textwidth]{pdf/renet_first_layer.pdf}
-    \caption{A one-layer ReNet}
-    \label{fig:networklayer}
+    \caption{A ReNet layer is composed by two sublayers, a vertical one and an
+        horizontal one}
+    \label{fig:renet_layer}
     \vspace{-3mm}
 \end{figure}
 
@@ -156,7 +157,8 @@ $j$ is the vertical index.
 First, the image is swept vertically with two RNNs, with one RNN working in
 a bottom-up direction and the other working in a top-down direction.
 Each RNN takes as an input one (flattened) patch at a time and updates its
-hidden state, working \emph{along each column} $j$ of the split input image $X$.
+hidden state, working \emph{along each column} $j$ of the split input image
+$X$.
 \begin{align}
     v^F_{i,j} = f_{\text{VFWD}}(z^F_{i,j-1},p_{i,j}), &\text{ for
     }j=1,\cdots, J\\
@@ -165,9 +167,9 @@ hidden state, working \emph{along each column} $j$ of the split input image $X$.
 \end{align}
 
 Note that $f_{\text{VFWD}}$ and $f_{\text{VREV}}$ return the activation of the
-recurrent hidden state, and may be implemented either as a simple $\tanh$ layer,
-as a gated recurrent layer~\citep{Cho2014} or as a long short-term memory
-layer~\citep{Hochreiter+Schmidhuber-1997}.
+recurrent hidden state, and may be implemented either as a simple $\tanh$
+layer, as a gated recurrent layer~\citep{Cho2014} or as a long short-term
+memory layer~\citep{Hochreiter+Schmidhuber-1997}.
 
 After this vertical, bidirectional sweep, the intermediate hidden states
 $v^F_{i,j}$ and $v^R_{i,j}$ are concatenated at each location $(i,j)$ to get a
@@ -204,7 +206,7 @@ Even if each ReNet layer captures the full input context, it is clearly still
 possible to stack multiple ReNet layers on top of each other into a deep
 network. Let us denote by $\phi$ the function from the input image (or feature
 map) $X$ of one ReNet layer to the output feature map $H$
-(see~\autoref{fig:networklayer} for a graphical illustration). It is possible
+(see~\autoref{fig:renet_layer} for a graphical illustration). It is possible
 to compute a composition of functions $\Phi = \phi_1(\phi_2(\phi_3(\dots)))$ by
 stacking multiple ReNet layers, to capture increasingly complex features of the
 input image.  After any number of recurrent layers are applied to an input
@@ -220,10 +222,9 @@ stochastic gradient descent algorithm with the gradient computed by
 backpropagation algorithm~\citep[see, e.g.,][]{BP86} to maximize the
 log-likelihood.
 
-\subsection{Differences between LeNet and ReNet}
-\label{sec:lenetrenet}
+\subsection{Differences between LeNet and ReNet}\label{sec:lenetrenet}
 
-\begin{figure}[h]
+\begin{figure}[t]
     \centering
     \includegraphics[width=0.9\textwidth]{img/lenet5.jpg}
     \caption{The LeNet network}
@@ -264,46 +265,60 @@ convolutional autoencoder whose decoder is an inverse\footnote{
 }
 of LeNet, as the max operator is not invertible. The proposed
 ReNet is end-to-end smooth and differentiable, making it more suited to be used
-as a decoder in the autoencoder or any of its probabilistic variants~\citep[see,
-e.g.,][]{Kingma+Welling-ICLR2014}.
+as a decoder in the autoencoder or any of its probabilistic
+variants~\citep[see e.g.,][]{Kingma+Welling-ICLR2014}.
 
-In some sense, each layer of the ReNet can be considered as a variant of a usual
-convolution+pooling layer, where pooling is replaced with lateral connections,
-and convolution is done without any overlap. Similarly, \citet{Springenberg2014}
-recently proposed a variant of a usual LeNet which does not use any pooling.
-They used convolution with a larger stride to compensate for the lack of
-dimensionality reduction by pooling at each layer. However, this approach still
-differs from the proposed ReNet in the sense that each feature activation at a
-layer is only with respect to a subset of the input image rather than the whole
-input image.
+In some sense, each layer of the ReNet can be considered as a variant of a
+usual convolution+pooling layer, where pooling is replaced with lateral
+connections, and convolution is done without any overlap. Similarly,
+\citet{Springenberg2014} recently proposed a variant of a usual LeNet which
+does not use any pooling.  They used convolution with a larger stride to
+compensate for the lack of dimensionality reduction by pooling at each layer.
+However, this approach still differs from the proposed ReNet in the sense that
+each feature activation at a layer is only with respect to a subset of the
+input image rather than the whole input image.
 
 The main disadvantage of ReNet is that it is not easily parallelizable, due to
-the sequential nature of the recurrent neural network (RNN). LeNet, on the other
-hand, is highly parallelizable due to the independence of computing activations
-at each layer. The introduction of sequential, lateral connections, however, may
-result in more efficient parametrization, requiring a smaller number of
-parameters with overall fewer computations, although this needs to be further
-explored. Note that this limitation on parallelization applies only to model
-parallelism, and any technique for data parallelism may be used for both the
-proposed ReNet and the LeNet.
+the sequential nature of the recurrent neural network (RNN). LeNet, on the
+other hand, is highly parallelizable due to the independence of computing
+activations at each layer. The introduction of sequential, lateral connections,
+however, may result in more efficient parametrization, requiring a smaller
+number of parameters with overall fewer computations, although this needs to be
+further explored. Note that this limitation on parallelization applies only to
+model parallelism, and any technique for data parallelism may be used for both
+the proposed ReNet and the LeNet.
+
 
 \section{Experiments}\label{sec:renet_experiments}
 
 \subsection{Datasets}
 
-The ReNet model has been evaluated on three widely-used benchmark datasets;
-MNIST, CIFAR-10 and the Street View Housing Numbers (SVHN). This section
-describes each dataset in detail.
-
-\paragraph{MNIST}
-
-\begin{figure}[h]
+\begin{figure}[!t]
     \centering
     \includegraphics[width=0.5\textwidth]{img/mnist_digits.png}
     \caption{Some digits from the MNIST dataset}
     \label{fig:mnist_digits}
 \end{figure}
 
+\begin{figure}[!t]
+    \centering
+    \includegraphics[width=0.5\textwidth]{img/cifar-10.png}
+    \caption{Some samples of the 10 classes of the CIFAR-10 dataset}
+    \label{fig:cifar}
+\end{figure}
+
+\begin{figure}[!t]
+    \centering
+    \includegraphics[width=0.5\textwidth]{img/SVHN.png}
+    \caption{Some samples of housing numbers from the SVHN dataset}
+    \label{fig:svhn}
+\end{figure}
+
+The ReNet model has been evaluated on three widely-used benchmark datasets;
+MNIST, CIFAR-10 and the Street View Housing Numbers (SVHN). This section
+describes each dataset in detail.
+
+\subsubsection{MNIST}
 The MNIST dataset~\citep{Lecun99objectrecognition} consists of 70,000
 handwritten digits from 0 to 9, centered on a $28\times 28$ square
 canvas~(see~\autoref{fig:mnist_digits} for some samples). Each pixel represents
@@ -313,15 +328,7 @@ this dataset into 50,000 training samples, 10,000 validation samples and 10,000
 test samples. For a fair comparison, the results reported
 in~\autoref{sec:renet_results} were obtained following the standard split.
 
-\paragraph{CIFAR-10}
-
-\begin{figure}[h]
-    \centering
-    \includegraphics[width=0.5\textwidth]{img/cifar-10.png}
-    \caption{Some samples of the 10 classes of the CIFAR-10 dataset}
-    \label{fig:cifar}
-\end{figure}
-
+\subsubsection{CIFAR-10}
 The CIFAR-10 dataset~\citep{KrizhevskyHinton2009} is a curated subset of the 80
 million tiny images dataset~(see~\autoref{fig:cifar} for some samples),
 originally released by \citet{Torralba+Fergus+Freeman-2008}. CIFAR-10 contains
@@ -334,15 +341,7 @@ Furthermore, zero-phase component analysis (ZCA) was applied and the each pixel
 was normalized to have zero-mean and unit-variance across the training samples,
 as suggested by \citet{KrizhevskyHinton2009}.
 
-\paragraph{Street View House Numbers}
-
-\begin{figure}[h]
-    \centering
-    \includegraphics[width=0.5\textwidth]{img/SVHN.png}
-    \caption{Some samples of housing numbers from the SVHN dataset}
-    \label{fig:svhn}
-\end{figure}
-
+\subsubsection{Street View House Numbers}
 The Street View House Numbers (SVHN) dataset~\citep{Netzer-wkshp-2011} consists
 of cropped images representing house numbers captured by Google StreetView
 vehicles as a part of the Google Maps mapping process. These images consist of
@@ -385,10 +384,10 @@ was chosen on a per-case basis in order to maximize validation performance.
     \centering
     \includegraphics[height=.14\textheight,width=\columnwidth]{pdf/renet_svhn.pdf}
     \caption{The ReNet network used for SVHN classification}
-    \label{fig:network}
+    \label{fig:renet_network}
 \end{figure}
 
-\subsection{Model Architectures}
+\subsection{Experimental settings}
 
 The principal parameters that define the architecture of the ReNet model are
 the number of ReNet layers ($N_{\text{RE}}$), their corresponding receptive
@@ -396,10 +395,10 @@ field sizes ($w_p \times h_p$) and feature dimensionality ($d_{\text{RE}}$),
 the number of fully-connected layers ($N_{\text{FC}}$) and their corresponding
 numbers ($d_{\text{FC}}$) and types ($f_{\text{FC}}$) of hidden units.
 
-Table~\ref{tbl:architectures} summarizes the settings of these hyperparameters
-that performed best on the validation set of the studied datasets.
-\autoref{fig:network} is a graphical illustration of the model selected with
-this metric for the SVHN dataset.
+Table~\ref{tbl:renet_architectures} summarizes the settings of these
+hyperparameters that performed best on the validation set of the studied
+datasets. \autoref{fig:renet_network} is a graphical illustration of the model
+selected with this metric for the SVHN dataset.
 
 \begin{table}[t]
     \centering
@@ -430,11 +429,10 @@ this metric for the SVHN dataset.
              connected layers, the number of neurons of the fully connected
              layers, their activation function and the data augmentation
              procedure employed.}
-    \label{tbl:architectures}
+    \label{tbl:renet_architectures}
 \end{table}
 
 \subsubsection{Training}
-
 All the networks have been trained using a recently proposed adaptive learning
 rate algorithm, called Adam~\citep{Kingma2014}. In order to reduce overfitting
 dropout~\citep{Srivastava14} was applied after each layer, including both the
@@ -454,7 +452,7 @@ performance. This, as well as e.g., ensembling multiple models, can be seen as
 one of the many potential areas of exploration for further work in case maximum
 performance is sought.
 
-\begin{table}[ht]
+\begin{table}[t]
     \centering
 
     \begin{minipage}{0.45\textwidth}
@@ -476,78 +474,86 @@ performance is sought.
 0.52\% & \citep{DBLP:journals/pami/AzzopardiA13} \\
         \end{tabular}
 
-        \vspace{2mm}
-        (a) MNIST
-    \end{minipage}
-    \hfill
-    \begin{minipage}{0.45\textwidth}
-        \centering
+            \vspace{2mm}
+            (a) MNIST
+        \end{minipage}
+        \hfill
+        \begin{minipage}{0.45\textwidth}
+            \centering
 
-        \begin{tabular}{l |  l}
-            Test Error & Model  \\
-            \hline
-4.5\% & \citep{DBLP:journals/corr/Graham14a}$\star$ \\
-6.28\% & \citep{DBLP:journals/corr/Graham14}$\star$ \\
-8.8\% & \citep{Lin2014}$\star$ \\
-9.35\% & \citep{Goodfellow2013}$\star$ \\
-9.39\% & \citep{DBLP:journals/corr/SpringenbergR13}$\star$ \\
-9.5\% & \citep{DBLP:conf/nips/SnoekLA12}$\star$ \\
-11\% & \citep{Krizhevsky-2012}$\star$ \\
-11.10\% & \citep{DBLP:conf/icml/WanZZLF13}$\star$ \\
-\bf{12.35\%} & \bf{ReNet} \\
-15.13\% & \citep{DBLP:journals/corr/abs-1301-3557}$\star$ \\
-15.6\% & \citep{DBLP:journals/corr/abs-1207-0580}$\star$ \\
-        \end{tabular}
+            \begin{tabular}{l |  l}
+                Test Error & Model  \\
+                \hline
+    4.5\% & \citep{DBLP:journals/corr/Graham14a}$\star$ \\
+    6.28\% & \citep{DBLP:journals/corr/Graham14}$\star$ \\
+    8.8\% & \citep{Lin2014}$\star$ \\
+    9.35\% & \citep{Goodfellow2013}$\star$ \\
+    9.39\% & \citep{DBLP:journals/corr/SpringenbergR13}$\star$ \\
+    9.5\% & \citep{DBLP:conf/nips/SnoekLA12}$\star$ \\
+    11\% & \citep{Krizhevsky-2012}$\star$ \\
+    11.10\% & \citep{DBLP:conf/icml/WanZZLF13}$\star$ \\
+    \bf{12.35\%} & \bf{ReNet} \\
+    15.13\% & \citep{DBLP:journals/corr/abs-1301-3557}$\star$ \\
+    15.6\% & \citep{DBLP:journals/corr/abs-1207-0580}$\star$ \\
+            \end{tabular}
 
-        \vspace{2mm}
-        (b) CIFAR-10
-    \end{minipage}
+            \vspace{2mm}
+            (b) CIFAR-10
+        \end{minipage}
 
-    \vspace{4mm}
-    \begin{minipage}{0.45\textwidth}
-        \centering
-        \begin{tabular}{l |  l}
-            Test Error & Model  \\
-            \hline
-1.92\% & \citep{DBLP:journals/corr/LeeXGZT14}$\star$ \\
-2.23\% & \citep{DBLP:conf/icml/WanZZLF13}$\star$ \\
-2.35\% & \citep{Lin2014}$\star$ \\
-\bf{2.38\%} & \bf{ReNet} \\
-2.47\% & \citep{Goodfellow2013}$\star$ \\
-2.8\% & \citep{DBLP:journals/corr/abs-1301-3557}$\star$ \\
-        \end{tabular}
+        \vspace{4mm}
+        \begin{minipage}{0.45\textwidth}
+            \centering
+            \begin{tabular}{l |  l}
+                Test Error & Model  \\
+                \hline
+    1.92\% & \citep{DBLP:journals/corr/LeeXGZT14}$\star$ \\
+    2.23\% & \citep{DBLP:conf/icml/WanZZLF13}$\star$ \\
+    2.35\% & \citep{Lin2014}$\star$ \\
+    \bf{2.38\%} & \bf{ReNet} \\
+    2.47\% & \citep{Goodfellow2013}$\star$ \\
+    2.8\% & \citep{DBLP:journals/corr/abs-1301-3557}$\star$ \\
+            \end{tabular}
 
-        \vspace{2mm}
-        (c) SVHN
-    \end{minipage}
-    \hfill
-    \begin{minipage}{0.51\textwidth}
-        \caption{Generalization errors obtained by the proposed ReNet along
-            with those reported by previous works on each of the three
-            datasets. For a fair comparison, only results obtained by a single
-            model are listed, i.e., no ensembling of multiple models. In the
-            case of SVHN, only models trained on the Format 2 (cropped digits)
-            dataset are reported. $\star$ denotes a convolutional neural
-            network.}
-        \label{tbl:result}
-    \end{minipage}
-\end{table}
+            \vspace{2mm}
+            (c) SVHN
+        \end{minipage}
+        \hfill
+        \begin{minipage}{0.51\textwidth}
+            \caption{Generalization errors obtained by the proposed ReNet along
+                with those reported by previous works on each of the three
+                datasets. For a fair comparison, only results obtained by a
+                single model are listed, i.e., no ensembling of multiple
+                models. In the case of SVHN, only models trained on the Format
+                2 (cropped digits) dataset are reported. $\star$ denotes a
+                convolutional neural network.}
+            \label{tbl:renet_result}
+        \end{minipage}
+    \end{table}
 
 \subsection{Results}\label{sec:renet_results}
-Table~\ref{tbl:result}, presents the results of ReNet on three datasets, along
-with previously reported results.
+
+Table~\ref{tbl:renet_result}, presents the results of ReNet on three datasets,
+along with previously reported results.
 
 It is clear that ReNet performs comparably to deep convolutional neural
 networks which are the {\it de facto} standard for object recognition. This
 suggests that ReNet is a viable alternative to convolutional neural networks
-(CNN), even on tasks where CNNs have historically dominated. However, it is
+(CNN), even on tasks where CNNs have historically dominated.  However, it is
 important to notice that ReNet does not outperform state-of-the-art
 convolutional neural networks on any of the three benchmark datasets, which
 calls for more research in the future.
 
-\section{Conclusions/Discussion}
 
-\paragraph{Choice of Recurrent Units}
+\section{Discussion}
+
+The ReNet model successfully proved that RNN-based model can and should be
+explored also in contexts where traditional CNN-based model have established
+the state of the art for a long time, such as object recognition. Many aspects
+of RNN-based models applied to this context remain to be studied in more depth,
+some of which will be outlined in the rest of this section.
+
+\subsubsection{Choice of Recurrent Units}
 Note that the proposed architecture is independent of the chosen recurrent
 units. The preliminary experiments on this model showed that gated recurrent
 units, either the GRU or the LSTM, outperform a usual sigmoidal unit (affine
@@ -555,7 +561,7 @@ transformation followed by an element-wise sigmoid function.) This indirectly
 confirms that the model utilizes long-term dependencies across an input image,
 and the gated recurrent units help capture these dependencies.
 
-\paragraph{Analysis of the Trained ReNet}
+\subsubsection{Analysis of the Trained ReNet}
 The ReNet model has been only evaluated in a quantitative fashion. However, the
 accuracies on the test sets do not reveal what kind of image structures the
 ReNet has captured in order to perform object recognition. Due to the large
@@ -565,7 +571,7 @@ LeNet significantly. Further investigation along the line of
 \citep{ZeilerFergus14} is needed, as well as exploring ensembles that combine
 RNNs and CNNs for bagged prediction.
 
-\paragraph{Computationally Efficient Implementation}
+\subsubsection{Computationally Efficient Implementation}
 As discussed in Sec.~\ref{sec:lenetrenet}, the proposed ReNet is less
 parallelizable due to the sequential nature of the recurrent neural network
 (RNN). Although this sequential nature cannot be addressed directly, our
@@ -576,48 +582,3 @@ used for training convolutional neural networks such as parallelizing
 fully-connected layers ~\citep{krizhevsky2014one}, having separate sets of
 kernels/features in different processors~\citep{Krizhevsky-2012} and exploiting
 data parallelism.
-
-
-% \begin{table}[h]
-% \begin{tabular}{ll}
-% 0.35\% & Deep Big Simple Neural Nets Excel on Handwritten Digit Recognition \citep{DBLP:journals/corr/abs-1003-0358} \\
-% 0.39\% & Convolutional Kernel Networks \citep{DBLP:conf/nips/MairalKHS14} \\
-% 0.39\% & Deeply-Supervised Nets \citep{DBLP:journals/corr/LeeXGZT14} \\
-% 0.4\% & Best Practices for Convolutional Neural Networks Applied to Visual Document Analysis \citep{DBLP:conf/icdar/SimardSP03} \\
-% 0.45\% & Maxout Networks \citep{Goodfellow2013} \\
-% \bf{0.45\%} & \bf{ReNet} \\
-% 0.47\% & Network in Network \citep{Lin2014} \\
-% 0.52\% & Trainable COSFIRE filters for keypoint detection and pattern recognition \citep{DBLP:journals/pami/AzzopardiA13} \\
-% \end{tabular}
-% \end{table}
-%
-% MNIST (talk about why we don't compare to dropconnect/multicolumn?)
-%
-% CIFAR-10 (briefly mention ZCA, flipping, pixel shift)
-% \begin{table}[h]
-% \begin{tabular}{ll}
-% 8.8\% & Network In Network \citep{Lin2014} \\
-% 9.32\% & Regularization of Neural Networks using DropConnect \citep{DBLP:conf/icml/WanZZLF13} \\
-% 9.35\% & Maxout Networks \citep{Goodfellow2013} \\
-% 9.39\% & Improving Deep Neural Networks with Probabilistic Maxout Units \citep{DBLP:journals/corr/SpringenbergR13} \\
-% 9.5\% & Practical Bayesian Optimization of Machine Learning Algorithms \citep{DBLP:conf/nips/SnoekLA12} \\
-% 11\% & ImageNet Classification with Deep Convolutional Neural Networks \citep{Krizhevsky-2012} \\
-% 11.21\% & Multi-Column Deep Neural Networks for Image Classification \citep{Ciresan-2012} \\
-% \bf{12.35\%} & \bf{ReNet} \\
-% 15.13\% & Stochastic Pooling for Regularization of Deep Convolutional Neural Networks \citep{DBLP:journals/corr/abs-1301-3557} \\
-% 15.6\% & Improving neural networks by preventing co-adaptation of feature detectors \citep{DBLP:journals/corr/abs-1207-0580} \\
-% \end{tabular}
-% \end{table}
-%
-% SVHN (briefly mention flipping, pixel shift)
-% \begin{table}[h]
-% \begin{tabular}{ll}
-% 1.92\% & Deeply Supervised Nets \citep{DBLP:journals/corr/LeeXGZT14} \\
-% 1.94\% & Regularization of Neural Networks using DropConnect \citep{DBLP:conf/icml/WanZZLF13} \\
-% 2.16\% & Multi-digit Number Recognition from Street View Imagery using Deep Convolutional Neural Networks \citep{Goodfellow+et+al-ICLR2014a} \\
-% 2.35\% & Network in Network \citep{Lin2014} \\
-% \bf{2.38\%} & \bf{ReNet} \\
-% 2.47\% & Maxout Networks \citep{Goodfellow2013} \\
-% 2.8\% & Stochastic Pooling for Regularization of Deep Convolutional Neural Networks \citep{DBLP:journals/corr/abs-1301-3557} \\
-% \end{tabular}
-% \end{table}

@@ -65,8 +65,7 @@ model in the context of the state of the art at the time it was conceived,
 \autoref{sec:reseg_experiments} presents the results of the experiments.
 
 
-
-\section{Rationale}\label{sec:reseg_rationale}
+\section{Motivation}\label{sec:reseg_rationale}
 
 In recent years, Convolutional Neural Networks (CNN) have become the {\em de
 facto} standard in many computer vision tasks, such as image classification and
@@ -184,7 +183,6 @@ The source code and model hyperparameters are available on
 \href{https://github.com/fvisin/reseg}{https://github.com/fvisin/reseg}.
 
 
-%-------------------------------------------------------------------------
 \section{Model Description}\label{sec:reseg_model}
 
 The architecture of the ReSeg model, motivated in~\autoref{%
@@ -205,33 +203,11 @@ predict the probability distribution over the classes for each pixel.
 The following sections analyze in detail each component of the processing
 pipeline
 
-
 \subsection{ReNet layer}
+
 As depicted in~\autoref{fig:first_layer}, each recurrent layer is composed
 by 4 RNNs coupled together in such a way to capture the local and global
 spatial structure of the input data.
-
-% \subsubsection{Gated Recurrent Units}
-% Recurrent units with added memory and gating, such as gated recurrent
-% units~\cite[GRU,][]{Cho2014} and long short-term memory
-% units~\cite[LSTM,][]{Hochreiter+Schmidhuber-1997}, have been key components to many successful
-% applications using recurrent neural networks
-% ~\cite[including][]{Cho2014,Sutskever-et-al-NIPS2014,Xu-et-al-arxiv2015}.
-%
-% The hidden state of the GRU at time $t$ is computed by
-% \begin{align*}
-%     h_t = (1-u_t) \odot h_{t-1} + u_t \odot \tilde{h}_t,
-% \end{align*}
-% where
-% \begin{align*}
-%     \tilde{h}_t = \tanh\left( W x_t + U (r_t \odot h_{t-1}) + b \right)
-% \end{align*}
-% and
-% \begin{align*}
-%     \left[ u_t; r_t\right] = \sigma\left( W_g x_t + U_g h_{t-1} + b_g\right).
-% \end{align*}
-% For an in-depth comparison of the similarities and trade-offs between GRU and
-% LSTM, there are several resources including \cite{Chung2015}.
 
 \begin{figure}[t]
     \begin{center}
@@ -261,7 +237,7 @@ done in parallel. This is a very important performance difference of the ReSeg
 model w.r.t. to other architectures in the literature that enforce to handle
 the data in a more constrainedly sequential nature.
 
-\begin{figure*}[t]
+\begin{figure}[t]
     \advance\leftskip-0.2\textwidth
     \centering
     \makebox[\textwidth][c]{\includegraphics
@@ -275,7 +251,7 @@ the data in a more constrainedly sequential nature.
         layer. Two similar ReNet layers are stacked, followed by an upsampling
         layer and a softmax nonlinearity.}
     \label{fig:ReSeg}
-\end{figure*}
+\end{figure}
 
 At every time step each RNN reads the next non-overlapping patch $p_{i,j}$ and,
 based on its previous state, emits a projection $o_{i,j}^{\star}$ and updates
@@ -300,12 +276,12 @@ this part of the model will be referred to as \emph{vertical recurrent
 sublayer}.
 
 After obtaining the concatenated feature map $\mathbf{O^{\updownarrow}}$, the
-model sweeps over each of its rows with a pair of new RNNs $f^{\rightarrow}$ and
-$f^{\leftarrow}$. Each element of $\mathbf{O^{\updownarrow}}$ is processed
-individually, rather than grouping them into patches as was done in the vertical
-recurrent sublayer. This was chosen so that the second recurrent sublayer has
-the same spatial granularity as the first one, but this is not a constraint of
-the model and different architectures can be explored.
+model sweeps over each of its rows with a pair of new RNNs $f^{\rightarrow}$
+and $f^{\leftarrow}$. Each element of $\mathbf{O^{\updownarrow}}$ is processed
+individually, rather than grouping them into patches as was done in the
+vertical recurrent sublayer. This was chosen so that the second recurrent
+sublayer has the same spatial granularity as the first one, but this is not a
+constraint of the model and different architectures can be explored.
 
 With a similar but specular procedure as the one adopted for the first
 sublayer, the network reads one element of the intermediate feature map
@@ -332,6 +308,7 @@ they strike a good balance between memory usage and computational power, but
 nothing prevents from using different kinds of RNN layers.
 
 \subsection{Upsampling layer}\label{sec:upsampling}
+
 Since by design each recurrent layer processes non-overlapping patches, the
 size of the last composite feature map is smaller than the size of the
 initial input $\mathbf{X}$, whenever the patch size is greater than one. To be
@@ -350,25 +327,27 @@ are the ideal method to tackle this problem.
 Transposed convolutions -- also known as \emph{fractionally strided
 convolutions} -- have been employed in many works in recent
 literature~\cite{Zeiler-ICCV2011,ZeilerFergus14,long2015fully,
-radford2015unsupervised,im2016generating}. This method is based on the observation
-that direct convolutions can be expressed as a dot product between the
-flattened input and a sparse matrix, whose non-zero elements are elements of the
-convolutional kernel. The equivalence with the convolution is granted by the
-connectivity pattern defined by the matrix.
+radford2015unsupervised,im2016generating}. This method is based on the
+observation that direct convolutions can be expressed as a dot product between
+the flattened input and a sparse matrix, whose non-zero elements are elements
+of the convolutional kernel. The equivalence with the convolution is granted by
+the connectivity pattern defined by the matrix.
 
 Transposed convolutions apply the transpose of this transformation matrix to
 the input, resulting in an operation whose input and output shapes are inverted
-with respect to the original direct convolution. A very efficient implementation of
-this operation can be obtained exploiting the gradient operation of the
-convolution -- whose optimized implementation can be found in many of the most
-popular libraries for neural networks. For an in-depth and comprehensive
-analysis of each alternative,
+with respect to the original direct convolution. A very efficient
+implementation of this operation can be obtained exploiting the gradient
+operation of the convolution -- whose optimized implementation can be found in
+many of the most popular libraries for neural networks. For an in-depth and
+comprehensive analysis of each alternative,
 %we refer the interested reader to~\cite{dumoulin2016guide}.
 see~\autoref{sec:transposed_conv}.
+
 
 \section{Experiments}\label{sec:reseg_experiments}
 
 \subsection{Datasets}
+
 The ReSeg architecture has been evaluated on several benchmark datasets. The
 model has been first tested on the easier case of background/foreground
 segmentation, where the algorithm is only requested to distinguish between the
@@ -429,7 +408,8 @@ fully comparable to~\cite{badrinarayanan2015segnet}, were obtained downsampling
 all the images by a factor of 2 resulting in a final $480 \times 360$
 resolution.
 
-\subsection{Preprocessing}\label{sec:data_preprocessing}
+\subsection{Data augmentation and preprocessing}\label{sec:data_preprocessing}
+
 The ReNet model adopted some data augmentation methods to enlarge the dataset
 by adding synthetic data randomly flipping and shifting the images. In ReSeg
 instead, this kinds of data augmentation were not employed.
@@ -474,6 +454,8 @@ important to resize the network prediction to the original size of the ground
 truth and not the opposite, not to misrepresent the segmentation accuracy.
 This is not a problem for validation and test, as the images are not resized in
 those cases.
+
+\subsection{Experimental settings}
 
 % HORSES
 \begin{table}[t]
@@ -572,7 +554,6 @@ those cases.
     \label{tbl:camvid_params}
 \end{table}
 
-\subsection{Experimental settings}
 To gain confidence with the sensitivity of the model to the different
 hyperparameters, ReSeg was first evaluated on the Weissman Horse and Oxford
 Flowers datasets on a binary foreground/background segmentation task. Once a
@@ -712,7 +693,7 @@ this remains to be tested.
 %    \label{fig:ReSeg_failure}
 %\end{figure}
 
-\section{Conclusions/Discussion}
+\section{Discussion}
 
 As reported in the previous section, our experiments on the Weizmann Horse
 dataset show that processing the input images with some layers of VGG-16
@@ -752,7 +733,7 @@ false positives and false negatives and then averaged. In the full semantic
 segmentation setting we also report the per-class accuracy and the average
 per-class accuracy (\emph{Avg class acc}).
 
-\begin{figure*}[!htb]
+\begin{figure}[t]
     \centering
     % \makebox[\textwidth][c]{
     \includegraphics[width=\textwidth]{img/camvid_classbal_diff.png}%}
@@ -762,7 +743,7 @@ per-class accuracy (\emph{Avg class acc}).
         low frequency classes as e.g., the street lights, at the price of a
         worse overall segmentation.}
     \label{fig:camvid_class_balance}
-\end{figure*}
+\end{figure}
 
 \section{Conclusion}
 We introduced the ReSeg model, an extension of the ReNet model for image
