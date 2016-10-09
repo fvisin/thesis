@@ -22,7 +22,73 @@ people tend to have different degrees of accuracy on small details and
 contours and at the same time, it is hard to define a clear separation path
 between the object and the background sometimes (e.g., the leafs of a tree)
 
-% WRITE SOMETHING ABOUT HOW TACKLED HISTORICALLY
+% Kinds of semantic segmentation problems
+Semantic segmentation is a broad area of research that encompasses many
+subtasks that depend on the kind of images at hand as well as on the domain of
+application. The input is usually an image that can be in grayscale or colors.
+In some cases it is required to segment a single image, while sometimes the
+task is simplified by the presence of stereo pairs of images that allow to
+exploit the disparity information, i.e., the difference between the two images
+due to the displacement of the cameras. This extra information can be used to
+compute a (usually noisy) depth map that can be very helpful to distinguish
+between objects that are overlapping in the 2D image, but can be easily
+separated on the depth axis. Similarly, depth sensors that produce RGB-D data
+can be used in this fashion to improve the segmentation in some domains. An
+analogous but slightly different case is that of sparse 3D data, where the
+depth information of some points is provided but the measurements are not
+densely placed in the input space.
+Finally, a related yet distinct setting is the one of cosegmentation, where
+multiple images of the same scene have to be segmented. Ideally one would want
+these segmentation masks to be consistent among each other. This extra
+constraint can be used as a prior to improve those parts that are difficult to
+segment in one image but trivial in another.
+
+The segmentation task is of paramount importance in many fields that range
+from autonomous driving -- where the objects in the scene have to be correctly
+and precisely detected to allow the navigation in the environment -- to medical
+applications such as magnetic resonance (MR) images analysis, ultrasonography,
+surgery robots control or polyps detection in colonoscopies.
+
+% How tackled historically
+Historically the computer vision community tackled this problem by building
+very specialized hand-engineered algorithms that relied heavily on very
+specific domain knowledge. Many of these methods addressed the segmentation
+problem looking for highly discriminative local and global features, such as
+pixel color (possibly in multiple color spaces); histogram of oriented
+gradients (HoG) -- where the input space is described with a discrete function
+that maps locations to colors and the gradient on the two axes is used to
+produce a histogram representation of each patch -- or the similar bag of
+visual words (BOV); the many local patch descriptors such as SIFT, SURF, Kaze,
+CenSurE, BRISK; poselets, that annotate keypoints of the object to be detected;
+dimensionality reduction methods (see e.g., principal components analysis (PCA)
+and ZCA whitening).
+
+Other classical methods for semantic segmentation include clustering
+algorithms, that group pixel in clusters based on some metrics; graph-based
+methods that build a graph with pixels as nodes and some measure of
+dissimilarity as weight for the edges; active contour models (ACMs) that
+segment the image roughly along edges and minimize an energy function that
+imposes a smooth prior on the segmentation; watershed segmentation, that takes
+the intensity values of grayscale images as a height map and imagines to drop
+water on it, filling regions with similar heights. When the rise of the
+water connects two basins, a watershed is found. Finally, many segmentation
+strategies base on two very well known and studied algorithms in the
+literature, namely random decision forests and support vector machines (SVMs).
+
+Many of these methods rely on a sliding-window approach, i.e., a classifier
+that segments a window of fixed size that moves across the image processing it
+in every location. The downside of this approach is that the classification is
+performed locally and the full context is usually not captured easily.
+
+The typical strategy to contrast this lack of high level consistency is to pair the
+segmentation algorithm with a Markov Random Field (MRF) or a Conditional Random
+Field (CRF). These methods can be implemented in several ways, but usually
+impose a local prior on each location and consistency constraints on pairs or
+sets of positions. The underlying intuition of these methods is that the
+prediction in every location should be consistent with the one of the
+neighbouring locations. The pattern of these dependencies can vary across
+different implementations and is usually defined basing on specific domain
+knowledge.
 
 This chapter introduces the second main contribution of this work. The ReSeg
 model~\cite{Visin_2016_CVPR_Workshops} builds on
