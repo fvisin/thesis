@@ -571,10 +571,10 @@ finetuned.
 In the rest of this section, the architectural choices for both
 sets of parameters will be detailed.
 
-Initial experiments on the upsampling showed that transposed convolutional
-layers seem to provide a better performance w.r.t. less sophisticated (not
-learned) tiling strategies such as nearest neighbor tiling or bilinear
-interpolation when there is enough data to learn the transformation.
+Initial experiments on upsampling showed that transposed convolutional layers
+seem to provide a better performance w.r.t. less sophisticated (not learned)
+tiling strategies such as nearest neighbor tiling or bilinear interpolation
+when there is enough data to learn the transformation.
 
 All the transposed convolution upsampling layers were followed by a
 ReLU~\cite{Krizhevsky2012-alexnet} non-linearity and initialized with the
@@ -584,28 +584,49 @@ initialized to be orthonormal, following the procedure defined
 in~\cite{Saxe2014}. Finally, the stride of the upsampling transposed
 convolutional layers was constrained to be tied to their filter size.
 
-In the segmentation task, each training image carries classification
-information for all of its pixels. Differently from the image classification
-task, small batch sizes provide the model with a good amount of information
-with sufficient variance to learn and generalize well. We experimented with
-various batch sizes going as low as processing a single image at the time,
-obtaining comparable results in terms of performance. In our experiments we
-kept a fixed batch size of $5$, as a compromise between train speed and memory
-usage. In all our experiments, we used L2
-regularization~\cite{Krogh92asimple}, also known as weight decay, set to
-$0.001$ to avoid instability at the end of training. We trained all our models
-with the Adadelta~\cite{Zeiler-2012} optimization algorithm, for its desired
-property of not requiring a specific hyperparameter tuning. The effect of Batch
-Normalization in RNNs has been a focus of attention~\cite{Laurent2015}, but it
-does not seem to provide a reliable improvement in performance, so we decided
-not to adopt it.
-% we did not use any gradient clipping or weight noise.
+One peculiarity of the segmentation task is that each training image carries
+classification information for all of its pixels. Differently from the image
+classification task, small batch sizes already provide the model with a good
+amount of information with sufficient variance to learn and generalize well.
+The ReSeg model was tested with various values of batch size, going as low as
+processing a single image at the time, obtaining comparable results in terms of
+performance. Many experiments were performed using a minibatch size of 1. When
+computational constraints allowed, larger batch sizes were used, e.g., 5, 10,
+20, 35, and 50. Larger batch sizes smoothed learning (as expected), and removed
+some issues related to spurious occurrences in the datasets such as misaligned
+or poorly segmented groundtruth masks. This had a bigger impact on the smaller
+datasets than on Camvid.
 
-In the experiments, we varied the number of ReNet layers and the number of
-upsampling transposed convolutional layers, each of them defined respectively
-by the number of features $d_{\text{RE}}(l)$ and $d_{\text{UP}}(l)$,
-the size of the input patches (or equivalently of the filters)
-${ps}_{\text{RE}}(l)$ and ${fs}_{\text{UP}}(l)$.
+The experiments kept fixed the batch size to the value of $5$, as
+a compromise between train speed and memory usage.
+
+All the experiments, used L2 regularization~\cite{Krogh92asimple}, also known
+as weight decay, set to $0.001$ to avoid instability at the end of training.
+Also, all the models were trained with the Adadelta~\cite{Zeiler-2012}
+optimization algorithm, for its desired property of not requiring a specific
+hyperparameter tuning. The effect of Batch Normalization in RNNs has been a
+focus of attention~\cite{Laurent2015}, but it does not seem to provide a
+reliable improvement in performance, so it was not adopted.
+
+The adaptive learning rate algorithm known as Adam~\cite{Kingma2014} was a
+key ingredient to stable learning, though others such as ~\cite{Zeiler-2012}
+were useful during model development. In addition, gradient norm rescaling was
+also utilized to help with the problems described in~\cite{bengio2013advances}.
+
+Regularization proved to be another important part of the process on the
+smaller Weizmann Horse and Oxford flowers datasets. For those two, weight
+noise, as described in~\cite{Graves2011}, with a scale 0.075 was applied to all
+weight matrices before each forward pass in all the experiments.
+Dropout~\cite{Srivastava14} on each forward connection with drop probability of
+$0.2$ on the input, and/or with drop probability of $0.5$ on the hidden
+projections was applied too.
+
+The experiments mainly focused on varying the number of ReNet layers and the
+number of upsampling transposed convolutional layers, as well as tuning their
+respective parameters, such as the number of features $d_{\text{RE}}(l)$ and
+$d_{\text{UP}}(l)$ respectively, and the size of the input patches (or
+equivalently of the filters) ${ps}_{\text{RE}}(l)$ and ${fs}_{\text{UP}}(l)$.
+The best parameters are reported in~\autoref{tbl:camvid_params}.
 
 % \begin{table}[t]
 %     \centering{
@@ -622,24 +643,6 @@ ${ps}_{\text{RE}}(l)$ and ${fs}_{\text{UP}}(l)$.
 %     \label{tbl:hyperparams}
 % \end{table}
 
-
-% An adaptive learning rate algorithm known as Adam~\cite{Kingma2014} was a
-% key ingredient to stable learning, though others such as ~\cite{Zeiler-2012}
-% were useful during model development. In addition, we also utilized
-% gradient norm rescaling to help with the problems described in
-% ~\cite{bengio2013advances}.
-%
-% Regularization proved to be another important part of our process,
-% especially on the smaller Weizmann Horse dataset. Weight noise, as described
-% in ~\cite{Graves2011}, with a scale 0.075 was applied to all weight matrices
-% before each forward pass during some experiments. Dropout ~\cite{Srivastava14} on
-% each forward connection with drop probability of $0.2$ on the input, and/or with drop
-% probability of $0.5$ on the hidden projections was applied during some experiments.
-% Many experiments were performed using a minibatch size of 1. When computational
-% constraints allowed, we also used larger batch sizes of 5, 10, 20, 35, and 50.
-% Larger batch sizes greatly smoothed learning (as expected), and removed some
-% issues related to spurious occurrences in the datasets such as misaligned or
-% poorly segmented groundtruth masks.
 
 \subsection{Results}
 
