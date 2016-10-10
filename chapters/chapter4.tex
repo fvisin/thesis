@@ -277,7 +277,7 @@ spatial structure of the input data.
 
 \begin{figure}[t]
     \begin{center}
-        \includegraphics[width=0.3\columnwidth]{pdf/first_layer.pdf}
+        \includegraphics[width=0.3\columnwidth]{img/reseg/first_layer.pdf}
         \caption{A ReNet layer. The blue and green dots on the input
             image/feature map represent the steps of $f^{\downarrow}$ and
             $f^{\uparrow}$ respectively. On the concatenation of the resulting
@@ -307,7 +307,7 @@ the data in a more constrainedly sequential nature.
     \advance\leftskip-0.2\textwidth
     \centering
     \makebox[\textwidth][c]{\includegraphics
-    	[height=.135\textheight,width=\textwidth]{pdf/reseg_base.pdf}}
+    	[height=.135\textheight,width=\textwidth]{img/reseg/reseg_base.pdf}}
     \caption{The ReSeg network. For space reasons the pretrained VGG-16
         convolutional layers used to preprocess the input to ReSeg are
         not represented. The first 2 RNNs (blue and green) are applied on
@@ -805,7 +805,7 @@ per-class accuracy (\emph{Avg class acc}).
 \begin{figure}[t]
     \centering
     % \makebox[\textwidth][c]{
-    \includegraphics[width=\textwidth]{img/camvid_classbal_diff.png}%}
+    \includegraphics[width=\textwidth]{img/reseg/camvid_classbal_diff.png}%}
     \caption{Camvid segmentation example with and without class balancing. From
         the left: input image, ground truth segmentation, ReSeg segmentation,
         ReSeg segmentation with class balancing. Class balancing improves the

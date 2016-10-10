@@ -137,7 +137,7 @@ of~\citet{Graves+Schmidhuber-2009}.
 
 \begin{figure}[t]
     \centering
-    \includegraphics[width=0.3\textwidth]{pdf/renet_first_layer.pdf}
+    \includegraphics[width=0.3\textwidth]{img/renet/renet_first_layer.pdf}
     \caption{A ReNet layer is composed by two sublayers, a vertical one and an
         horizontal one}
     \label{fig:renet_layer}
@@ -214,7 +214,7 @@ image, the activation at the last recurrent layer may be flattened and fed into
 a differentiable classifier to solve an object recognition task. The
 experiments on this model, presented in~\autoref{sec:renet_experiments}, used
 several fully-connected layers followed by a softmax classifier, as shown
-in~\autoref{fig:network}.
+in~\autoref{fig:renet_network}.
 
 The deep ReNet is a smooth, continuous function, and the parameters (those from
 the RNNs as well as from the fully-connected layers) can be estimated by the
@@ -226,7 +226,7 @@ log-likelihood.
 
 \begin{figure}[t]
     \centering
-    \includegraphics[width=0.9\textwidth]{img/lenet5.jpg}
+    \includegraphics[width=0.9\textwidth]{img/renet/lenet5.jpg}
     \caption{The LeNet network}
     \label{fig:lenet}
     \vspace{-3mm}
@@ -295,21 +295,21 @@ the proposed ReNet and the LeNet.
 
 \begin{figure}[!t]
     \centering
-    \includegraphics[width=0.5\textwidth]{img/mnist_digits.png}
+    \includegraphics[width=0.5\textwidth]{img/renet/mnist_digits.png}
     \caption{Some digits from the MNIST dataset}
     \label{fig:mnist_digits}
 \end{figure}
 
 \begin{figure}[!t]
     \centering
-    \includegraphics[width=0.5\textwidth]{img/cifar-10.png}
+    \includegraphics[width=0.5\textwidth]{img/renet/cifar-10.png}
     \caption{Some samples of the 10 classes of the CIFAR-10 dataset}
     \label{fig:cifar}
 \end{figure}
 
 \begin{figure}[!t]
     \centering
-    \includegraphics[width=0.5\textwidth]{img/SVHN.png}
+    \includegraphics[width=0.5\textwidth]{img/renet/SVHN.png}
     \caption{Some samples of housing numbers from the SVHN dataset}
     \label{fig:svhn}
 \end{figure}
@@ -382,7 +382,7 @@ was chosen on a per-case basis in order to maximize validation performance.
 
 \begin{figure}[t]
     \centering
-    \includegraphics[height=.14\textheight,width=\columnwidth]{pdf/renet_svhn.pdf}
+    \includegraphics[height=.14\textheight,width=\columnwidth]{img/renet/renet_svhn.pdf}
     \caption{The ReNet network used for SVHN classification}
     \label{fig:renet_network}
 \end{figure}
