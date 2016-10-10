@@ -446,7 +446,7 @@ groundtruth segmentations contain a foreground/background mask of the focused
 horse, encoded as a real-value between 0 and 255. To convert this into a
 boolean mask, the data has been thresholded in the center of the range setting
 all smaller values to 0, and all greater values to 1. See~\autoref{%
-fig:reseg_horses_samples} for a segmentation sample.
+fig:reseg_samples_horses} for some segmentation samples.
 
 % \subsubsection{Fashionista}
 % The Fashionista dataset from ~\cite{Fashionista} contains 685 RGB images of
@@ -469,6 +469,7 @@ together setting any pixel not marked as class 38 (the flower class) to 0, and
 setting all the flower class pixels to 1. This binary segmentation task for
 Oxford Flowers 17 is described in detail in~\cite{Xiaomeng14}.
 %A larger 102 class Oxford Flowers dataset is available from the same authors.
+See~\autoref{fig:reseg_samples_flowers} for some segmentation samples.
 
 \subsubsection{CamVid Dataset}
 The Cambridge-driving Labeled Video Database (CamVid)~\cite{
@@ -486,7 +487,8 @@ used the same subset of 11 class categories
 as~\cite{badrinarayanan2015segnet} and in order to make the experimental setup
 fully comparable to~\cite{badrinarayanan2015segnet}, were obtained downsampling
 all the images by a factor of 2 resulting in a final $480 \times 360$
-resolution.
+resolution. See~\autoref{fig:reseg_samples_camvid} for some segmentation
+samples.
 
 \subsection{Data augmentation and preprocessing}\label{sec:data_preprocessing}
 
@@ -777,14 +779,37 @@ However, this remains to be tested.
 % segmentation, while others are specific to the evaluation datasets or competing
 % methodologies.
 
-\begin{figure}[t]
+\begin{figure}[t!]
     \centering
-    \includegraphics[width=\textwidth]{img/reseg/Segm_horse258.pdf}
-    \includegraphics[width=\textwidth]{img/reseg/Segm_horse283.pdf}
-    \caption{Weizmann Horse segmentation sample.
+    \includegraphics[width=\textwidth]{img/reseg/samples/horse1.pdf}\\
+    \vspace{0.1em}
+    \includegraphics[width=\textwidth]{img/reseg/samples/horse2.pdf}
+    \caption{ReSeg Weizmann Horse segmentation samples.
         Left: Input image, Center: Ground truth segmentation,
         Right: ReSeg predicted segmentation}
-    \label{fig:reseg_horses_samples}
+    \label{fig:reseg_samples_horses}
+\end{figure}
+
+\begin{figure}[t!]
+    \centering
+    \includegraphics[width=0.5\textwidth]{img/reseg/samples/flowers1.jpg}\\
+    \vspace{0.1em}
+    \includegraphics[width=0.5\textwidth]{img/reseg/samples/flowers2.jpg}
+    \caption{ReSeg Oxford Flowers segmentation samples.
+        Left: Input image, Center: Ground truth segmentation,
+        Right: ReSeg predicted segmentation}
+    \label{fig:reseg_samples_flowers}
+\end{figure}
+
+\begin{figure}[t!]
+    \centering
+    \includegraphics[width=\textwidth]{img/reseg/samples/camvid1.png}\\
+    \vspace{0.1em}
+    \includegraphics[width=\textwidth]{img/reseg/samples/camvid2.png}
+    \caption{ReSeg CamVid segmentation samples.
+        Left: Input image, Center: Ground truth segmentation,
+        Right: ReSeg predicted segmentation}
+    \label{fig:reseg_samples_camvid}
 \end{figure}
 
 
@@ -838,8 +863,7 @@ the average per-class accuracy (\emph{Avg class acc}) are also reported.
 
 \begin{figure}[t]
     \centering
-    % \makebox[\textwidth][c]{
-    \includegraphics[width=\textwidth]{img/reseg/camvid_classbal_diff.png}%}
+    \includegraphics[width=\textwidth]{img/reseg/samples/camvid_classbal_diff.png}
     \caption{Camvid segmentation example with and without class balancing. From
         the left: input image, ground truth segmentation, ReSeg segmentation,
         ReSeg segmentation with class balancing. Class balancing improves the
@@ -867,5 +891,6 @@ dependencies.
 The experiments prove the flexibility of ReSeg in the foreground-background
 segmentation as well as the full semantic segmentation tasks on multiple
 datasets. The model achieves state of the art in all the datasets and generates
-convincing segmentation masks, as shown in~\autoref{fig:reseg_horses_samples}
-and \autoref{fig:camvid_class_balance}.
+convincing segmentation masks, as shown in~\autoref{fig:reseg_samples_horses},
+\autoref{fig:reseg_samples_flowers}, \autoref{fig:reseg_samples_camvid} and
+\autoref{fig:camvid_class_balance}.
