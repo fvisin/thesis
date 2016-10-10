@@ -7,6 +7,7 @@ the full context of the input with just one layer thanks to a sophisticated
 interaction of the inner RNNs. This allows activations to be local yet
 conditioned on global information, an ideal setting for semantic segmentation.
 
+% Intro to semantic segmentation
 \emph{Semantic segmentation} is the task of labeling each pixel of an image
 with the class it belongs to. In an urban scene scenario, this would mean,
 e.g., to label all the pixels of all the cars in the image as belonging to the
@@ -22,19 +23,25 @@ people tend to have different degrees of accuracy on small details and
 contours and at the same time, it is hard to define a clear separation path
 between the object and the background sometimes (e.g., the leafs of a tree)
 
+Segmentation is of paramount importance in many fields that range from
+autonomous driving -- where the objects in the scene have to be correctly and
+precisely detected to allow the navigation in the environment -- to medical
+applications such as magnetic resonance (MR) images analysis, ultrasonography,
+surgery robots control or polyps detection in colonoscopies.
+
 % Kinds of semantic segmentation problems
 Semantic segmentation is a broad area of research that encompasses many
-subtasks that depend on the kind of images at hand as well as on the domain of
-application. The input is usually an image that can be in grayscale or colors.
-In some cases it is required to segment a single image, while sometimes the
-task is simplified by the presence of stereo pairs of images that allow to
-exploit the disparity information, i.e., the difference between the two images
-due to the displacement of the cameras. This extra information can be used to
-compute a (usually noisy) depth map that can be very helpful to distinguish
-between objects that are overlapping in the 2D image, but can be easily
-separated on the depth axis. Similarly, depth sensors that produce RGB-D data
-can be used in this fashion to improve the segmentation in some domains. An
-analogous but slightly different case is that of sparse 3D data, where the
+subtasks, which depend on the kind of images at hand as well as on the domain
+of application. The input is usually an image that can be in grayscale or
+colors.  In some cases it is required to segment a single image, while
+sometimes the task is simplified by the presence of stereo pairs of images that
+allow to exploit the disparity information, i.e., the difference between the
+two images due to the displacement of the cameras. This extra information can
+be used to compute a (usually noisy) depth map that can be very helpful to
+distinguish between objects that are overlapping in the 2D image, but can be
+easily separated on the depth axis. Similarly, depth sensors that produce RGB-D
+data can be used in this fashion to improve the segmentation in some domains.
+An analogous but slightly different case is that of sparse 3D data, where the
 depth information of some points is provided but the measurements are not
 densely placed in the input space.
 Finally, a related yet distinct setting is the one of cosegmentation, where
@@ -43,37 +50,41 @@ these segmentation masks to be consistent among each other. This extra
 constraint can be used as a prior to improve those parts that are difficult to
 segment in one image but trivial in another.
 
-The segmentation task is of paramount importance in many fields that range
-from autonomous driving -- where the objects in the scene have to be correctly
-and precisely detected to allow the navigation in the environment -- to medical
-applications such as magnetic resonance (MR) images analysis, ultrasonography,
-surgery robots control or polyps detection in colonoscopies.
-
 % How tackled historically
 Historically the computer vision community tackled this problem by building
 very specialized hand-engineered algorithms that relied heavily on very
 specific domain knowledge. Many of these methods addressed the segmentation
 problem looking for highly discriminative local and global features, such as
-pixel color (possibly in multiple color spaces); histogram of oriented
-gradients (HoG) -- where the input space is described with a discrete function
-that maps locations to colors and the gradient on the two axes is used to
-produce a histogram representation of each patch -- or the similar bag of
-visual words (BOV); the many local patch descriptors such as SIFT, SURF, Kaze,
-CenSurE, BRISK; poselets, that annotate keypoints of the object to be detected;
-dimensionality reduction methods (see e.g., principal components analysis (PCA)
-and ZCA whitening).
+pixel color (possibly in multiple color spaces, see e.g.,~\cite{
+cheng2001color}); histogram of oriented gradients (HoG)~\citep{Dalal05,
+bourdev2010detecting,felzenszwalb2010object} -- where the input space is
+described with a discrete function that maps locations to colors and the
+gradient on the two axes is used to produce a histogram representation of each
+patch -- or the similar bag of visual words (BOV)~\citep{csurka2004visual}; the
+many local patch descriptors such as SIFT~\citep{lowe2004distinctive},
+SURF~\citep{bay2008speeded}, Kaze~\citep{alcantarilla2012kaze}, CenSurE~\citep{
+agrawal2008censure}, BRISK~\citep{leutenegger2011brisk}; poselets~\citep{
+brox2011object,bourdev2010detecting} that annotate keypoints of the object to
+be detected; dimensionality reduction methods (see e.g., principal components
+analysis (PCA)~\cite{smith2002tutorial,shlens2014tutorial,chen2011pixel} and
+ZCA whitening~(see e.g.,~\cite{KrizhevskyHinton2009} for a good introduction)).
 
 Other classical methods for semantic segmentation include clustering
-algorithms, that group pixel in clusters based on some metrics; graph-based
+algorithms~\citep[see e.g.,~][]{hartigan1975clustering,chen1998image}, that
+group pixel in clusters based on some metrics; graph-based
 methods that build a graph with pixels as nodes and some measure of
-dissimilarity as weight for the edges; active contour models (ACMs) that
-segment the image roughly along edges and minimize an energy function that
-imposes a smooth prior on the segmentation; watershed segmentation, that takes
-the intensity values of grayscale images as a height map and imagines to drop
-water on it, filling regions with similar heights. When the rise of the
-water connects two basins, a watershed is found. Finally, many segmentation
-strategies base on two very well known and studied algorithms in the
-literature, namely random decision forests and support vector machines (SVMs).
+dissimilarity as weight for the edges~\citep[see e.g.,~][]{
+carreira2010constrained,felzenszwalb2004efficient}; active contour models
+(ACMs) that segment the image roughly along edges and minimize an energy
+function that imposes a smooth prior on the segmentation\citep[see e.g.,~][]{
+atkins1998fully,kass1988snakes}; watershed segmentation, that takes the
+intensity values of grayscale images as a height map and imagines to drop water
+on it, filling regions with similar heights until the rise of the water
+connects two basins and a watershed is found~\citep[see e.g.,~][]{
+roerdink2000watershed}. Finally, many segmentation strategies base on two very
+well known and studied algorithms in the literature, namely random decision
+forests~\citep{ho1995random,shotton2008semantic} and support vector machines
+(SVMs)~\citep{burges1998tutorial,yang2012layered}.
 
 Many of these methods rely on a sliding-window approach, i.e., a classifier
 that segments a window of fixed size that moves across the image processing it
@@ -81,14 +92,16 @@ in every location. The downside of this approach is that the classification is
 performed locally and the full context is usually not captured easily.
 
 The typical strategy to contrast this lack of high level consistency is to pair the
-segmentation algorithm with a Markov Random Field (MRF) or a Conditional Random
-Field (CRF). These methods can be implemented in several ways, but usually
-impose a local prior on each location and consistency constraints on pairs or
-sets of positions. The underlying intuition of these methods is that the
-prediction in every location should be consistent with the one of the
+segmentation algorithm with a Markov Random Field (MRF)~\citep[see e.g.,~][]{
+blake2011markov,MurphyBook2012,moser2012markov} or a Conditional Random
+Field (CRF)~\citep[see e.g.,~][]{russell2009associative, he2004multiscale,
+shotton2006textonboost}. These methods can be implemented in several ways, but
+usually impose a local prior on each location and consistency constraints on
+pairs or sets of positions. The underlying intuition of these methods is that
+the prediction in every location should be consistent with the one of the
 neighbouring locations. The pattern of these dependencies can vary across
 different implementations and is usually defined basing on specific domain
-knowledge.
+knowledge. For a complete survey on segmentation, see~\cite{thoma2016survey}.
 
 This chapter introduces the second main contribution of this work. The ReSeg
 model~\cite{Visin_2016_CVPR_Workshops} builds on
@@ -432,7 +445,8 @@ segmentation images, of the same size as the corresponding image. The
 groundtruth segmentations contain a foreground/background mask of the focused
 horse, encoded as a real-value between 0 and 255. To convert this into a
 boolean mask, the data has been thresholded in the center of the range setting
-all smaller values to 0, and all greater values to 1.
+all smaller values to 0, and all greater values to 1. See~\autoref{%
+fig:reseg_horses_samples} for a segmentation sample.
 
 % \subsubsection{Fashionista}
 % The Fashionista dataset from ~\cite{Fashionista} contains 685 RGB images of
@@ -661,10 +675,8 @@ computational constraints allowed, larger batch sizes were used, e.g., 5, 10,
 20, 35, and 50. Larger batch sizes smoothed learning (as expected), and removed
 some issues related to spurious occurrences in the datasets such as misaligned
 or poorly segmented groundtruth masks. This had a bigger impact on the smaller
-datasets than on Camvid.
-
-The experiments kept fixed the batch size to the value of $5$, as
-a compromise between train speed and memory usage.
+datasets than on Camvid, where the batch size was kept fixed to the value of
+$5$, as a compromise between train speed and memory usage.
 
 All the experiments, used L2 regularization~\cite{Krogh92asimple}, also known
 as weight decay, set to $0.001$ to avoid instability at the end of training.
@@ -710,97 +722,119 @@ The best parameters are reported in~\autoref{tbl:camvid_params}.
 % \end{table}
 
 
-\subsection{Results}
+\subsection{Results}\label{sec:reseg_results}
 
-In~\autoref{tbl:WeizmannHorses_SOTA}, we report the results on the Weizmann
-Horse dataset. On this dataset, we verified the assumption that processing
-the input image with some pre-trained convolutional layers from VGG-16 could
-ease the learning. Specifically, we restricted ourselves to only using the
-first $7$ convolutional layers from VGG, as we only intended to extract some
-low-level generic features and learn the task-specific high-level features with
-the ReNet layers. The results indeed show an increase in terms of average Intersection
-over Union (\emph{IoU}) when these layers are being used, confirming our
-hypothesis.
+\autoref{tbl:WeizmannHorses_SOTA} reports the results on the Weizmann
+Horse dataset. On this dataset, the assumption that processing the input image
+with some pre-trained convolutional layers from VGG-16 could ease the learning
+was verified. Specifically, the experiments were restricted to only using the
+first $7$ convolutional layers from VGG, as the goal was to extract some
+low-level generic features only and learn the task-specific high-level features
+with the ReNet layers. The results indeed show an increase in terms of average
+Intersection over Union (\emph{IoU}) when these layers are being used,
+confirming that the ReNet layers can learn good high-level features from
+generic convolutional features detected by a pretrained VGG model.
 
-\autoref{tbl:OxfordFlowers_SOTA} shows the results for Oxford Flowers
-dataset, when using the full ReSeg architecture (i.e., including VGG convolutional layers).
-As shown in the table, our method clearly outperforms the
+\begin{figure}[t]
+    \centering
+    \includegraphics[width=\textwidth]{img/reseg/reseg_interm_pred.pdf}
+    \caption{A ReSeg network with intermediate predictions.}
+    \label{fig:reseg_intermediate_pred}
+\end{figure}
+
+Another variant of the network that was tested on the Weizmann Horse dataset
+used intermediate predictions to help the gradient flow in the early layers
+of the network as depicted in~\autoref{fig:reseg_intermediate_pred}. In this
+scenario, the feature maps of some of the intermediate layers were passed to an
+upsampling layer followed by a softmax and the corresponding classification
+error was backpropagated to improve the learning of the early layers. The
+experiments with this setup were not conclusive, as in some cases the
+intermediate layers helped the training while in others they did not seem to
+help or were even harmful. Overall, the potential performance improvement was
+not significant enough in the positive cases to justify the increase of
+complexity and of training time, so it was decided not to employ them in the
+following experiments. Recent techniques, such as the use of residual
+connections~\citep{he2015deep,srivastava2015training} are most probably more
+effective at speeding up the training of early layers of the network.
+
+\autoref{tbl:OxfordFlowers_SOTA} shows the results for Oxford Flowers dataset,
+when using the full ReSeg architecture (i.e., including VGG convolutional
+layers).  As shown in the table, this method clearly outperforms the
 state-of-the-art both in terms of global accuracy and average IoU.
 
-\autoref{tbl:camvid_SOTA} presents the results on CamVid dataset using the full
-ReSeg architecture. Our model exhibits state-of-the-art performance in terms of
-IoU when compared to both standard segmentation methods and neural network
-based methods, showing an increase of $17\%$ w.r.t.\ to the recent SegNet
-model. It is worth highlighting that incorporating sub-model averaging to
-SegNet model, as in \cite{Kendall2015bayesiansegnet}, boosts the original model
-performance, as expected. Therefore, introducing sub-model averaging to ReSeg
-would also presumably result in significant performance increase.  However,
-this remains to be tested.
+Finally, \autoref{tbl:camvid_SOTA} presents the results on CamVid dataset using
+the full ReSeg architecture. This model exhibits state-of-the-art performance
+in terms of IoU when compared to both standard segmentation methods and neural
+network based methods, showing an increase of $17\%$ w.r.t.\ to the recent
+SegNet model. It is worth highlighting that incorporating sub-model averaging
+to SegNet model, as in \cite{Kendall2015bayesiansegnet}, boosts the original
+model performance, as expected. Therefore, introducing sub-model averaging to
+ReSeg would also presumably result in significant performance increase.
+However, this remains to be tested.
 
 % There are number of difficulties in directly comparing our performance with the
 % reported scores, some of which are intrinsic to using neural based models for
 % segmentation, while others are specific to the evaluation datasets or competing
 % methodologies.
 
-%\begin{figure}[t]
-%    \centering
-%    \makebox[\columnwidth][c]{\includegraphics[width=1.1\columnwidth]
-%    {Segm_horse258.pdf}}
-%    \caption{Weizmann Horse example segmentation.
-%        Left: Input image, Center: Ground truth segmentation,
-%        Right: ReSeg predicted segmentation}
-%    \label{fig:ReSeg_example}
-%\end{figure}
+\begin{figure}[t]
+    \centering
+    \includegraphics[width=\textwidth]{img/reseg/Segm_horse258.pdf}
+    \includegraphics[width=\textwidth]{img/reseg/Segm_horse283.pdf}
+    \caption{Weizmann Horse segmentation sample.
+        Left: Input image, Center: Ground truth segmentation,
+        Right: ReSeg predicted segmentation}
+    \label{fig:reseg_horses_samples}
+\end{figure}
 
-%\begin{figure}[t]
-%    \centering
-%    \makebox[\columnwidth][c]{\includegraphics[width=1.1\columnwidth]
-%    {Segm_horse283.pdf}}
-%    \caption{Weizmann Horse failure segmentation.
-%        Left: Input image, Center: Ground truth segmentation,
-%        Right: ReSeg predicted segmentation}
-%    \label{fig:ReSeg_failure}
-%\end{figure}
 
 \section{Discussion}
 
-As reported in the previous section, our experiments on the Weizmann Horse
-dataset show that processing the input images with some layers of VGG-16
-pre-trained network improves the results. In this setting, pre-processing the input
-with Local Contrast Normalization (LCN) does not seem to give any advantage
-(see~\autoref{tbl:camvid_params}). We did not use any other kind of
-pre-processing.
+As pointed out earlier, the experiments on the Weizmann Horse dataset were
+treated as a test playground to acquire knowledge on the sensitivity of the
+model w.r.t. the preprocessing and the hyperparameters. The preliminary
+experiments show that processing the input images with the first layers of
+the VGG-16 pre-trained network improves the results. Other image manipulation
+techniques, such as pre-processing the input with Local Contrast Normalization
+(LCN), do not seem to improve the performance of the model
+(see~\autoref{tbl:camvid_params}) and were therefore not used in the following
+experiments.
 
-While on both the Weizmann Horse and the Oxford Flowers datasets we trained on
-a binary background/foreground segmentation task, on CamVid we addressed the
-full semantic segmentation task. In this setting, when the dataset is highly
-imbalanced, the segmentation performance of some classes can drop
-significantly as the network tries to maximize the score on the high-occurrence
-classes, {\em de facto} ignoring the low-occurrence ones. To overcome this behaviour,
-we added a term to the cross-entropy loss to bias the prediction towards the
-low-occurrence classes. We use \emph{median frequency
-balancing}~\cite{Eigen2015}, which re-weights the class predictions by the
-ratio between the median of the frequencies of the classes (computed on the
-training set) and the frequency of each class.
-% \begin{equation}
-% \alpha(c) = median\_frequency / f(c)
-% \end{equation}
-% where $f(c)$  is the number of pixels of the class $c$ divided by the total
-% number of pixels in the images where $c$ is present, and $median\_frequency$ is
-% the median of these frequencies.
-This increases the score of the low frequency classes
-(see~\autoref{tbl:camvid_params}) at the price of a more noisy segmentation
-mask, as the probability of the underrepresented classes is overestimated and
-can lead to an increase in misclassified pixels in the output segmentation
-mask, as shown in~\autoref{fig:camvid_class_balance}.
+While the Weizmann Horse and the Oxford Flowers datasets were tackled in a
+binary background/foreground segmentation setting, on the CamVid dataset the
+full semantic segmentation task was addressed. In this setting, when the
+dataset is highly imbalanced, the segmentation performance of some classes can
+drop significantly as the network tries to maximize the score on the
+high-occurrence classes, {\em de facto} ignoring the low-occurrence ones. To
+overcome this behaviour, a class-balancing term was added to the cross-entropy
+loss to bias the prediction towards the low-occurrence classes. Specifically,
+\emph{median frequency balancing}~\cite{Eigen2015,eigen2015predicting} was
+employed, which re-weights the class predictions by the ratio between the
+median of the frequencies of the classes (computed on the training set) and the
+frequency of each class:
 
-On all datasets we report the per-pixel accuracy (\emph{Global acc}), computed
-as the percentage of true positives w.r.t.\ the total number of pixels in the
-image, and the average per-class Intersection over Union (\emph{Avg IoU}),
-computed on each class as true positive divided by the sum of true positives,
-false positives and false negatives and then averaged. In the full semantic
-segmentation setting we also report the per-class accuracy and the average
-per-class accuracy (\emph{Avg class acc}).
+\begin{equation*}
+    \alpha(c) = median\_frequency / f(c)
+\end{equation*}
+
+\noindent where the frequency of the class $c$, $f(c)$, is computed dividing
+the number of pixels of the class $c$ divided by the total number of pixels in
+the images where $c$ is present, and $median\_frequency$ is the median of the
+frequencies of all the classes.
+
+This increases the score of the low frequency classes (see~\autoref{%
+tbl:camvid_params}) at the price of a more noisy segmentation mask, as the
+probability of the underrepresented classes is overestimated and can lead to
+an increase in misclassified pixels in the output segmentation mask. This
+behavior is clearly visible in~\autoref{fig:camvid_class_balance}.
+
+The metrics reported on all the datasets are the per-pixel accuracy~(\emph{%
+Global acc}), computed as the percentage of true positives w.r.t.\ the total
+number of pixels in the image, as well as the average per-class Intersection
+over Union (\emph{Avg IoU}), computed on each class as true positive divided by
+the sum of true positives, false positives and false negatives and then
+averaged. In the full semantic segmentation setting the per-class accuracy and
+the average per-class accuracy (\emph{Avg class acc}) are also reported.
 
 \begin{figure}[t]
     \centering
@@ -814,17 +848,24 @@ per-class accuracy (\emph{Avg class acc}).
     \label{fig:camvid_class_balance}
 \end{figure}
 
-\section{Conclusion}
-We introduced the ReSeg model, an extension of the ReNet model for image
-semantic segmentation. The proposed architecture shows state-of-the-art
-performances on CamVid, a widely used dataset for urban scene semantic
-segmentation, as well as on the much smaller Oxford Flowers dataset. We also
-report state-of-the-art performances on the Weizmann Horses.
-
-In our analysis, we discuss the effects of applying some layers of VGG-16 to
-process the input data, as well as those of introducing a class balancing
-term in the cross-entropy loss function to help the learning of
-under-represented classes.
+% \section{Conclusion}
+% We introduced the ReSeg model, an extension of the ReNet model for image
+% semantic segmentation. The proposed architecture shows state-of-the-art
+% performances on CamVid, a widely used dataset for urban scene semantic
+% segmentation, as well as on the much smaller Oxford Flowers dataset. We also
+% report state-of-the-art performances on the Weizmann Horses.
+%
+% In our analysis, we discuss the effects of applying some layers of VGG-16 to
+% process the input data, as well as those of introducing a class balancing
+% term in the cross-entropy loss function to help the learning of
+% under-represented classes.
 Notably, it is sufficient to process the input images with just a few layers of
-VGG-16 for the ReSeg model to gracefully handle the semantic segmentation task, confirming
-its ability to encode contextual information and long term dependencies.
+VGG-16 for the ReSeg model to gracefully handle the semantic segmentation task,
+confirming its ability to encode contextual information and long term
+dependencies.
+
+The experiments prove the flexibility of ReSeg in the foreground-background
+segmentation as well as the full semantic segmentation tasks on multiple
+datasets. The model achieves state of the art in all the datasets and generates
+convincing segmentation masks, as shown in~\autoref{fig:reseg_horses_samples}
+and \autoref{fig:camvid_class_balance}.
