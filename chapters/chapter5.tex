@@ -1,9 +1,267 @@
 \chapter{Convolutional RNNs for Video Semantic Segmentation}\label{sec:video_segmentation}
 
-%============================= INTRODUCTION =================================
-\section{Introduction}\label{sec:i}
-Write something about video segmentation
+\autoref{sec:reseg} introduced ReSeg, a Recurrent Neural Network based model
+for semantic segmentation. The strength of that model comes from the coupling
+of fast general-purpose CNN feature extractors with stateful RNNs able to
+carry the information extracted by the CNNs through various steps of
+computation.
 
-%============================= SECTIONS =================================
+The task addressed by ReSeg is semantic segmentation, where given an input
+image the algorithm is required to provide a segmentation mask, i.e., to
+classify each pixel as belonging to a specific class. \autoref{sec:reseg}
+also described a variant of this task, namely cosegmentation, where instead
+of a single input image the algorithm is provided with multiple images --
+usually taken by different cameras at different locations -- and can exploit
+the information they potentially share to improve the single image prediction,
+consequently improving the global score at the same time.
 
-%\section{New section}
+In some sense, \emph{video segmentation} can be seen as an extreme version
+of cosegmentation, where the model is asked to segment multiple frames of a
+video. As opposed to cosegmentation, where the images depict the same scene
+from different angles at different positions in time, in videos the images
+come in a seamless fashion and their correlation through time can be exploited
+to increase the performances.
+
+The biggest problem of this task is that if labeling images for semantic
+segmentation is expensive, the time required to label all the frames of a
+video is even more dramatic. One typical way to alleviate this issue is to
+label only a subset of the frames, either by dropping most of the frames and
+providing only a few of them with their corresponding mask, or by providing all
+the input frames with only a subset of them annotated. Another way to reduce
+the labeling effort is to just label the main subject of each frame or to
+reduce the number of classes (to the limit case of foreground/background
+separation).
+
+% Intro
+In the recent years, Convolutional Neural Networks (CNNs) have successfully
+been applied to address many computer vision tasks, such as image
+classification~\citep{Krizhevsky2012-alexnet}, semantic image
+segmentation~\citep{noh2015learning,long2014fully} and object
+detection~\citep{Sermanet13overfeat}. The success witnessed on still images
+has rapidly reached the video domain, providing remarkable results in tasks
+such as video action recognition~\citep{simonyan2014two, karpathy2014large},
+event detection in videos~\citep{yeung2015end} and video captioning~\citep{
+yao2015describing}.
+
+Most common video related tasks involve predicting only a single or a few
+outputs per video. However, computer vision tasks such as video semantic
+segmentation, change detection and object tracking, require a per \emph{
+temporal "voxel"} prediction.
+
+Pixel-wise prediction of still images has recently enjoyed the interested
+attention of the computer vision community, that successfully coupled
+classification models trained on ImageNet~\citep{Szegedy15googlelenet,
+Simonyan14vgg} with various upsampling strategies in a trainable end-to-end
+fashion, applying the resulting models in the image segmentation domain with
+success~\citep{long2014fully,noh2015learning}. More recently, some effort has
+been devoted to address the more challenging task of end to end video semantic
+segmentation~\citep{Tran16v2v}. Works in this direction usually define a fixed
+{\emph a priori} window on the temporal dimension to obtain a voxel-wise
+prediction~\citep{Tran16v2v}.
+
+Most common video related tasks involving neural network approaches combine
+CNNs with Recurrent Neural Networks (RNNs) in a sequential fashion, by first
+applying a possibly pre-trained CNN on each frame to then interpret the
+resulting feature maps in a temporal consistent way, by processing them with an
+RNN \cite{}. While this is an effective way to exploit the temporal
+information, the two pipelines don't completely benefit from each other, since
+the temporal consistency is enforced only in the last step. Furthermore, the
+spatial relations are ignored by the state of the RNN and are taken into
+account only throughout the encoding coming from the CNNs.
+
+In this paper, we aim to address the task separation enforced by this
+dichotomy, proposing a novel architecture to jointly process the temporal and
+the spatial information at each level of the recurrent-convolutional hierarchy.
+
+To do so, we build on top of~\cite{ShiCWYWW15} and extend their work by
+introducing a novel recurrent-convolutional-upsampling layer, which learns how
+to jointly leverage spatio-temporal dimensions, by learning the 2D topology and
+the time consistency simultaneously. The overall model mimics the conventional
+2D semantic segmentation encoder-decoder architecture, but is able to jointly
+capture spatio-temporal information, using memory instead of a fixed window of
+time.
+
+We demonstrate the effectiveness of recurrent-convolutional LSTM for video
+semantic segmentation task.
+
+state rnn has a topology
+
+We provide and in-depth analysis on the importance of the temporal dimension
+for this kind of task.
+
+- how temporal dimension is important for the task
+- conv-deconv lstm model
+
+
+\section{Related Work}
+\label{sec:sota}
+
+
+\section{Method}
+
+Our architecture is shown in Figure \ref{fig:method}.
+\label{sec:method}
+\begin{figure}
+\centering
+\includegraphics[width=7cm]{img/deconvRNN/model_skip.png}
+\label{fig:method}
+\caption{An example of architecture for video semantic segmentation build with
+four convolutional LSTMs. The input to the model is a sequence of video frames
+and the output is a sequence of segmentation maps. The arrows indicate if a
+layer performs spatial down-sampling ($\downarrow$) or up-sampling
+($\uparrow$). The rectangles show the spatial dimension of consecutive hidden
+states (black rectangles) and cell states (green rectangles). In our
+architecture we use bidirectional LSTM which are shown with ($\leftrightarrow$)
+and skip connections.}
+\end{figure}
+
+
+\subsection{Convolutional LSTM}
+We build on top of convolutional LSTM (ConvLSTM) proposed in~\cite{ShiCWYWW15}.
+TODO(describe better). + brief LSTM background
+
+
+\[ i_t^{l} = \sigma(W_{xi}^{l}*X_t^{l} + W_{hi}^{l}*H_{t-1}^{l} + W_{ci}^{l} \circ C_{t-1}^{l} + b_i^{l})\]
+\[ f_t^{l} = \sigma(W_{xf}^{l}*X_t^{l} + W_{hf}^{l}*H_{t-1}^{l} + W_{cf}^{l} \circ C_{t-1}^{l} + b_f^{l})\]
+\[ C_t^{l} = f_t^{l} \circ C_{t-1}^{l} + i \circ tanh(W_{xc}^{l}*X_t^{l} + W_{hc}^{l}*H_{t-1}^{l} + b_c^{l})\]
+\[ o_t^{l} = \sigma(W_{xo}^{l}*X_t^{l} + W_{ho}^{l}*H_{t-1}^{l} + W_{co}^{l} \circ C_{t-1}^{l} + b_o^{l})\]
+\[ H_t^{l} = o_t^{l} \circ relu(C_t^{l})\]
+
+where \(X_t^{l}\) and \(H_t^{l}\) are the input and output feature maps
+respectively, \(C_t^{l}\) is the state of the cell (or memory) of the recurrent
+unit, \(i_t^{l}\), \(f_t^{l}\), \(o_t^{l}\) are respectively the input gate,
+the forget gate and the output gate and control the behavior of the recurrent
+unit given the input and its state at each time step $t$.
+\(\sigma\) sigmoid function, \(W_{\star}^{l}\) weights, \(*\) convolution
+operation and \(\circ\) Hadamard product.
+
+Note that, differently from typical recurrent architectures, all gates and
+states have spatial dimensions as are the result of the application of
+convolutions on the input of the layer. Differently from~\cite{ShiCWYWW15}, we
+use Rectified Linear Unit (ReLU) on the output instead of the tanh.
+
+\subsection{Spatial resolution}
+In order to mimic CNN, we introduce mechanisms to change spatial resolution of
+feature maps: e. g. pooling, strided convolution, unpooling or transposed
+convolution.
+
+NOTE: What is the difference between putting the pooling in the middle of two
+ConvLSTMs and within ConvLSTM??? It might be difficult to defend this as
+novelty...
+
+\subsection{Bidirectional RNNs}
+Bidirectional RNNs (B-RNNs) \cite{Schuster1997bidirecrnn} have been
+successfully used in the literature for video related tasks \cite{Du2015_CVPR}.
+BRNNs integrate information from both future and past frames by going through
+the video frames both forwards and backwards, ensuring more consistent temporal
+smoothness when making predictions. The output of the respective forward and
+backward passes is then combined via concatenation or sum and used as input to
+the next layer of the architecture or used as final prediction.
+
+Due to memory constraints, we don't follow the trend of concatenating the B-RNN
+outputs \cite{}, but rather sum them as initially  suggested in
+\cite{Schuster1997bidirecrnn}. However, instead of computing the arithmetic
+mean, we learn the parameters of a weighted sum
+
+\[ H_j^{l\leftrightarrow} = \alpha_j^{l} H_j^{l\leftarrow} + (1 - \alpha_j^{l}) H_j^{l\rightarrow}\]
+
+\subsection{Skip Connections}
+
+\section{Results on Benchmark Datasets}
+\label{sec:exp}
+FCN8, FCN8 with convLSTM, our model
+\subsection{FCN8}
+FCN8 network achieved state of the art results on semantic segmentation tasks
+\cite{DBLP:conf/cvpr/LongSD15}. The FCN8 network is divided into two parts : a
+contracting part and a decontracting part, so that the output of the network
+has the same size than the input. The contracting part is adapted from vgg
+\cite{Simonyan14vgg}. The decontracting part is made of 3 transposed
+convolutions, to what paper meaning, add citation, which output a slighty
+larger map than the input. A crop layer then reshape the output to the exact
+same size of the input. Two skip connections are added between layers in the
+contracting path and the corresponding one in decontracting path.
+
+We reused the weights of the contrating path without retraining them. However,
+we retrain all the decontracting path when used.
+
+This FCN8 network is used a baseline in 3 configurations :
+\begin{itemize}
+    \item As is. No modification to the network is done. Only the decontracting
+        path is trained. The network has no temporality taken into account.
+    \item We add a convolutional LSTM layer on top of the network. The time is
+        taken into account only at the top scale.
+    \item The transposed convolutions of the decontracting path are replaced by
+        upsampling LSTM layers. The temporality is taken into account at
+        different scales in the decontracting path. Like in the previous point
+        convolutional LSTM layer is added on top. The skip connections of the
+        original FCN8 are removed.
+\end{itemize}
+
+
+\subsection{Datasets}
+
+\subsubsection{CamVid: Motion-based Video Segmentation}
+\label{sssec:camvid}
+CamVid
+dataset\footnote{http://mi.eng.cam.ac.uk/research/projects/VideoRec/CamVid/}
+\cite{Brostow90camvid} is a motion-based video segmentation dataset, captured
+from the perspective of a driving automobile, with object class semantic
+labels. The dataset contains, which contains 11 semantic classes such as sky,
+road, buildings or cars. The dataset contains video sequences but has more
+often been used for still image semantic segmentation, considering the video
+frames separately \cite{}.
+
+\subsubsection{Gatech: Geometric Context Video Segmentation}
+\label{sssec:gatech}
+Gatech dataset
+\footnote{http://www.cc.gatech.edu/cpl/projects/videogeometriccontext/}
+\cite{VideoGeometricContext2013} is a geometric scene understanding dataset,
+which consists of 63 videos for training/validation and 38 for testing. Each
+video has between 50 and 300 frames (with an average of 190). A pixel-wise
+segmentation map is provided for each frame. There are 8 classes in the
+dataset: \textit{sky}, \textit{ground}, \textit{buildings}, \textit{porous},
+\textit{humans}, \textit{cars}, \textit{vertical mix} and \textit{main mix}.
+The dataset was originally built to learn 3D geometric structure of outdoor
+video scenes.
+
+
+\subsubsection{Change Detection}
+\label{sssec:changedet}
+Change Detection dataset (CDnet) comes after 2 successful benchmarks
+\cite{wang2014cdnet,goyette2012changedetection}. CDnet contains over 160,000
+frames obtained from 31 videos and manually annotated. This dataset covers a
+variety of semantic segmentation scenarios. The categories include Challenging
+weather, Air turbulence, camera jitter, dynamic background, low resolution
+traffic videos, intermittent object motion, shadow, thermal, bad weather, low
+frame rate, night videos, pan-tilt-zoom and turbulence. The official evaluation
+metrics are Recall (Re), Specificity (Sp), False Positive Rate (FPR), False
+Negative Rate (FNR), Percentage of Wrong Classifications (PWC), Precision (Pr)
+and F-Measure (FM).
+
+\subsection{Experimental Setup}
+\label{ssec:setup}
+In this section, we study the effectiveness of involving the temporal
+information on the task of video spatial segmentaion. Our experiments with
+regarding to our pipeline are designed to find an optimum way of involving the
+temporal information.
+Toward this end, we compare our end to end segmentation method with two
+following baselines:
+\begin{itemize}
+    \item Segmentation over each frame independently using Convnet. In this
+        case, we don't involve any temporal information.
+    \item Employing the temporal information only on half of the network. (TODO:
+        why are we using this as a baseline?)
+\end{itemize}
+As explained earlier we employ the temporal information on every layers of the
+network and have a recursion over time at each layer. Therefore, we have both
+convolutional LSTM and upsampling LSTM. (TODO: requires more explanation)
+\subsubsection{Configuration of the layers}
+The convolutional and upsampling layers respectively consist of 70 and 100
+units. We apply batch normalization on each scale.
+
+\subsection{Leveraging time throughout the feature hierarchy}
+\label{ssec:analysis}
+
+\section{Discussion}
+\label{sec:disc}
+\section{Conclusion}
