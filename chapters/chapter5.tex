@@ -1,28 +1,24 @@
 \chapter{Convolutional RNNs for Video Semantic Segmentation}\label{sec:video_segmentation}
 
-\autoref{sec:reseg} introduced ReSeg, a Recurrent Neural Network based model
-for semantic segmentation. The strength of that model comes from the coupling
-of fast general-purpose CNN feature extractors with stateful RNNs able to
-carry the information extracted by the CNNs through various steps of
-computation.
+The previous chapter introduced the task of semantic segmentation, where the
+model is requested to produce a semantic mask, i.e. to classify every pixel of
+an input image.
 
-The task addressed by ReSeg is semantic segmentation, where given an input
-image the algorithm is required to provide a segmentation mask, i.e., to
-classify each pixel as belonging to a specific class. \autoref{sec:reseg}
-also described a variant of this task, namely cosegmentation, where instead
-of a single input image the algorithm is provided with multiple images --
-usually taken by different cameras at different locations -- and can exploit
-the information they potentially share to improve the single image prediction,
-consequently improving the global score at the same time.
+Rather than presenting the algorithm with a single image, a variant of the
+segmentation task called cosegmentation, provides it with multiple images
+usually taken at different locations in the same scene (potentially by
+different cameras). In this setting the model can exploit the information that
+the images potentially share to improve the single image prediction and
+consequently improve the global score at the same time.
 
-In some sense, \emph{video segmentation} can be seen as an extreme version
-of cosegmentation, where the model is asked to segment multiple frames of a
-video. As opposed to cosegmentation, where the images depict the same scene
-from different angles at different positions in time, in videos the images
-come in a seamless fashion and their correlation through time can be exploited
-to increase the performances.
+In many ways, \emph{video segmentation} can be seen as an extreme version of
+cosegmentation, where the model is asked to segment multiple frames of a video.
+As opposed to cosegmentation, where the images depict the same scene from
+different angles and in moments potentially very far away in time, in videos the
+images come in a seamless fashion and their correlation through time can be
+exploited to increase the performances.
 
-The biggest problem of this task is that if labeling images for semantic
+The main problem of this task is that if labeling images for semantic
 segmentation is expensive, the time required to label all the frames of a
 video is even more dramatic. One typical way to alleviate this issue is to
 label only a subset of the frames, either by dropping most of the frames and
@@ -32,69 +28,109 @@ the labeling effort is to just label the main subject of each frame or to
 reduce the number of classes (to the limit case of foreground/background
 separation).
 
+Applying machine learning techniques to this class of problems is challenging
+due to the lack of large amounts of labeled data, as well as for the huge
+amount of time required to train these kind of models that calls for
+non-trivial technological solutions. The time spent on operations that are not
+strictly related to training, such as loading and preprocessing the data,
+saving the weights on disk, saving samples and generating plots to monitor the
+progress of the algorithm, has to be minimized. Another recent trend in this
+field is to resort to multi-GPU training, that introduces an almost linear
+speedup (up to a certain numbers of GPUs)~\cite{theano2016short,ma2016theano}
+but increases the complexity of the algorithm, is often subject to constraints
+(e.g., the GPUs might have to be hosted by the same machine or node of a
+cluster) and makes debugging much less pleasant in many cases.
+
+\autoref{sec:reseg} introduced ReSeg~\citep{Visin_2016_CVPR_Workshops}, an
+RNN-based model for image semantic segmentation. One of the main strengths of
+ReSeg comes from the coupling of fast general-purpose CNN feature extractors
+with stateful RNNs able to carry the information extracted by the CNNs through
+various steps of computation, showing the effectiveness of RNNs applied to the
+spatial domain.
+
+% While in ReSeg RNNs are allowed to move over the spatial dimension of the data
+% rather than the temporal one.
+This approach can be taken a step further by allowing the RNNs to jointly
+process space and time information in videos, by placing the CNNs directly into
+the inner computation of the recursive layer. This chapter introduces a novel
+architecture that aims to address the task separation traditionally enforced by
+the CNN-RNN dichotomy jointly processing the temporal and the spatial
+information at each level of the recurrent-convolutional hierarchy.
+
+
+\section{Motivation}
+
 % Intro
-In the recent years, Convolutional Neural Networks (CNNs) have successfully
-been applied to address many computer vision tasks, such as image
-classification~\citep{Krizhevsky2012-alexnet}, semantic image
-segmentation~\citep{noh2015learning,long2014fully} and object
-detection~\citep{Sermanet13overfeat}. The success witnessed on still images
-has rapidly reached the video domain, providing remarkable results in tasks
-such as video action recognition~\citep{simonyan2014two, karpathy2014large},
-event detection in videos~\citep{yeung2015end} and video captioning~\citep{
-yao2015describing}.
+In the last years, Convolutional Neural Networks (CNNs) have been successfully
+applied to address many computer vision tasks, such as image
+classification~\citep{Krizhevsky2012-alexnet,Simonyan2015,
+Szegedy-et-al-arxiv2014} and object detection~\citep{Girshick-et-al-arxiv2013,
+Sermanet13overfeat} and their application has become ubiquitous in many well
+known and widely used commercial products.
 
-Most common video related tasks involve predicting only a single or a few
-outputs per video. However, computer vision tasks such as video semantic
-segmentation, change detection and object tracking, require a per \emph{
-temporal "voxel"} prediction.
+More recently, pixel-wise prediction of still images has enjoyed the attention
+of the computer vision community. In contrast to image classification and
+object detection this \emph{structured prediction} problem requires each
+pixel to be classified, which demands for a more fine detail understanding of
+the image, as well as consistency in the prediction. In this domain many
+state of the art architectures successfully coupled classification models
+trained on ImageNet~\citep{Simonyan14vgg,Szegedy15googlelenet} with various
+upsampling strategies in a trainable end-to-end fashion to address the
+challenging image segmentation and scene parsing task~\citep[see e.g.,~][]{
+long2014fully,noh2015learning}.
 
-Pixel-wise prediction of still images has recently enjoyed the interested
-attention of the computer vision community, that successfully coupled
-classification models trained on ImageNet~\citep{Szegedy15googlelenet,
-Simonyan14vgg} with various upsampling strategies in a trainable end-to-end
-fashion, applying the resulting models in the image segmentation domain with
-success~\citep{long2014fully,noh2015learning}. More recently, some effort has
-been devoted to address the more challenging task of end to end video semantic
-segmentation~\citep{Tran16v2v}. Works in this direction usually define a fixed
-{\emph a priori} window on the temporal dimension to obtain a voxel-wise
-prediction~\citep{Tran16v2v}.
+The success witnessed on still images has rapidly reached the video domain,
+achieving remarkable results in tasks such as video action recognition~\citep{
+simonyan2014two,karpathy2014large}, event detection in videos~\citep{
+yeung2015end} and video captioning~\citep{yao2015describing}. Along this
+direction, some effort has been devoted lately to address the more
+challenging task of end to end video semantic segmentation~\citep{Tran16v2v}.
 
-Most common video related tasks involving neural network approaches combine
-CNNs with Recurrent Neural Networks (RNNs) in a sequential fashion, by first
-applying a possibly pre-trained CNN on each frame to then interpret the
-resulting feature maps in a temporal consistent way, by processing them with an
-RNN \cite{}. While this is an effective way to exploit the temporal
+While many computer vision video-related tasks involve predicting only a single
+or a few outputs per video, some of them -- such as video semantic
+segmentation, change detection and object tracking -- require a per
+\emph{temporal "voxel"} prediction. As an analogy to 3D voxels, where a
+volumetric pixel (or voxel) is used to describe a local portion of the data
+that extends across space in three dimensions, temporal voxels refer to 3D
+portions of the data that span over a contiguous two-dimensional space and over
+a one-dimensional sequence in the temporal domain.
+Works in this direction usually define a fixed {\emph a priori} window on the
+temporal dimension to obtain a voxel-wise prediction~\citep{Tran16v2v}.
+
+The most common way to address video related tasks with neural network
+approaches is to combine CNNs with RNNs in a sequential fashion, by first
+applying a (possibly pre-trained) CNN on each frame and then interpreting the
+resulting feature maps in a temporal consistent way by processing them with an
+RNN~\cite{Donahue-et-al-arxiv2014,Vinyals-et-al-CVPR2015,Karpathy+Li-CVPR2015,
+Venugopalan_2015_ICCV}. While this is an effective way to exploit the temporal
 information, the two pipelines don't completely benefit from each other, since
 the temporal consistency is enforced only in the last step. Furthermore, the
-spatial relations are ignored by the state of the RNN and are taken into
-account only throughout the encoding coming from the CNNs.
+spatial relations are mostly ignored by the state of the RNN as they are taken
+into account only through the encoding coming from the CNNs.
 
-In this paper, we aim to address the task separation enforced by this
-dichotomy, proposing a novel architecture to jointly process the temporal and
-the spatial information at each level of the recurrent-convolutional hierarchy.
+On this note, \cite{ShiCWYWW15} propose an interesting approach that deeply
+entangles the convolution operator with the state-to-state and input-to-state
+transitions of the RNN itself, rather than encoding each frame independently
+with CNNs and then processing the spatial encodings timewise with an RNN.
 
-To do so, we build on top of~\cite{ShiCWYWW15} and extend their work by
-introducing a novel recurrent-convolutional-upsampling layer, which learns how
-to jointly leverage spatio-temporal dimensions, by learning the 2D topology and
-the time consistency simultaneously. The overall model mimics the conventional
-2D semantic segmentation encoder-decoder architecture, but is able to jointly
-capture spatio-temporal information, using memory instead of a fixed window of
-time.
+The model presented in this chapter builds on top of~\cite{ShiCWYWW15} and
+extends their work in two ways: i) replacing the convolution operator in the
+state-to-state and input-to-state transitions with a full multi-layer
+convolutional subnetwork ii) introducing a novel
+recurrent-convolutional-upsampling layer that learns how to leverage the
+spatio-temporal dimensions jointly to produce an upsampled feature map that
+respects the 2D topology of the input feature map and at the same time
+maintains its time consistency.
 
-We demonstrate the effectiveness of recurrent-convolutional LSTM for video
-semantic segmentation task.
+The full model mimics the conventional 2D semantic segmentation encoder-decoder
+architecture, but is able to jointly capture spatio-temporal information, using
+the internal memory of RNNs instead of a fixed window of time.
 
-state rnn has a topology
-
-We provide and in-depth analysis on the importance of the temporal dimension
-for this kind of task.
-
-- how temporal dimension is important for the task
-- conv-deconv lstm model
-
-
-\section{Related Work}
-\label{sec:sota}
+% We demonstrate the effectiveness of recurrent-convolutional LSTM for video
+% semantic segmentation task.
+% We provide and in-depth analysis on the importance of the temporal dimension
+% for this kind of task.
+% - how temporal dimension is important for the task
 
 
 \section{Method}
