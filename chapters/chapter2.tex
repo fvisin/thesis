@@ -2,9 +2,10 @@
 
 %============================= INTRODUCTION =================================
 Artificial intelligence (AI) is a broad field that aims to develop intelligent
-software that can e.g., acquire knowledge from its interaction with the world,
-find optimized strategies for problem solving, automate tasks, detect patterns
-in audio, video and textual data, play games, drive cars and much more.
+software that can for instance acquire knowledge from its interaction with the
+world, find optimized strategies for problem solving, automate tasks, detect
+patterns in audio, video and textual data, play games, drive cars and much
+more.
 
 Machine learning is a complex subfield of AI that witnessed a very quick
 expansion in the recent years. It aims to enable computers to \emph{learn} how
@@ -14,38 +15,38 @@ and trying to generalize this extracted knowledge to new, unseen data.
 Among its many powerful tools, artificial neural networks are models that take
 inspiration from what is known about the human brain, by mimicking its
 connectivity patterns, learning rules and signals propagation, under the
-constraints imposed by out limited knowledge of the brain and a less powerful
+constraints imposed by our limited knowledge of the brain and a less powerful
 hardware.
 
 While it is beyond the scope of this document to give a formal and in-depth
 introduction to every concept needed to fully comprehend Machine Learning,
-the following sections will introduce Artificial neural networks, with a
-specific focus on two of the most used kinds of neural networks. The interested
-reader can find a more detailed overview of Machine Learning in~\cite{
-bishop-book2006,Goodfellow-et-al-2016-Book}
+the following sections will introduce Artificial Neural Networks (ANNs), with a
+specific focus on two of the most used kinds of neural networks i.e.,
+Convolutional Neural Networks (CNNs) and Recurrent Neural Networks (RNNs). The
+interested reader can find a more detailed overview of Machine Learning
+in~\cite{bishop-book2006,Goodfellow-et-al-2016-Book}
 
 %================================== SECTION ==================================
 \section{Artificial neural networks}\label{sec:NN}
-Brains are composed by a large amount of simple elements, called neurons,
-that are highly interconnected. The number of neurons in the human brain is
-estimated to be around $10^{11}$, each one connected to a little less than
-$10^{4}$ other neurons, for a total between $10^{14}$ and $10^{15}$
+Biological brains are composed by a large number of simple elements, called
+neurons, that are highly interconnected. The number of neurons in the human
+brain is estimated to be around $10^{11}$, each one connected to a little less
+than $10^{4}$ other neurons, for a total between $10^{14}$ and $10^{15}$
 synapses~\cite{drachman2005we}. The activity of each of these either excites or
 inhibits the surrounding neurons it is connected to, generating a complex
-network of interactions.
-
-Artificial Neural Networks (ANNs) take inspiration from this understanding of
-the human brain, building networks composed of many artificial neurons, small
-elements that perform very simple operations on their inputs.
+network of interactions. Artificial Neural Networks (ANNs) take inspiration
+from this understanding of the human brain, building networks composed of many
+artificial neurons, small elements that perform very simple operations on their
+inputs.
 
 \subsection{Brief history of neural networks}
 In 1943 McCulloch and Pitts defined a mathematical model of how a biological
 neuron works~\citep{McCulloch43}. The artificial neuron they proposed was
 able to solve simple binary problems, but did not learn. In 1949~\cite{Hebb49}
-suggested that human learn by enhancing the neural pathways between neurons
-that collaborate, and weakening the others. Only decades later this learning
+suggested that humans learn by enhancing the neural pathways between neurons
+that collaborate, and weakening the others. Only a decade later this learning
 rule inspired the Perceptron~(see~\autoref{fig:perceptron}), the first ANN that
-was able to vary its own weights, i.e. to find the setting that allowed it to
+was able to vary its own weights, i.e., to find the setting that allowed it to
 exhibit the desired behavior~\citep{Rosenblatt57}.
 
 % PERCEPTRON
@@ -78,19 +79,19 @@ corresponding weight $w_i$ -- often referred to as \emph{preactivation} -- is
 computed as
 
 \begin{equation*}
-    z = \sum_{i=0}^{n}(w_i \cdot x_i)
+    z = \sum_{i=0}^{n}(w_i \cdot x_i).
 \end{equation*}
 
 \noindent where to simplify the notation the bias term $b$ has been replaced
-by an equivalent input term $x_0=b$. Note that this is simply the dot
+by an equivalent input term $x_0=1$. Note that this is simply the dot
 product of the weight vector $\mathbf{w}$ and the input vector $\mathbf{x}$.
 The result of this first affine transformation is then passed through a step
-function of form
+function of the form
 \begin{equation*}
     y =
         \begin{cases}
             1,          & \text{if } z \geq 0 \\
-            0,         & \text{otherwise}
+            0,         & \text{otherwise}.
         \end{cases}
 \end{equation*}
 
@@ -98,27 +99,27 @@ function of form
 % (see~\autoref{sec:activation_fn}),
 \noindent that determines the binary output of the Perceptron.
 
-This can be used, e.g., to classify whether the input belongs to a specific
-class or not. Note that the model can be easily extended to handle multiple
-classes, by simply adding more dimensions to $y$ and assigning each of them to
-a different class.
+This can be used, for instance, to classify whether the input belongs to a
+specific class or not. Note that the model can be easily extended to handle
+multiple classes, by simply adding more dimensions to $y$ and assigning each of
+them to a different class.
 
 The behavior of the Perceptron is indeed remarkable, but the biggest innovation
-of~\cite{Rosenblatt57} is most probably the update algorithm that allowed to
-modify the weights of the model in a Hebbian rule fashion. The weights and the
-bias -- also called the \emph{parameters} of the network -- are \emph{learned}
-according to the following rule:
+of~\cite{Rosenblatt57} is most probably the update algorithm that allowed one
+to modify the weights of the model in a Hebbian rule fashion. The weights and
+the bias -- also called the \emph{parameters} of the network -- are
+\emph{learned} according to the following rule:
 
 \begin{equation}\label{eq:perceptron_lr}
-    w_i^{\text{new}} = w_i^{\text{old}} + \eta \cdot (\hat {y} - y) \cdot x_i
+    w_i^{\text{new}} = w_i^{\text{old}} + \eta \cdot (\hat {y} - y) \cdot x_i.
 \end{equation}
 
-\noindent where $\hat y$ is the target (i.e. desired) value, $y$ is the output
+\noindent where $\hat y$ is the target (i.e., desired) value, $y$ is the output
 of the Perceptron, $x_i^t$ and $w_i^t$ are respectively the $i$-th input and
 weight at time $t$ and $\eta$ is a scaling factor that allows to adjust the
 magnitude by which the weights are modified.
 
-The introduction of a model that could learn from the data
+The introduction of a model that could learn from data
 %This discovery
 was welcomed with excitement as the beginning of a new era and
 research in ANNs became very active for approximately a decade, until in
@@ -241,11 +242,11 @@ learn by itself to solve problems and interact with humans appeared suddenly
 unrealistic and most of the research community lost interest in ANNs. The field
 experienced a severe slow down and most of the fundings were cut.
 
-After a decade known as the AI Winter, in 1982 John Hopfield presented a model
-of the human memory that did not only give insights on how the brain works, but
-was also useful in practical applications and had a sound and detail
-mathematical grounding. At the same time at the US-Japan Joint Conference on
-Cooperative/Competitive Neural Networks Japan announced a renewed effort in
+After a decade known as the first AI Winter, in 1982 John Hopfield presented a
+model of human memory that did not only give insights on how the brain works,
+but was also useful in practical applications and had a sound and detailed
+mathematical grounding. At the same time, at the US-Japan Joint Conference on
+Cooperative/Competitive Neural Networks, Japan announced a renewed effort in
 building Neural Networks and the fear that the US might be left behind renewed
 their effort on this topic.
 
@@ -253,16 +254,16 @@ The breakthrough that completely restored the interest in the field came in
 1986, when~\cite{Rumelhart86b} rediscovered the backpropagation
 algorithm~\citep{Linnainmaa70,Werbos74} that allowed to train ANNs composed by
 multiple layers by performing gradient descent~(see \autoref{sec:backprop}).
-Since then ANNs have been constantly focus of study and innovation and
-established the state of the art in several domains.
+However once again the expectation was set too high and AI was expected to
+allow to do things like translate languages, carry on conversations and
+interpret pictures. In late 80s and early 90s AI fundings were cut again when
+those very high demands had not been attended.
 
-% SCHMIDHUEBER
-%In the new millennium, deep NNs have finally attracted wide-spread attention,
-%mainly by outperforming alternative machine learning methods such as kernel
-%machines in numerous important applications. In fact, since 2009, supervised
-%deep NNs have won many official international pattern recognition competitions
-%achieving the first superhuman visual pattern recognition results in limited
-%domains.
+Despite that, many researcher were convinced by then of the potential of AI
+and kept working on it. By 2006 ANNs established the state of the art in many
+official international competitions in several domains, attracting again
+attention and fundings. Since then, they have been constantly the focus of
+study and innovation.
 
 \subsection{MultiLayer Perceptron}\label{sec:MLP}
 \begin{figure}[h]
@@ -295,31 +296,31 @@ established the state of the art in several domains.
 \end{figure}
 
 \noindent Consider the network in~\autoref{fig:MLP}. As opposed to the
-Perceptron, the MLP has multiple hidden layers, where each neuron of one hidden
-layer is connected to all the neurons of the previous and next layer. Each
-connection from the $i$-th neuron of layer $l-1$ to the $j$-th neuron of layer
-$(l)$ is associated to a weight $w_{ij}^{(l)}$, and all the weights are stored
-in a matrix $\mathbf{W}$.
+Perceptron in~\autoref{fig:perceptron}, the MLP has multiple hidden layers,
+where each neuron of one hidden layer is connected to all the neurons of the
+previous and the next layer. Each connection from the $i$-th neuron of layer
+$l-1$ to the $j$-th neuron of layer $(l)$ is associated to a weight
+$w_{ij}^{(l)}$, and all the weights are stored in a matrix $\mathbf{W}$.
 
 Similarly to the Perceptron case, each layer computes an affine transformation
 
 \begin{equation}\label{eq:MLP_affine}
-    \mathbf{z}^{(l)} = \mathbf{W}^{(l)} \cdot \mathbf{a}^{(l-1)}
+    \mathbf{z}^{(l)} = \mathbf{W}^{(l)} \cdot \mathbf{a}^{(l-1)}.
 \end{equation}
 
-\noindent followed by a nonlinearity -- usually more complex than the one
+\noindent followed by a nonlinearity -- usually more smooth than the one
 used in the Perceptron -- called \emph{activation function}
 
 \begin{equation}\label{eq:MLP_activation}
-    \mathbf{a}^{(l)} = \sigma(\mathbf{z}^{(l)})
+    \mathbf{a}^{(l)} = \sigma(\mathbf{z}^{(l)}).
 \end{equation}
 
 One hidden layer can thus be seen as a function $h^{(l)}$ that depends on some
 \emph{parameters} -- namely the vector of weights $\mathbf{w}^{(l)}$ and the
-bias of the layer $b^{(l)}$ -- as well as some \emph{hyperparameters} such as,
-e.g., the number of neurons and the choice of activation function. It is common
-to refer to the set of trainable parameters that fully characterize a layer as
-\emph{sufficient statistics}, usually denoted as $\boldsymbol{\theta}$.
+bias of the layer $b^{(l)}$ -- as well as some \emph{hyperparameters}, such as
+the number of neurons and the choice of activation function. It is common
+to denote the set of trainable parameters that fully characterize a layer as
+$\boldsymbol{\theta}$.
 
 The processing performed by the hierarchy of layers of the MLP results in the
 output vector $\mathbf{y}$ and is equivalent to a composition of multiple
@@ -328,19 +329,19 @@ functions
 \begin{equation}\label{eq:fn_composition}
     \textbf{y} = h^{(L)}_{\boldsymbol{\theta}} \composition
         h^{(L-1)}_{\boldsymbol{\theta}} \composition
-        \dots \composition h^{(1)}_{\boldsymbol{\theta}}
+        \dots \composition h^{(1)}_{\boldsymbol{\theta}}.
 \end{equation}
 
-Although very common and widely used, the MLP is not the only architecture for
-ANNs. In \autoref{sec:cnn} and \autoref{sec:rnn} two of the most used
-alternatives will be described. Generally, each layer of an ANN computes some
-activation based on its input and a nonlinear activation function. The choice
-of which activation function to use in each layer can have a big impact on the
-performance of the model and is sometimes constrained by the semantic assigned
-to the output of some units. The most important activation functions will be
-introduced in the following section.
-%Generally, more complex activation functions than the one proposed in the
-%Perceptron are being used. Here are some of the most frequently used ones.
+\noindent Although very common and widely used, the MLP is not the only
+architecture for ANNs. In \autoref{sec:cnn} and \autoref{sec:rnn} two of the
+most used alternatives will be described.
+
+Generally, each layer of an ANN computes some activation based on its input and
+a nonlinear activation function. The choice of which activation function to use
+in each layer can have a big impact on the performance of the model and is
+sometimes constrained by the semantic assigned to the output of some units. The
+most important activation functions will be introduced in the following
+section.
 
 \subsection{Activation functions}\label{sec:activations}
 \begin{figure}[h]
@@ -378,31 +379,29 @@ introduced in the following section.
             node[below = 1.2em of a.east, anchor=east] {$Leaky ReLU(z)$};
     \end{tikzpicture}
     \caption{Some of the most common activation functions: sigmoid, tanh, ReLU
-        and Leaky ReLU\label{fig:activations}}
+        and Leaky ReLU. Best viewed in colors.\label{fig:activations}}
 \end{figure}
 
-\noindent The activation function is one of the most important component of an
-ANN. As explained in the previous sections, to tackle nonlinearly separable
-problems it is imperative to map the input into a space that is linearly
-separable. The activation function does this by performing an
-\emph{element-wise nonlinear transformation} of the pre-activation that comes
-from the affine transformation.
+The activation function is one of the most important component of an ANN. As
+explained in the previous sections, to tackle nonlinearly separable problems it
+is imperative to map the input into a space that is linearly separable. The
+activation function does this by performing an \emph{element-wise nonlinear
+transformation} of the pre-activation that comes from the affine
+transformation.
 
 The affine transformation and the nonlinearity work together in a very tight
 interaction: the latter is fixed and does not evolve during training, but
-is a powerful transformation; the former instead, is determined by the weights
-that are learned during training and exploits the latter to map the incoming
-activation into a new space where they are easier to separate.
-
-In addition to this it is interesting to point out that if there was no
-activation function, since the composition of multiple affine transformation
-is an affine transformation, the layers of the MLP could be replaced by a
-single equivalent layer, and the MLP would become a Perceptron.
+maps its input to a different space in a (usually highly) non-linear way; the
+former, is determined by the weights that are learned during training and
+exploits the latter to map the incoming activation into a new space where they
+are easier to separate. In addition to this it is interesting to point out that
+if there was no activation function, since the composition of multiple affine
+transformation is an affine transformation, the layers of the MLP could be
+replaced by a single equivalent layer, and the MLP would become a Perceptron.
 
 Many activation functions have been proposed in the years and even if our
 understanding of this component has improved, which one to use with the
-different architectures and tasks is still object of active debate and
-sometimes a matter of personal preference.
+different architectures and tasks is still the object of active research.
 
 \subsubsection{Logistic}\label{sec:logistic}
 The logistic, often called \emph{sigmoid}, is a differentiable monotonically
@@ -412,12 +411,12 @@ negative numbers it asymptotes to $0$ while for large positive numbers it
 asymptotes to $1$. It is defined as
 
 \begin{equation}\label{eq:logistic}
-    logistic(\mathbf{z}) = \frac{1}{1+\exp(-\mathbf{z})}
+    logistic(\mathbf{z}) = \frac{1}{1+\exp(-\mathbf{z})}.
 \end{equation}
 
 \noindent The logistic function has probably been the most used nonlinearity
 historically due to its possible interpretation as the firing rate of a neuron
-given its potential (i.e. the level of excitement provoked by its incoming
+given its potential (i.e., the level of excitement provoked by its incoming
 spikes): when the potential is low the neuron fires less often whereas when the
 potential is high the frequency of the spikes increases.
 
@@ -440,12 +439,12 @@ fast to compute its derivative, once solved analytically:
 \end{split}
 \end{align}
 
-Its use is not as widespread as it used to be though, due to two major
-drawbacks:
+The use of the logistic function is not as widespread as it used to be though,
+due to two major drawbacks:
 \begin{itemize}
     \item \emph{Saturation kills the gradient:}
         backpropagation~\autoref{sec:backprop} relies on the gradient of the
-        error to determine the parameter update. The logistic function
+        error to determine the parameters update. The logistic function
         saturates at both ends, resulting in a very small or zero gradient.
         This problem -- often referred to as~\emph{vanishing gradient} -- makes
         training very slow or prevents it in some cases. This also makes the
@@ -454,7 +453,7 @@ drawbacks:
         logistic function is close to zero.
     \item \emph{The output is not zero-centered:} the dynamics of ANNs are
         usually complex and difficult to inspect, but it is widely believed
-        that normalizing (i.e. zero-centered with unit variance) the
+        that normalizing (i.e., zero-centered with unit variance) the
         intermediate activations of the network helps
         training~(\cite{Ioffe+Szegedy-2015,Laurent2015,arpit2016normalization,
         cooijmans2016recurrent}). The output of the logistic function is always
@@ -473,7 +472,7 @@ chosen where it is desirable to be able to increase or decrease some quantity
 by small amounts, thanks to its codomain. It is defined as
 
 \begin{equation}\label{eq:tanh}
-    tanh(\mathbf{z}) = \frac{1-exp(-2\mathbf{z})}{1+exp(-2\mathbf{z})}
+    tanh(\mathbf{z}) = \frac{1-exp(-2\mathbf{z})}{1+exp(-2\mathbf{z})}.
 \end{equation}
 
 
@@ -484,40 +483,41 @@ nonlinearity of choice in many applications~\cite{Krizhevsky-2012,
 LeCun-et-al-Nature2015,Glorot+al-AI-2011-small}. It is defined as
 
 \begin{equation}\label{eq:relu}
-    relu(\mathbf{z}) = max(0, \mathbf{z})
+    relu(\mathbf{z}) = max(0, \mathbf{z}).
 \end{equation}
 
-Although very simple, it has some very interesting properties and a few
+Although very simple, it has some very interesting properties and only a few
 drawbacks:
 
 \begin{itemize}
     \item \emph{No positive saturation:} the ReLU is zero for non-positive
         inputs, but does not saturate otherwise. This ensures a flow of
-        gradient whenever the input is positive that was found to significantly
-        speed up the convergence of training.
+        gradient whenever the input is positive, that was found to
+        significantly speed up the convergence of training.
     \item \emph{Cheap to compute:} as opposed to many other activation
-        functions that require expensive operations, such as e.g. exponentials,
-        ReLU's implementation simply amounts to thresholding at zero. Another
-        important characteristic is that the gradient is trivial to compute:
+        functions that require expensive operations, such as for instance
+        exponentials, ReLU's implementation simply amounts to thresholding at
+        zero. Another important characteristic is that the gradient is trivial
+        to compute:
 
         \begin{equation}\label{eq:relu_derivative}
             \nabla (relu(\mathbf{z}^{(l)})) =
                 \begin{cases}
                     \mathbf{a}^{(l-1)},  & \text{if } \mathbf{z}^{(l)} > 0 \\
                     0,          & \text{if } \mathbf{z}^{(l)} < 0 \\
-                    undefined,  & \text{if } \mathbf{z}^{(l)} = 0
+                    undefined,  & \text{if } \mathbf{z}^{(l)} = 0.
                 \end{cases}
         \end{equation}
 
-    \item \emph{Induce sparsity:} ReLU units induce sparsity, since whenever
+    \item \emph{Induce sparsity:} ReLU units induce sparsity, indeed whenever
         the input preactivation is negative their activation is zero. Sparsity
         is usually a desired property: as opposed to dense encoding, sparsity
-        will produce representations where only a few entries will change
-        upon small variations of the input, i.e. will produce a representation
-        that is more consistent and robust to perturbations. Furthermore,
-        sparsity allows for a more compact encoding, which is desirable in many
-        contexts such as, e.g., data compression and efficient data transfer.
-        Finally, it is also usually easier to linearly separate sparse
+        will produce representations where only a few entries change upon small
+        variations of the input, i.e., it will produce a representation that is
+        more consistent and robust to perturbations. Furthermore, sparsity
+        allows for a more compact encoding, which is desirable in many contexts
+        such as, e.g., data compression and efficient data transfer.  Finally,
+        it is also usually easier to linearly separate sparse
         representations~\citep{Glorot+al-AI-2011-small}.
     \item \emph{ReLU units can die:} when a large gradient flows through a ReLU
         unit it can change its weights in such a way that will prevent it from
@@ -536,7 +536,7 @@ unit, potentially recovering extreme values of the weights. Leaky ReLUs are
 defined as
 
 \begin{equation}\label{eq:lrelu}
-    leaky\_relu(\mathbf{z}) = max(\beta*\mathbf{z}, \mathbf{z})
+    leaky\_relu(\mathbf{z}) = max(\beta*\mathbf{z}, \mathbf{z}).
 \end{equation}
 
 \subsubsection{Softmax}\label{sec:softmax}
@@ -548,22 +548,22 @@ that of all the dimensions (or neurons) in the layer. The softmax is a
 It is defined as
 
 \begin{equation}\label{eq:softmax}
-    softmax(z_i) = \frac{\exp(z_i)}{\sum_{k=0}^K{\exp(z_k)}}
+    softmax(z_i) = \frac{\exp(z_i)}{\sum_{k=0}^K{\exp(z_k)}}.
 \end{equation}
 
-\noindent where $K$ is the number of classes, i.e. of dimensions (or neurons).
+\noindent where $K$ is the number of classes, i.e., of dimensions (or neurons).
 
 Note that it is possible to add a temperature parameter $T$ to the softmax that
-allows to control its steepness (see~\autoref{fig:softmax}), i.e. to control
-the randomness of predictions. When $T$ is high the distribution over the
-classes will be flatter - with the extreme case of $T = \inf$, where all the
-classes have equal probability. When $T$ is low, the probability curve is
-pickier on the class with higher probability and has a light tail on the other
-classes.
+allows it to control its steepness (see~\autoref{fig:softmax}), i.e., to
+control the randomness of predictions. When $T$ is high the distribution over
+the classes will be more uniform - with the extreme case of $T = \inf$, where
+all the classes have equal probability. When $T$ is low, the probability curve
+is more peacky on the class with higher probability and has a light tail on the
+other classes.
 
 \begin{equation}\label{eq:softmax_tmp}
     softmax(z_i) = \frac{\exp(z_i / T)}
-                        {\sum_{k=0}^K{\exp(z_k / T)}}
+                        {\sum_{k=0}^K{\exp(z_k / T)}}.
 \end{equation}
 
 \begin{figure}[h]
@@ -616,37 +616,37 @@ classes.
 \end{figure}
 
 \subsection{Backpropagation}\label{sec:backprop}
-The learning rule introduced with Perceptrons does not allow to train models
-with multiple layers (i.e. with \emph{hidden} layers), such as the one depicted
-in~\autoref{fig:MLP}.
+The learning rule originally introduced with Perceptrons did not allow one to
+train models with multiple layers (i.e., with \emph{hidden} layers), such as
+the one depicted in~\autoref{fig:MLP}.
 
-This is not possible due to the fact that to compute the variation of the
-weights of a layer with~\autoref{eq:perceptron_lr} it is necessary to know the
-correct value of its output, which is given only for the last layer.
+This was not possible since to compute the variation of the weights of a layer
+with~\autoref{eq:perceptron_lr} it is necessary to know the correct value of
+its output, which is given only for the last layer.
 
-To address this apparently insurmountable obstacle it suffices to notice that
-the computation performed by the activation function is a nonlinear but
-differentiable function of the inputs. This allows for computing the partial
-derivatives of the error (e.g. the expected value of the quadratic loss) ,
-w.r.t. the weights of the network. In other words, it is possible to use
-calculus to determine the amount by which each neuron of the last layer
-contributed to causing the error, and then further split the responsibility of
-each of them among the ones of the preceding layer. This way the error can be
-\emph{backpropagated} through the layers of the network, assigning to each
-weight its amount of blame. This information can be used by an
-\emph{optimization algorithm} to iteratively change the weights to minimize the
-error.
+To address this obstacle it suffices to notice that the computation performed
+by each activation function is a nonlinear, but differentiable function of the
+inputs. This allows for the computation of the partial derivatives of the error
+(e.g., the expected value of the quadratic loss) w.r.t. the weights of the
+network. In other words, it is possible to use calculus to determine the amount
+by which each neuron of the last layer contributed to causing the error, and
+then further split the responsibility of each of them among the ones of the
+preceding layer. In this way, the error can be \emph{backpropagated} through
+the layers of the network, assigning to each weight its amount of blame. This
+information can be used by an \emph{optimization algorithm} to iteratively
+change the weights to minimize the error.
 
 The backpropagation algorithm has some resemblance with the learning rule of
 the Perceptron~(\autoref{eq:perceptron_lr}). The main idea in that case was
 to modify each weight of the network by a factor proportional to the error
 ($E = \hat y - y$, in the Perceptron) and to the input. Even if in MLPs it is
-usually common to consider other kinds of errors, the same concept applies: the
-learning procedure tries to modify the weights in order to minimize some error
+usually common to consider different kinds of cost functions, the same concept
+applies: the learning procedure tries to modify the weights in order to
+minimize some error
 
 \begin{equation}
     %w_{ij}^{(l)} = w_{ij}^{(l)} + \eta \frac{\partial E}{\partial w_{ij}^{(l)}}
-    \mathbf{W} = \mathbf{W} + \eta \frac{\partial E}{\partial \mathbf{W}}
+    \mathbf{W} = \mathbf{W} + \eta \frac{\partial E}{\partial \mathbf{W}}.
 \end{equation}
 
 \noindent where $\eta$ is a scaling factor typically referred to as
@@ -654,14 +654,14 @@ learning procedure tries to modify the weights in order to minimize some error
 
 It is easy to understand backpropagation with a practical example. Consider
 once again~\autoref{fig:MLP}: the network processes a bidimensional input
-$\mathbf{x}$ and, after three layers of affine transformations followed by a
-nonlinearity, returns a unidimensional value $\mathbf{y}$. The correct output
+$\mathbf{x}$ and, after three layers of affine transformations followed by
+nonlinearities, returns a unidimensional value $\mathbf{y}$. The correct output
 $\mathbf{\hat y}$ is given and is used to compute the error, or~\emph{cost},
-with some \emph{differentiable} metric. For this example consider e.g. the mean
-squared error (MSE)
+with some \emph{differentiable} metric. For this example consider e.g., the
+mean squared error (MSE)
 
 \begin{equation}\label{eq:MSE}
-    E_{mse} = \frac{1}{M} \sum_{\mathcal{D}}\frac{1}{2}(\mathbf{\hat y} - \mathbf{y})^2
+    E_{mse} = \frac{1}{M} \sum_{\mathcal{D}}\frac{1}{2}(\mathbf{\hat y} - \mathbf{y})^2.
 \end{equation}
 
 \noindent the summation is done over a dataset $\mathcal{D}$ of $M$ samples,
@@ -670,8 +670,8 @@ $\mathbf{\hat y}$. $\mathbf{y}$ is used as a compact notation for
 $\mathbf{y(x)}$ and represents the output of the network for one input sample
 $\mathbf{x}$.
 
-It is possible to compute the fraction of the error that is imputable to each
-neuron of the network by taking the derivative of the error w.r.t. to its
+It is possible to compute the fraction of the error that can be attributed to
+each neuron of the network by taking the derivative of the error w.r.t. to its
 weights
 
 \begin{align}\label{eq:backprop_step1}
@@ -688,9 +688,9 @@ weights
 \end{split}
 \end{align}
 
-Backpropagation allows to compute the partial derivative
+Backpropagation allows one to compute the partial derivative
 $\frac{\partial}{\partial w_{ij}^{(l)}}(-\mathbf{y})$
-exploiting the chain rule of derivation. Consider e.g. the weights of the
+exploiting the chain rule of derivation. Consider e.g., the weights of the
 second layer $\mathbf{W}^{(2)}$
 
 \begin{align}\label{eq:backprop_step2}
@@ -728,7 +728,7 @@ second layer $\mathbf{W}^{(2)}$
         \sigma'(\mathbf{z}^{(3)}) \cdot
         \mathbf{W}^{(3)} \cdot
         \sigma'(\mathbf{z}^{(2)}) \cdot
-        \mathbf{a}^{(1)}
+        \mathbf{a}^{(1)}.
 \end{equation}
 
 \noindent where $\sigma'$ can be computed analytically and depends on the
@@ -772,12 +772,12 @@ and better performance.
 
 Convolutional neural networks (CNNs) are an example of model that exploits the
 structure of the data. The intuition behind CNNs is that many kinds of data --
-such as e.g. images or audio clips -- have a \emph{local} topological structure
-that does not depend on the specific location in the global reference system.
-In the case of images, for example, this means that a hand can appear in the
-center of the image as well as in one of the corners, and is not less of a hand
-in either cases. Similarly, the sound of the word \emph{hand} should be
-detected the same way when pronounced with a high or low pitch.
+such as images or audio clips -- have a \emph{local} topological structure that
+does not depend on the specific location in the global reference system. In the
+case of images, for example, this means that a hand can appear in the center of
+the image as well as in one of the corners, and is not less of a hand in either
+cases. Similarly, the sound of the word \emph{hand} should be detected the same
+way when pronounced with a high or low pitch.
 
 CNNs exploit this understanding of the data by applying the same pattern
 detector on many locations of the image. This is formally done through a
@@ -1704,7 +1704,7 @@ and its output size is
 \begin{equation*}
 \begin{split}
     o' &= i' + (k - 1) - 2p \\
-       &= i' - (k - 1)
+       &= i' - (k - 1).
 \end{split}
 \end{equation*}
 \end{relationship}
@@ -1862,9 +1862,9 @@ of the input, and its output size is
 %
 It is well known that the brain is organized in functional areas and sub-areas
 that process the incoming signal in an incremental fashion. These areas of the
-brain are typically connected both in a \emph{feedforward}, i.e. to neurons
+brain are typically connected both in a \emph{feedforward}, i.e., to neurons
 belonging to deeper (i.e., further away from the sensory input) layers, and in
-a \emph{feedback} fashion (i.e. to previous layers in the hierarchy). This is
+a \emph{feedback} fashion (i.e., to previous layers in the hierarchy). This is
 believed to help processing temporal data and allow for an iterative refinement
 of the computation.
 
@@ -1885,12 +1885,12 @@ nothing prevents from using RNNs with any kind of sequential data.
 \end{figure}
 
 Suppose to be modeling some sequential data $x_0, x_1, \dots , x_t, x_{t+1},
-\dots$ such as e.g., an English sentence. At time $t$ it is possible to model
-the probability distribution over a dictionary of English words, conditioned on
-the words seen up that moment -- namely $x_0, x_1, \dots , x_{t-1}$. This can
-be used, e.g., in a smart keyboard application to suggest the next most
-probable words to the user, or in an automatic help desk to generate a
-meaningful answer to a question.
+\dots$ such as an English sentence. At time $t$ it is possible to model the
+probability distribution over a dictionary of English words, conditioned on the
+words seen up that moment -- namely $x_0, x_1, \dots , x_{t-1}$. This can be
+used, e.g., in a smart keyboard application to suggest the next most probable
+words to the user, or in an automatic help desk to generate a meaningful answer
+to a question.
 
 It might not be immediately obvious what it means in practice to put a loop in
 an ANN and how to backpropagate through it. To better comprehend how RNNs work
@@ -1981,7 +1981,7 @@ $C_t$. This is then, once again, propagated to the next time step.
     \setlength\belowdisplayshortskip{0pt}
     \strut
     \begin{equation}\label{eq:LSTM_forget_gate}
-        f_t = \sigma\left(W_f \cdot \left[h_{t-1}, x_t\right] + b_f \right)
+        f_t = \sigma\left(W_f \cdot \left[h_{t-1}, x_t\right] + b_f \right).
     \end{equation}
     \strut
 \end{minipage}
@@ -2011,7 +2011,7 @@ out~(\autoref{eq:LSTM_forget_gate}).
     \begin{equation}\label{eq:LSTM_input_gate}
     \begin{split}
         i_t &= \sigma\left(W_i \cdot \left[h_{t-1}, x_t\right] + b_i \right)\\
-        \tilde C_t &= tanh \left(W_C \cdot \left[h_{t-1}, x_t\right] + b_f \right)
+        \tilde C_t &= tanh \left(W_C \cdot \left[h_{t-1}, x_t\right] + b_f \right).
     \end{split}
     \end{equation}
     \strut
@@ -2035,7 +2035,7 @@ gate $i_t$, together with the previous state $C_{t-1}$ fully determine the
 state at time $t$ through~\autoref{eq:LSTM_state_update}.
 
 \begin{equation}\label{eq:LSTM_state_update}
-    C_t = f_t \hadamard C_{t-1} + i_t \hadamard \tilde C_t
+    C_t = f_t \hadamard C_{t-1} + i_t \hadamard \tilde C_t.
 \end{equation}
 
 The last gate of LSTMs is the \emph{output~gate} $o_t$ that, as the name
@@ -2058,7 +2058,7 @@ the output gate to finally produce the output (\autoref{eq:LSTM_output_gate}).
     \begin{equation}\label{eq:LSTM_output_gate}
     \begin{split}
         o_t &= \sigma\left(W_o \cdot \left[h_{t-1}, x_t\right] + b_o \right)\\
-        h_t &= o_t \hadamard tanh \left(C_t\right)
+        h_t &= o_t \hadamard tanh \left(C_t\right).
     \end{split}
     \end{equation}
     \strut
@@ -2082,7 +2082,7 @@ the output gate to finally produce the output (\autoref{eq:LSTM_output_gate}).
     \begin{split}
         f_t &= \sigma\left(W_f \cdot \left[h_{t-1}, x_t, C_{t-1}\right] + b_f \right)\\
         i_t &= \sigma\left(W_i \cdot \left[h_{t-1}, x_t, C_{t-1}\right] + b_i \right)\\
-        o_t &= \sigma\left(W_o \cdot \left[h_{t-1}, x_t, C_{t}\right] + b_o \right)\\
+        o_t &= \sigma\left(W_o \cdot \left[h_{t-1}, x_t, C_{t}\right] + b_o \right).
     \end{split}
     \end{equation}
     \strut
@@ -2109,7 +2109,7 @@ in~\autoref{eq:LSTM_peepholes}).
     \setlength\belowdisplayshortskip{0pt}
     \strut
     \begin{equation}\label{eq:LSTM_coupled}
-        C_t = f_t \hadamard C_{t-1} + (1 - f_t) \hadamard \tilde C_t
+        C_t = f_t \hadamard C_{t-1} + (1 - f_t) \hadamard \tilde C_t.
     \end{equation}
     \strut
 \end{minipage}
@@ -2137,7 +2137,7 @@ written. The modified state update equation is~\autoref{eq:LSTM_coupled}.
         z_t &= \sigma \left( W_z \cdot \left[h_{t-1}, x_t\right]\right) \\
         r_t &= \sigma \left( W_r \cdot \left[h_{t-1}, x_t\right]\right) \\
         \tilde h_t &= tanh \left(W_o \cdot \left[r_t \hadamard h_{t-1}, x_t\right]\right) \\
-        h_t &= (1-z_t) \hadamard h_{t-1} + (z_t) \hadamard \tilde h_t
+        h_t &= (1-z_t) \hadamard h_{t-1} + (z_t) \hadamard \tilde h_t.
     \end{split}
     \end{equation}
     \strut

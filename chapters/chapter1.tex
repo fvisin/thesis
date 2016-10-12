@@ -16,43 +16,44 @@
         machines will behave like men. I don't think for a very long time we
         are going to have a difficult problem distinguishing a man from a
         robot. And I don't think my daughter will ever marry a computer. But I
-        think that computer will be doing the things that men do when we say
+        think that computers will be doing the things that men do when we say
         they are thinking. I am convinced that machines can and will think in
         our lifetime.}{-- \textup{The Thinking Machine (Artificial Intelligence
             in the 1960s)}, \\ O. Selfridge (Lincoln labs, MIT)}
 }
 
-The dream of machines that can think and substitute humans in doing their jobs
-dates back to the '60s, if not before. We are still not at that point, although
-in the last decade the field experienced outstanding advancements and has been
-object of increasing interest. Machine Learning (ML) settled the state of art
-in many fields, such as e.g., image classification~\cite{Krizhevsky-2012,
-szegedy2016inception, visin2015renet}, semantic
+The dream of machines that can think and act as substitutes for humans in their
+jobs dates back to the '60s, if not before. We are still not at that point,
+although in the last decade the field experienced outstanding advancements and
+has been the object of increasing interest. Machine Learning (ML) set the
+state-of-art in many fields, such as e.g., image classification~\cite{
+Krizhevsky-2012,szegedy2016inception,visin2015renet}, semantic
 segmentation~\cite{chen2015semantic, Visin_2016_CVPR_Workshops}, video
 understanding~\citep{srivastava2015unsupervised, Xu-et-al-arxiv2015}, natural
 language processing and machine translation~\citep{Bahdanau-et-al-arxiv2014}.
 Much of this research is already in commercial products we use every day, such
 as e.g., speech recognition and speech synthesis in phones, face detection in
-cameras and socials, or traffic signs enhancement in cars. Even more
-impressively, a ML algorithm recently won several games of
-go~\citep{silver2016alphago} -- a game known for being extremely challenging --
-against one of the best human players.
+cameras and social networks, or traffic signs enhancement in cars. Even more
+impressively, a ML algorithm recently won several games of go~\citep{
+silver2016alphago} -- a game known for being extremely challenging -- against
+one of the best human players.
 
 Despite its many successes, machine learning is no lamp genie that can tackle
-any problem by simply providing it with enough data. To get results in
-machine learning requires a meticulous analysis of the characteristics of the
-problem, clever architecture modelling, smart engineering, as well as careful
-inspection of complex and extremely nonlinear compositions of transformations.
-Most of all, it requires good organization, intuition and patience, since many
-of the experiments can last days if not weeks -- even on big clusters of GPUs.
+any problem by simply providing it with enough data. To get results in machine
+learning requires a meticulous analysis of the characteristics of the problem,
+clever architecture modelling, smart engineering, as well as careful inspection
+of complex and extremely nonlinear compositions of transformations.  Most of
+all, it requires good organization, intuition and patience, since many of the
+experiments can last days if not weeks -- even on big clusters of GPUs.
 
-My research is focused on visual scene understanding. My claim is that
-understanding a visual scene -- be it an image or a video -- requires to capture
-its semantic, and that this has to be done by building an incremental
-representation of the context while processing the elements of the observed environment scene. For
-this reason I decided to focus on Recurrent Neural Networks (RNNs), a family
-of neural networks with memory -- or state -- that can decide autonomously when
-to store, retrieve or delete information from their memory.
+My research has focused on visual scene understanding. My claim is that
+understanding a visual scene -- be it an image or a video -- requires capturing
+the scene semantics, and that this has to be done by building an incremental
+representation of the context while processing the elements of the observed
+environment scene. For this reason I decided to focus on Recurrent Neural
+Networks (RNNs), a family of neural networks with memory -- or state -- that
+can decide autonomously when to store, retrieve or delete information from
+their memory.
 
 As a first step to address the problem of image understanding, I focused on
 object classification, i.e., the problem of selecting the class an object in a
@@ -62,8 +63,8 @@ presence or absence could be used as a proxy for the presence or absence of a
 specific class of objects. From 2012 onwards, handcrafted methods were
 abandoned in favour of convolutional neural networks (CNNs), after the
 CNN-based model presented in~\cite{Krizhevsky-2012} improved the state of the
-art by $10\%$. Since then CNNs-based models dominated the object classification
-panorama.
+art by $10\%$. Since then, CNNs-based models dominated the object
+classification panorama.
 
 In~\cite{visin2015renet} my co-authors and I presented ReNet, an alternative to
 the ubiquitous CNNs for object classification. Our model is based on 4 RNNs
@@ -74,20 +75,21 @@ of the image reading one pixel (or patch, depending on the configuration) at
 the time from left to right and from right to left, respectively. The two
 resulting feature maps (i.e., output of each of these RNNs) are concatenated in
 each position over the channel axis, yielding a composite feature map where
-each position has information on the context of the full row, as in each
-position it is a concatenation of an RNN reaching the position from the right
-and of an RNN reaching the same position from the left. The second two RNNs
-sweep over the composite feature map vertically, top-down and bottom-up
-respectively. By reading the composite feature map, each RNN has access in each
-position to a "summary" of the corresponding row. Once again, the two feature
-maps are concatenated, resulting in a final feature map where each position is
-specific to a pixel (or patch) of the image but has information on the full
-image. The ReNet architecture allow us to capture the full context of the image
-with just one layer (to be fair, two sublayers), as opposed to CNN based
-architectures that would need many layers to span the entire image. As usual,
-it is still possible to stack multiple ReNet layers to increase the capacity of
-the network. ReNet obtained comparable results to the CNN state of the art on
-three widely used datasets.
+each position has information on the context of the full row as, in each
+position, it is a concatenation of an RNN reaching the position from the right
+and of an RNN reaching the same position from the left.
+
+The second two RNNs sweep over the composite feature map vertically, top-down
+and bottom-up respectively. By reading the composite feature map, each RNN has
+access in each position to a "summary" of the corresponding row. Once again,
+the two feature maps are concatenated, resulting in a final feature map where
+each position is specific to a pixel (or patch) of the image but has
+information on the full image. The ReNet architecture allow us to capture the
+full context of the image with just one layer (to be fair, two sublayers), as
+opposed to CNN based architectures that would need many layers to span the
+entire image. As usual, it is still possible to stack multiple ReNet layers to
+increase the capacity of the network. ReNet obtained comparable results to the
+CNN state-of-the-art on three widely used datasets.
 
 Encouraged by the results of ReNet and the positive feedback from the
 scientific community, I worked on a second model based on ReNet, to perform
@@ -98,37 +100,38 @@ precise pixel-level Object Localization, which is essential to many
 applications and to a proper understanding of the image.
 
 ReSeg~\citep{Visin_2016_CVPR_Workshops} takes advantage of the inner structure
-of the ReNet layers that, in contrast to classical convolutional models, allow
-to propagate the information through several layers of computation retaining
-the topological structure of the input. To speed up training the image is first
-preprocessed with a CNN pretrained on big datasets for object classification,
-to extract meaningful features and exploit the extra training data. Those rich
-features are then processed by several ReNet layers. This results though in an
-intermediate feature map that has a smaller resolution than the image. To be
-able to classify each pixel, the original resolution has to be recovered. To
-this aim, one or more transposed convolutional layers~\citep{dumoulin2016guide}
-upsample the feature map to the desired size. This model obtained state of the
-art results on three datasets and won the best paper award at the DeepVision
-Workshop at CVPR 2016.
+of the ReNet layers that, in contrast to classical convolutional models, allows
+the propagation of information through several layers of computation, retaining
+the topological structure of the input. To speed up training, the image is
+first preprocessed with a CNN pretrained on big datasets for object
+classification, to extract meaningful features and exploit the extra training
+data. Those rich features are then processed by several ReNet layers. However
+this results in an intermediate feature map that has a smaller resolution
+than the image. To be able to classify each pixel, the original resolution has
+to be recovered. Thus, one or more transposed convolutional layers~\citep{
+dumoulin2016guide} upsample the feature map to the desired size. ReSeg obtained
+state-of-the-art on three datasets and won the best paper award at the
+DeepVision Workshop at CVPR 2016.
 
 The natural next step in the direction of visual scene understanding is the
-processing of videos, to exploit the temporal correlation between frames and
+processing of videos to exploit the temporal correlation between frames and
 improve the performance of the algorithm. It is not trivial to work with videos
 in the domain of semantic segmentation: big enough dataset are still lacking
 due to the very high cost of labelling each pixel of each frame of a video; in
 many cases labels are imprecise and noisy, or missing a well defined semantic
-(e.g. "porous" or "vertical mix"), which makes learning harder. Still, it is
-a challenging but important problem to tackle and there seems to be room for
-improvement w.r.t. the current state of the art. The proposed model combines
-the benefits of CNNs -- namely the exploitation of the topological structure in
-the images and the processing speed -- and the ability to retain temporal and
-context information of RNNs. The paper builds
-on~\cite{xingjian2015convolutional} that introduced an RNN whose internal state
-is convolutional. This idea is improved by stacking several convolutions inside
-the RNN state (as opposed to only one) and by introducing a
+(e.g. the classes "porous" and "vertical mix" are difficult to define
+unequivocally), which makes learning harder. Still, it is a challenging but
+important problem to tackle and there seems to be room for improvement w.r.t.
+the current state of the art on the path traced by ReSeg. The proposed model
+combines the benefits of CNNs -- namely the exploitation of the topological
+structure in the images and the processing speed -- and the ability to retain
+temporal and spatial context information of RNNs. The idea builds on~\cite{
+xingjian2015convolutional} that introduced an RNN model whose internal state is
+convolutional. We improved on the original model by stacking several
+convolutions inside the RNN state (as opposed to only one) and by introducing a
 \emph{deconvolutional RNN}, whose state is a stack of multiple transposed
-convolutions. This model achieved so far state of the art results on two
-datasets and encouraging results on a last one.
+convolutions. This model achieved so far comparable results with the
+state-of-the-art on two datasets and encouraging results on a third.
 
 % As future steps for this research, I plan to conclude the video segmentation
 % paper in time to submit it to the CVPR conference 2017. I am also working on
