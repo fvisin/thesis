@@ -113,10 +113,10 @@ entangles the convolution operator with the state-to-state and input-to-state
 transitions of the RNN itself, rather than encoding each frame independently
 with CNNs and then processing the spatial encodings timewise with an RNN.
 
-The model presented in this chapter builds on top of~\cite{ShiCWYWW15} and
-extends their work in two ways: i) replacing the convolution operator in the
-state-to-state and input-to-state transitions with a full multi-layer
-convolutional subnetwork ii) introducing a novel
+The model presented in this chapter, called DeconvRNN, builds on top
+of~\cite{ShiCWYWW15} and extends their work in two ways: i) replacing the
+convolution operator in the state-to-state and input-to-state transitions with
+a full multi-layer convolutional subnetwork ii) introducing a novel
 recurrent-convolutional-upsampling layer that learns how to leverage the
 spatio-temporal dimensions jointly to produce an upsampled feature map that
 respects the 2D topology of the input feature map and at the same time
@@ -133,52 +133,110 @@ the internal memory of RNNs instead of a fixed window of time.
 % - how temporal dimension is important for the task
 
 
-\section{Method}
+\section{Model description}\label{sec:deconvrnn_model}
 
-Our architecture is shown in Figure \ref{fig:method}.
-\label{sec:method}
-\begin{figure}
-\centering
-\includegraphics[width=7cm]{img/deconvRNN/model_skip.png}
-\label{fig:method}
-\caption{An example of architecture for video semantic segmentation build with
-four convolutional LSTMs. The input to the model is a sequence of video frames
-and the output is a sequence of segmentation maps. The arrows indicate if a
-layer performs spatial down-sampling ($\downarrow$) or up-sampling
-($\uparrow$). The rectangles show the spatial dimension of consecutive hidden
-states (black rectangles) and cell states (green rectangles). In our
-architecture we use bidirectional LSTM which are shown with ($\leftrightarrow$)
-and skip connections.}
+The architecture of the model, shown in~\autoref{fig:deconvrnn_model}, takes
+inspiration from the convolutional LSTM (ConvLSTM) proposed in~\cite{
+ShiCWYWW15}. This section will first analyze the ConvLSTM model and then
+gradually introduce the novelties of DeconvRNN.
+
+\begin{figure}[t]
+    \centering
+    \includegraphics[width=7cm]{img/deconvRNN/method.png}
+    \includegraphics[width=7cm]{img/deconvRNN/model_skip.png}
+    \caption{An example of architecture for video semantic segmentation build
+        with four convolutional LSTMs. The input to the model is a sequence of
+        video frames and the output is a sequence of segmentation maps. The
+        arrows indicate if a layer performs spatial down-sampling
+        ($\downarrow$) or up-sampling ($\uparrow$). The rectangles show the
+        spatial dimension of consecutive hidden states (black rectangles) and
+        cell states (green rectangles). In our architecture we use
+        bidirectional LSTM which are shown with ($\leftrightarrow$) and skip
+        connections.}\label{fig:deconvrnn_model}
 \end{figure}
 
 
 \subsection{Convolutional LSTM}
-We build on top of convolutional LSTM (ConvLSTM) proposed in~\cite{ShiCWYWW15}.
-TODO(describe better). + brief LSTM background
 
+In~\cite{ShiCWYWW15} the authors propose a modification of LSTM with
+peephole, called convolutional LSTM. To allow for a more convenient comparison,
+the equations that govern a vanilla LSTM with peephole connections that were
+defined in~\autoref{eq:LSTM_peepholes} are reported again here
 
-\[ i_t^{l} = \sigma(W_{xi}^{l}*X_t^{l} + W_{hi}^{l}*H_{t-1}^{l} + W_{ci}^{l} \circ C_{t-1}^{l} + b_i^{l})\]
-\[ f_t^{l} = \sigma(W_{xf}^{l}*X_t^{l} + W_{hf}^{l}*H_{t-1}^{l} + W_{cf}^{l} \circ C_{t-1}^{l} + b_f^{l})\]
-\[ C_t^{l} = f_t^{l} \circ C_{t-1}^{l} + i \circ tanh(W_{xc}^{l}*X_t^{l} + W_{hc}^{l}*H_{t-1}^{l} + b_c^{l})\]
-\[ o_t^{l} = \sigma(W_{xo}^{l}*X_t^{l} + W_{ho}^{l}*H_{t-1}^{l} + W_{co}^{l} \circ C_{t-1}^{l} + b_o^{l})\]
-\[ H_t^{l} = o_t^{l} \circ relu(C_t^{l})\]
+\begin{equation*}\tag{\ref{eq:LSTM_peepholes} revisited}
+\begin{split}
+    i_t &= \sigma\left(W_i \cdot \left[h_{t-1}, x_t\right] +
+        W_{ic} \hadamard C_{t-1} + b_i \right)\\
+    f_t &= \sigma\left(W_f \cdot \left[h_{t-1}, x_t\right] +
+        W_{fc} \hadamard C_{t-1} + b_f \right)\\
+    \tilde C_t &= tanh \left(W_c \cdot \left[h_{t-1}, x_t\right] + b_c \right)\\
+    C_t &= f_t \hadamard C_{t-1} + i_t \hadamard \tilde C_t\\
+    o_t &= \sigma\left(W_o \cdot \left[h_{t-1}, x_t\right] +
+        W_{oc} \hadamard C_{t-1} + b_o \right)\\
+    h_t &= o_t \hadamard tanh \left(C_t\right).
+\end{split}
+\end{equation*}
 
-where \(X_t^{l}\) and \(H_t^{l}\) are the input and output feature maps
-respectively, \(C_t^{l}\) is the state of the cell (or memory) of the recurrent
-unit, \(i_t^{l}\), \(f_t^{l}\), \(o_t^{l}\) are respectively the input gate,
-the forget gate and the output gate and control the behavior of the recurrent
-unit given the input and its state at each time step $t$.
-\(\sigma\) sigmoid function, \(W_{\star}^{l}\) weights, \(*\) convolution
-operation and \(\circ\) Hadamard product.
+\noindent where $x_t$ and $h_t$ are the input and output feature maps
+respectively at time $t$; $C_t$ is the state of the cell (or memory) of the
+recurrent unit at time $t$; $i_t$, $f_t$, $o_t$ are respectively the states of
+the input gate, the forget gate and the output gate and control the behavior of
+the recurrent unit given the input and its state at each time step $t$;
+$\sigma$ is the logistic function, $W_{\star}$ the weights
+and $\hadamard$ the Hadamard product. Note that the compact notation
+$W_\star * [h_{t-1}, x_t]$ represents $W_{\star h} * h_{t-1} + W_{\star x} *
+x_t$.
 
-Note that, differently from typical recurrent architectures, all gates and
-states have spatial dimensions as are the result of the application of
-convolutions on the input of the layer. Differently from~\cite{ShiCWYWW15}, we
-use Rectified Linear Unit (ReLU) on the output instead of the tanh.
+The convolutional LSTM of~\cite{ShiCWYWW15} replaces the dot products with
+convolutions, leading to the following formulation
+
+\begin{equation}
+\begin{split}
+    i_t &= \sigma\left(W_i * \left[h_{t-1}, x_t\right] +
+        W_{ic} \hadamard C_{t-1} + b_i \right)\\
+    f_t &= \sigma\left(W_f * \left[h_{t-1}, x_t\right] +
+        W_{fc} \hadamard C_{t-1} + b_f \right)\\
+    \tilde C_t &= tanh \left(W_c * \left[h_{t-1}, x_t\right] + b_c \right)\\
+    C_t &= f_t \hadamard C_{t-1} + i_t \hadamard \tilde C_t\\
+    o_t &= \sigma\left(W_o * \left[h_{t-1}, x_t\right] +
+        W_{oc} \hadamard C_{t-1} + b_o \right)\\
+    h_t &= o_t \hadamard tanh \left(C_t\right).
+\end{split}
+\end{equation}
+
+\noindent where $*$ is the convolution operator. Notably, as opposed to
+classical recurrent architectures, all gates and states here have \emph{spatial
+dimensions}, as they are the result of the application of convolutions on the
+input of the layer.
+
+The encoding pathway of the DeconvRNN model builds from this, with two
+modifications: i) it introduces a full, multi-layered, CNN, in place of the
+convolution; ii) it replaces the Hadamard product with a convolution. The
+latter modification allows the network to process videos with different
+resolution than the ones it was trained on. To shorten the notation, once again
+the state weight matrices $W_{\star c}$ are incorporated into the set of
+weights $W$. This results in the following equations
+
+\begin{equation}
+\begin{split}
+    i_t &= \sigma\left(W_i^{(L)} * \dots * \gamma W_i^{(1)} *
+        \gamma W_i^{(0)} * \left[h_{t-1}, x_t, C_{t-1}\right] + b_i \right)\\
+    f_t &= \sigma\left(W_f^{(L)} * \dots * \gamma W_f^{(1)} *
+        \gamma W_f^{(0)} * \left[h_{t-1}, x_t, C_{t-1}\right] + b_f \right)\\
+    \tilde C_t &= tanh \left(W_c^{(L)} * \dots * \gamma W_c^{(1)} *
+        \gamma W_c^{(0)} * \left[h_{t-1}, x_t\right] + b_c \right)\\
+    C_t &= f_t \hadamard C_{t-1} + i_t \hadamard \tilde C_t\\
+    o_t &= \sigma\left(W_o^{(L)} * \dots * \gamma W_o^{(1)} *
+        \gamma W_o^{(0)} * \left[h_{t-1}, x_t, C_{t-1}\right] + b_o \right)\\
+    h_t &= o_t \hadamard tanh \left(C_t\right).
+\end{split}
+\end{equation}
+
+\subsection{DeConvolutional LSTM}
 
 \subsection{Spatial resolution}
 In order to mimic CNN, we introduce mechanisms to change spatial resolution of
-feature maps: e. g. pooling, strided convolution, unpooling or transposed
+feature maps: e.g., pooling, strided convolution, unpooling or transposed
 convolution.
 
 NOTE: What is the difference between putting the pooling in the middle of two
@@ -195,7 +253,7 @@ backward passes is then combined via concatenation or sum and used as input to
 the next layer of the architecture or used as final prediction.
 
 Due to memory constraints, we don't follow the trend of concatenating the B-RNN
-outputs \cite{}, but rather sum them as initially  suggested in
+outputs \cite{}, but rather sum them as initially suggested in
 \cite{Schuster1997bidirecrnn}. However, instead of computing the arithmetic
 mean, we learn the parameters of a weighted sum
 
@@ -203,8 +261,13 @@ mean, we learn the parameters of a weighted sum
 
 \subsection{Skip Connections}
 
-\section{Results on Benchmark Datasets}
-\label{sec:exp}
+
+\section{Results}\label{sec:deconvRNN_results}
+
+it has affine transformation, flipping, cropping, warping, etc...
+%have 80% + of accuracy in val in gatech
+% 46 epochs, val loss 0.4873, val jacquard 0.4865...
+% Epoch 53/300 - loss: 0.2103 - cat_masked_accuracy: 0.9281 - val_loss: 0.3016 - val_jaccard: 0.6224
 FCN8, FCN8 with convLSTM, our model
 \subsection{FCN8}
 FCN8 network achieved state of the art results on semantic segmentation tasks
@@ -237,10 +300,9 @@ This FCN8 network is used a baseline in 3 configurations :
 \subsection{Datasets}
 
 \subsubsection{CamVid: Motion-based Video Segmentation}
-\label{sssec:camvid}
-CamVid
-dataset\footnote{http://mi.eng.cam.ac.uk/research/projects/VideoRec/CamVid/}
-\cite{Brostow90camvid} is a motion-based video segmentation dataset, captured
+The Cambridge-driving Labeled Video Database (CamVid)~\cite{
+Brostow2010semantic}~\footnote{http://mi.eng.cam.ac.uk/research/projects/VideoRec/CamVid/}
+is a motion-based video segmentation dataset, captured
 from the perspective of a driving automobile, with object class semantic
 labels. The dataset contains, which contains 11 semantic classes such as sky,
 road, buildings or cars. The dataset contains video sequences but has more
