@@ -2011,7 +2011,7 @@ out~(\autoref{eq:LSTM_forget_gate}).
     \begin{equation}\label{eq:LSTM_input_gate}
     \begin{split}
         i_t &= \sigma\left(W_i \cdot \left[h_{t-1}, x_t\right] + b_i \right)\\
-        \tilde C_t &= tanh \left(W_C \cdot \left[h_{t-1}, x_t\right] + b_f \right).
+        \tilde C_t &= tanh \left(W_c \cdot \left[h_{t-1}, x_t\right] + b_c \right).
     \end{split}
     \end{equation}
     \strut
@@ -2065,6 +2065,19 @@ the output gate to finally produce the output (\autoref{eq:LSTM_output_gate}).
 \end{minipage}
 \end{figure}
 
+Putting it all together, the equations that govern the behavior of an LSTM are
+
+\begin{equation}\label{eq:LSTM}
+\begin{split}
+    i_t &= \sigma\left(W_i \cdot \left[h_{t-1}, x_t\right] + b_i \right)\\
+    f_t &= \sigma\left(W_f \cdot \left[h_{t-1}, x_t\right] + b_f \right)\\
+    \tilde C_t &= tanh \left(W_c \cdot \left[h_{t-1}, x_t\right] + b_c \right)\\
+    C_t &= f_t \hadamard C_{t-1} + i_t \hadamard \tilde C_t\\
+    o_t &= \sigma\left(W_o \cdot \left[h_{t-1}, x_t\right] + b_o \right)\\
+    h_t &= o_t \hadamard tanh \left(C_t\right).
+\end{split}
+\end{equation}
+
 
 \subsubsection{LSTMs with peepholes}
 
@@ -2080,9 +2093,16 @@ the output gate to finally produce the output (\autoref{eq:LSTM_output_gate}).
     \strut
     \begin{equation}\label{eq:LSTM_peepholes}
     \begin{split}
-        f_t &= \sigma\left(W_f \cdot \left[h_{t-1}, x_t, C_{t-1}\right] + b_f \right)\\
-        i_t &= \sigma\left(W_i \cdot \left[h_{t-1}, x_t, C_{t-1}\right] + b_i \right)\\
-        o_t &= \sigma\left(W_o \cdot \left[h_{t-1}, x_t, C_{t}\right] + b_o \right).
+        i_t &= \sigma\left(W_i \cdot \left[h_{t-1}, x_t\right] +
+            W_{ic} \circ C_{t-1} + b_i \right)\\
+        f_t &= \sigma\left(W_f \cdot \left[h_{t-1}, x_t\right] +
+            W_{fc} \circ C_{t-1} + b_f \right)\\
+        \tilde C_t &= tanh \left(W_c \cdot \left[h_{t-1}, x_t\right] +
+            b_c \right)\\
+        C_t &= f_t \hadamard C_{t-1} + i_t \hadamard \tilde C_t\\
+        o_t &= \sigma\left(W_o \cdot \left[h_{t-1}, x_t\right] +
+            W_{oc} \hadamard C_{t-1} + b_o \right)\\
+        h_t &= o_t \hadamard tanh \left(C_t\right).
     \end{split}
     \end{equation}
     \strut
