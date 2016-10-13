@@ -2,14 +2,12 @@
 
 The previous chapter introduced the task of semantic segmentation, where the
 model is requested to produce a semantic mask, i.e. to classify every pixel of
-an input image.
-
-Rather than presenting the algorithm with a single image, a variant of the
-segmentation task called cosegmentation, provides it with multiple images
-usually taken at different locations in the same scene (potentially by
-different cameras). In this setting the model can exploit the information that
-the images potentially share to improve the single image prediction and
-consequently improve the global score at the same time.
+an input image. Rather than presenting the algorithm with a single image, a
+variant of the segmentation task called cosegmentation, provides it with
+multiple images usually taken at different locations in the same scene
+(potentially by different cameras). In this setting the model can exploit the
+information that the images potentially share to improve the single image
+prediction and consequently improve the global score at the same time.
 
 In many ways, \emph{video segmentation} can be seen as an extreme version of
 cosegmentation, where the model is asked to segment multiple frames of a video.
@@ -41,7 +39,7 @@ but increases the complexity of the algorithm, is often subject to constraints
 (e.g., the GPUs might have to be hosted by the same machine or node of a
 cluster) and makes debugging much less pleasant in many cases.
 
-\autoref{sec:reseg} introduced ReSeg~\citep{Visin_2016_CVPR_Workshops}, an
+\autoref{sec:reseg} analyzed ReSeg~\citep{Visin_2016_CVPR_Workshops}, an
 RNN-based model for image semantic segmentation. One of the main strengths of
 ReSeg comes from the coupling of fast general-purpose CNN feature extractors
 with stateful RNNs able to carry the information extracted by the CNNs through
@@ -113,13 +111,13 @@ entangles the convolution operator with the state-to-state and input-to-state
 transitions of the RNN itself, rather than encoding each frame independently
 with CNNs and then processing the spatial encodings timewise with an RNN.
 
-The model presented in this chapter, called DeconvRNN, builds on top
-of~\cite{ShiCWYWW15} and extends their work in two ways: i) replacing the
-convolution operator in the state-to-state and input-to-state transitions with
-a full multi-layer convolutional subnetwork ii) introducing a novel
-recurrent-convolutional-upsampling layer that learns how to leverage the
-spatio-temporal dimensions jointly to produce an upsampled feature map that
-respects the 2D topology of the input feature map and at the same time
+The model presented in this chapter, called Decoder Encoder Convolutional LSTM
+(DEConvLSTM), builds on top of~\cite{ShiCWYWW15} and extends their work in two
+ways: i) replacing the convolution operator in the state-to-state and
+input-to-state transitions with a full multi-layer convolutional subnetwork ii)
+introducing a novel recurrent-convolutional-upsampling layer that learns how to
+leverage the spatio-temporal dimensions jointly to produce an upsampled feature
+map that respects the 2D topology of the input feature map and at the same time
 maintains its time consistency.
 
 The full model mimics the conventional 2D semantic segmentation encoder-decoder
@@ -133,17 +131,24 @@ the internal memory of RNNs instead of a fixed window of time.
 % - how temporal dimension is important for the task
 
 
-\section{Model description}\label{sec:deconvrnn_model}
+\section{Model description}\label{sec:deconvlstm_model}
 
-The architecture of the model, shown in~\autoref{fig:deconvrnn_model}, takes
-inspiration from the convolutional LSTM (ConvLSTM) proposed in~\cite{
-ShiCWYWW15}. This section will first analyze the ConvLSTM model and then
-gradually introduce the novelties of DeconvRNN.
+Videos can be interpreted as a set of frames that interlace spatial information
+through time. The supporting idea of this model builds on this, with the claim
+that space and time cannot be processed sequentially, as done by much of the
+past ML literature, but rather the two should be mixed together in a coherent
+and joint architecture. The proposed DEConvLSTM intertwines space with time at
+each step of the hierarchy~(see~\autoref{fig:deconvlstm_model}), taking
+inspiration from the ConvLSTM model described in~\cite{ShiCWYWW15}.
+% and pushing that intuition further.
+
+This section will introduce the novelties of the DEConvLSTM model, starting
+with a description of the ConvLSTM model and then building on that.
 
 \begin{figure}[t]
     \centering
-    \includegraphics[width=7cm]{img/deconvRNN/method.png}
-    \includegraphics[width=7cm]{img/deconvRNN/model_skip.png}
+    \includegraphics[width=7cm]{img/deconvLSTM/method.png}
+    \includegraphics[width=7cm]{img/deconvLSTM/model_skip.png}
     \caption{An example of architecture for video semantic segmentation build
         with four convolutional LSTMs. The input to the model is a sequence of
         video frames and the output is a sequence of segmentation maps. The
@@ -152,16 +157,17 @@ gradually introduce the novelties of DeconvRNN.
         spatial dimension of consecutive hidden states (black rectangles) and
         cell states (green rectangles). In our architecture we use
         bidirectional LSTM which are shown with ($\leftrightarrow$) and skip
-        connections.}\label{fig:deconvrnn_model}
+        connections.}\label{fig:deconvlstm_model}
 \end{figure}
 
 
 \subsection{Convolutional LSTM}
 
-In~\cite{ShiCWYWW15} the authors propose a modification of LSTM with
-peephole, called convolutional LSTM. To allow for a more convenient comparison,
-the equations that govern a vanilla LSTM with peephole connections that were
-defined in~\autoref{eq:LSTM_peepholes} are reported again here
+In~\cite{ShiCWYWW15} the authors propose a modification of the well-known LSTM
+with peephole connections, called convolutional LSTM. To allow for a more
+convenient comparison, the equations of the vanilla LSTM with peephole
+connections (that were defined in~\autoref{eq:LSTM_peepholes}) are reported
+here
 
 \begin{equation*}\tag{\ref{eq:LSTM_peepholes} revisited}
 \begin{split}
@@ -173,7 +179,7 @@ defined in~\autoref{eq:LSTM_peepholes} are reported again here
     C_t &= f_t \hadamard C_{t-1} + i_t \hadamard \tilde C_t\\
     o_t &= \sigma\left(W_o \cdot \left[h_{t-1}, x_t\right] +
         W_{oc} \hadamard C_{t-1} + b_o \right)\\
-    h_t &= o_t \hadamard tanh \left(C_t\right).
+    h_t &= o_t \hadamard tanh \left(C_t\right),
 \end{split}
 \end{equation*}
 
@@ -200,7 +206,7 @@ convolutions, leading to the following formulation
     C_t &= f_t \hadamard C_{t-1} + i_t \hadamard \tilde C_t\\
     o_t &= \sigma\left(W_o * \left[h_{t-1}, x_t\right] +
         W_{oc} \hadamard C_{t-1} + b_o \right)\\
-    h_t &= o_t \hadamard tanh \left(C_t\right).
+    h_t &= o_t \hadamard tanh \left(C_t\right),
 \end{split}
 \end{equation}
 
@@ -209,15 +215,59 @@ classical recurrent architectures, all gates and states here have \emph{spatial
 dimensions}, as they are the result of the application of convolutions on the
 input of the layer.
 
-The encoding pathway of the DeconvRNN model builds from this, with two
+The encoding pathway of the DeconvLSTM model builds from this, with two
 modifications: i) it introduces a full, multi-layered, CNN, in place of the
-convolution; ii) it replaces the Hadamard product with a convolution. The
-latter modification allows the network to process videos with different
-resolution than the ones it was trained on. To shorten the notation, once again
-the state weight matrices $W_{\star c}$ are incorporated into the set of
-weights $W$. This results in the following equations
+convolution operator; ii) it replaces the Hadamard product with a convolution.
+This is expressed in a shortened notation in~\autoref{eq:deconvLSTM_enc} by
+incorporating the state weight matrices $W_{\star c}$ into the set of weights
+$W$
+%. This results in the following equations
 
-\begin{equation}
+\begin{equation}\label{eq:deconvLSTM_enc}
+\begin{split}
+    i_t &= \sigma\left(W_i^{(L)} * \dots * W_i^{(1)} * W_i^{(0)} *
+        \left[h_{t-1}, x_t, C_{t-1}\right] + b_i \right)\\
+    f_t &= \sigma\left(W_f^{(L)} * \dots * W_f^{(1)} * W_f^{(0)} *
+        \left[h_{t-1}, x_t, C_{t-1}\right] + b_f \right)\\
+    \tilde C_t &= tanh \left(W_c^{(L)} * \dots * W_c^{(1)} * W_c^{(0)} *
+        \left[h_{t-1}, x_t\right] + b_c \right)\\
+    C_t &= f_t \hadamard C_{t-1} + i_t \hadamard \tilde C_t\\
+    o_t &= \sigma\left(W_o^{(L)} * \dots * W_o^{(1)} * W_o^{(0)} *
+        \left[h_{t-1}, x_t, C_{t-1}\right] + b_o \right)\\
+    h_t &= o_t \hadamard tanh \left(C_t\right).
+\end{split}
+\end{equation}
+
+\noindent where the last convolution, $W_\star^{(L)}$, is followed by a pooling
+layer to reduce the dimensionality of the intermediate feature maps. Also, the
+last convolution is followed by a $tanh$ non-linearity (to keep the typical
+LSTM behavior intact) and all the others are followed by a $ReLU$
+non-linearity.
+
+To replace the Hadamard product allows to reduce the number of
+parameters and is consistent with the idea of retaining the spatial structure
+in the internal state and gates of the LSTM. It also allows the network to
+process videos with a different resolution than the one it was trained on,
+which is often a convenient property.
+
+
+\subsection{Transposed Convolutional LSTM}
+
+It became common lately to address the segmentation problem in still images
+with architectures that first shrink the resolution of the feature maps to
+produce a rich, yet not too heavy, encoding and then upsample the intermediate
+feature maps back to the original image size in order to emit a per-pixel
+prediction~(see~\autoref{sec:reseg}). This kind of structure has proven to be
+very effective in this task with 2D images.
+
+Transferring this knowledge to the video segmentation task, the DEConvLSTM
+model introduces a Transposed Convolutional LSTM (TransConvLSTM) layer that
+exploits transposed convolutions to recover the resolution lost with the
+pooling layers. In the same fashion as for the ConvLSTM layer, the
+TransConvLSTM layer inserts a transposed CNN~\emph{inside} the state update
+function of an LSTM with peephole connections
+
+\begin{equation}\label{eq:deconvLSTM_dec}
 \begin{split}
     i_t &= \sigma\left(W_i^{(L)} * \dots * \gamma W_i^{(1)} *
         \gamma W_i^{(0)} * \left[h_{t-1}, x_t, C_{t-1}\right] + b_i \right)\\
@@ -231,17 +281,6 @@ weights $W$. This results in the following equations
     h_t &= o_t \hadamard tanh \left(C_t\right).
 \end{split}
 \end{equation}
-
-\subsection{DeConvolutional LSTM}
-
-\subsection{Spatial resolution}
-In order to mimic CNN, we introduce mechanisms to change spatial resolution of
-feature maps: e.g., pooling, strided convolution, unpooling or transposed
-convolution.
-
-NOTE: What is the difference between putting the pooling in the middle of two
-ConvLSTMs and within ConvLSTM??? It might be difficult to defend this as
-novelty...
 
 \subsection{Bidirectional RNNs}
 Bidirectional RNNs (B-RNNs) \cite{Schuster1997bidirecrnn} have been
@@ -262,12 +301,24 @@ mean, we learn the parameters of a weighted sum
 \subsection{Skip Connections}
 
 
-\section{Results}\label{sec:deconvRNN_results}
+\section{Results}\label{sec:deconvLSTM_results}
 
 it has affine transformation, flipping, cropping, warping, etc...
 %have 80% + of accuracy in val in gatech
 % 46 epochs, val loss 0.4873, val jacquard 0.4865...
 % Epoch 53/300 - loss: 0.2103 - cat_masked_accuracy: 0.9281 - val_loss: 0.3016 - val_jaccard: 0.6224
+
+%and still data is missing , and the community is making good efforts to bridge the gap
+%and that with the data that we have for video segmentation we get reasonable results
+
+%to handle variable size images we could just have used something like SPP
+% the argument is that TIME really has to make a difference
+% it is just that we need more data
+% and show that some results are reasonable
+% although not SOTA
+% CNN are very data hungry
+% and that they did not have good results until image net
+% and the next big step is video
 FCN8, FCN8 with convLSTM, our model
 \subsection{FCN8}
 FCN8 network achieved state of the art results on semantic segmentation tasks
