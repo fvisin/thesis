@@ -79,7 +79,7 @@ corresponding weight $w_i$ -- often referred to as \emph{preactivation} -- is
 computed as
 
 \begin{equation*}
-    z = \sum_{i=0}^{n}(w_i \cdot x_i).
+    z = \sum_{i=0}^{n}(w_i \cdot x_i),
 \end{equation*}
 
 \noindent where to simplify the notation the bias term $b$ has been replaced
@@ -91,7 +91,7 @@ function of the form
     y =
         \begin{cases}
             1,          & \text{if } z \geq 0 \\
-            0,         & \text{otherwise}.
+            0,         & \text{otherwise},
         \end{cases}
 \end{equation*}
 
@@ -111,7 +111,7 @@ the bias -- also called the \emph{parameters} of the network -- are
 \emph{learned} according to the following rule:
 
 \begin{equation}\label{eq:perceptron_lr}
-    w_i^{\text{new}} = w_i^{\text{old}} + \eta \cdot (\hat {y} - y) \cdot x_i.
+    w_i^{\text{new}} = w_i^{\text{old}} + \eta \cdot (\hat {y} - y) \cdot x_i,
 \end{equation}
 
 \noindent where $\hat y$ is the target (i.e., desired) value, $y$ is the output
@@ -305,7 +305,7 @@ $w_{ij}^{(l)}$, and all the weights are stored in a matrix $\mathbf{W}$.
 Similarly to the Perceptron case, each layer computes an affine transformation
 
 \begin{equation}\label{eq:MLP_affine}
-    \mathbf{z}^{(l)} = \mathbf{W}^{(l)} \cdot \mathbf{a}^{(l-1)}.
+    \mathbf{z}^{(l)} = \mathbf{W}^{(l)} \cdot \mathbf{a}^{(l-1)},
 \end{equation}
 
 \noindent followed by a nonlinearity -- usually more smooth than the one
@@ -329,7 +329,7 @@ functions
 \begin{equation}\label{eq:fn_composition}
     \textbf{y} = h^{(L)}_{\boldsymbol{\theta}} \composition
         h^{(L-1)}_{\boldsymbol{\theta}} \composition
-        \dots \composition h^{(1)}_{\boldsymbol{\theta}}.
+        \dots \composition h^{(1)}_{\boldsymbol{\theta}},
 \end{equation}
 
 \noindent Although very common and widely used, the MLP is not the only
@@ -411,7 +411,7 @@ negative numbers it asymptotes to $0$ while for large positive numbers it
 asymptotes to $1$. It is defined as
 
 \begin{equation}\label{eq:logistic}
-    logistic(\mathbf{z}) = \frac{1}{1+\exp(-\mathbf{z})}.
+    logistic(\mathbf{z}) = \frac{1}{1+\exp(-\mathbf{z})},
 \end{equation}
 
 \noindent The logistic function has probably been the most used nonlinearity
@@ -548,7 +548,7 @@ that of all the dimensions (or neurons) in the layer. The softmax is a
 It is defined as
 
 \begin{equation}\label{eq:softmax}
-    softmax(z_i) = \frac{\exp(z_i)}{\sum_{k=0}^K{\exp(z_k)}}.
+    softmax(z_i) = \frac{\exp(z_i)}{\sum_{k=0}^K{\exp(z_k)}},
 \end{equation}
 
 \noindent where $K$ is the number of classes, i.e., of dimensions (or neurons).
@@ -646,22 +646,22 @@ minimize some error
 
 \begin{equation}
     %w_{ij}^{(l)} = w_{ij}^{(l)} + \eta \frac{\partial E}{\partial w_{ij}^{(l)}}
-    \mathbf{W} = \mathbf{W} + \eta \frac{\partial E}{\partial \mathbf{W}}.
+    \mathbf{W} = \mathbf{W} + \eta \frac{\partial E}{\partial \mathbf{W}},
 \end{equation}
 
 \noindent where $\eta$ is a scaling factor typically referred to as
 \emph{learning rate}, that determines the size of the gradient descent steps.
 
-It is easy to understand backpropagation with a practical example. Consider
+It is easier to understand backpropagation with a practical example. Consider
 once again~\autoref{fig:MLP}: the network processes a bidimensional input
 $\mathbf{x}$ and, after three layers of affine transformations followed by
 nonlinearities, returns a unidimensional value $\mathbf{y}$. The correct output
 $\mathbf{\hat y}$ is given and is used to compute the error, or~\emph{cost},
-with some \emph{differentiable} metric. For this example consider e.g., the
+with some \emph{differentiable} metric. For this example consider the
 mean squared error (MSE)
 
 \begin{equation}\label{eq:MSE}
-    E_{mse} = \frac{1}{M} \sum_{\mathcal{D}}\frac{1}{2}(\mathbf{\hat y} - \mathbf{y})^2.
+    E_{mse} = \frac{1}{M} \sum_{\mathcal{D}}\frac{1}{2}(\mathbf{\hat y} - \mathbf{y})^2,
 \end{equation}
 
 \noindent the summation is done over a dataset $\mathcal{D}$ of $M$ samples,
@@ -728,7 +728,7 @@ second layer $\mathbf{W}^{(2)}$
         \sigma'(\mathbf{z}^{(3)}) \cdot
         \mathbf{W}^{(3)} \cdot
         \sigma'(\mathbf{z}^{(2)}) \cdot
-        \mathbf{a}^{(1)}.
+        \mathbf{a}^{(1)},
 \end{equation}
 
 \noindent where $\sigma'$ can be computed analytically and depends on the
@@ -745,10 +745,9 @@ activation function of choice (see e.g.~\autoref{eq:logistic_derivative} and
 
 Deep CNNs have been at the heart of spectacular advances in deep learning.
 Although CNNs have been used as early as the nineties to solve character
-recognition tasks \citep{le1997reading}, their current widespread application
-is due to much more recent work, when a deep CNN was used to beat
-state-of-the-art in the ImageNet image classification challenge
-\citep{krizhevsky2012imagenet}.
+recognition tasks \citep{le1997reading}, their current popularity is due to
+much more recent work, when a deep CNN was used to beat state-of-the-art in the
+ImageNet image classification challenge~\citep{krizhevsky2012imagenet}.
 
 \begin{figure}[h]
     \centering
@@ -757,30 +756,30 @@ state-of-the-art in the ImageNet image classification challenge
         characters recognition.}
 \end{figure}
 
-\autoref{sec:MLP} introduced MLPs, a powerful and very common kind of ANN that
-computes an affine transformation of its inputs followed by an activation
+\autoref{sec:MLP} introduced MLPs, a powerful and very common ANN architecture
+that computes an affine transformation of its inputs followed by an activation
 function. One property of MLPs is that they are dense, in the sense that they
-connect all the units of one layer to all the units of the next layer (often
-referred to as being \emph{fully connected}. When the input has a structure, a
-dense connectivity pattern might be wasteful and it is usually preferable to be
-able to exploit the data structure. The reason for this is twofold: first,
-adapting the connectivity pattern to the structure of the data reduces the
-number of operations performed by the network and, consequently, the
-computation time; second, constraining the connectivity pattern has the effect
-of forcing the network to focus on what is important, yielding faster training
-and better performance.
+often connect all the units of one layer to all the units of the next layer
+(often referred to as being \emph{fully connected}). When the input has a
+structure, a dense connectivity pattern might be wasteful and it is usually
+preferable to be able to exploit the data structure. The reason for this is
+twofold: first, adapting the connectivity pattern to the structure of the data
+reduces the number of operations performed by the network and, consequently,
+the computation time; second, constraining the connectivity pattern has the
+effect of forcing the network to focus on what is important, yielding faster
+training and better performance.
 
-Convolutional neural networks (CNNs) are an example of model that exploits the
-structure of the data. The intuition behind CNNs is that many kinds of data --
-such as images or audio clips -- have a \emph{local} topological structure that
-does not depend on the specific location in the global reference system. In the
-case of images, for example, this means that a hand can appear in the center of
-the image as well as in one of the corners, and is not less of a hand in either
-cases. Similarly, the sound of the word \emph{hand} should be detected the same
-way when pronounced with a high or low pitch.
+Convolutional neural networks (CNNs) are an example of a model that exploits
+the structure of the data. The intuition behind CNNs is that many kinds of data
+-- such as images or audio clips -- have a \emph{local} topological structure
+that does not depend on the specific location in the global reference system.
+In the case of images, for example, this means that a hand can appear in the
+center of the image as well as in one of the corners, and is not less of a hand
+in either cases. Similarly, the sound of the word \emph{hand} should be
+detected the same way when pronounced with a high or low pitch.
 
 CNNs exploit this understanding of the data by applying the same pattern
-detector on many locations of the image. This is formally done through a
+detector at many locations in the image. This is formally done through a
 \emph{convolution} (hence the name CNN), a signal processing operation that
 superimposes a pattern detector -- usually called \emph{filter}, \emph{kernel}
 or \emph{mask} -- on different locations of the image and emits an activation
@@ -798,7 +797,11 @@ that are not completely contained in the image. The typical solution adopted to
 overcome this limitation is to \emph{pad} the image by adding a frame (usually
 of zeros) around it on every side. This ensures that on the borders of the
 image the convolution performs both a complete superimposition of the kernel on
-the image as well as a partial one.
+every position in the image, as well as a partial ones (that is, a
+superimposition that is partially on the image and partially on the padding).
+In the padded half hand scenario, this partial superimposition over the image
+would cause an activation that is not as strong as in the case of a full
+overlap, but not zero either.
 
 The elements described so far fully define a convolution. The shape of the
 feature maps produced by a convolutional layer is affected by the shape of its
@@ -832,7 +835,7 @@ The bread and butter of neural networks is \emph{affine transformations}: a
 vector is received as input and is multiplied with a matrix to produce an
 output (to which a bias vector is usually added before passing the result
 through a nonlinearity). This is applicable to any type of input, be it an
-image, a sound clip or an unordered collection of features: whatever their
+image, a sound clip or an unordered collection of features; whatever their
 dimensionality, their representation can always be flattened into a vector
 before the transformation.
 
@@ -842,7 +845,7 @@ structure. More formally, they share these important properties:
 \begin{itemize}
     \item They are stored as multi-dimensional arrays.
     \item They feature one or more axes for which ordering matters (e.g., width
-        and height axes for an image, time axis for a sound clip).
+        and height axes for an image, time axis for a sound clip, etc, ..).
     \item One axis, called the channel axis, is used to access different views
         of the data (e.g., the red, green and blue channels of a color image, or
         the left and right channels of a stereo audio track).
@@ -858,15 +861,14 @@ where discrete convolutions come into play.
 A discrete convolution is a linear transformation that preserves this notion of
 ordering. It is sparse (only a few input units contribute to a given output
 unit) and reuses parameters (the same weights are applied to multiple locations
-in the input).
+in the input). \autoref{fig:numerical_no_padding_no_strides} provides an
+example of a discrete convolution. The light blue grid is called the {\em input
+feature map}. To keep the drawing simple, a single input feature map is
+represented, but it is not uncommon to have multiple feature maps stacked one
+onto another.\footnote{An example of this is what was referred to earlier as
+    {\em channels\/} for images and sound clips.}
 
-\autoref{fig:numerical_no_padding_no_strides} provides an example of a discrete
-convolution. The light blue grid is called the {\em input feature map}. To keep
-the drawing simple, a single input feature map is represented, but it is not
-uncommon to have multiple feature maps stacked one onto another.\footnote{%
-    An example of this is what was referred to earlier as {\em channels\/} for
-    images and sound clips.}
-A {\em kernel\/} (shaded area) of value
+A {\em kernel\/} (shaded area) with values:
 
 \begin{figure}[H]
     \centering
@@ -928,17 +930,16 @@ are called {\em output feature maps}.\footnote{%
     most of the machine learning literature, the term {\em convolution\/}
     will be used in this guide.}
 If there are multiple input feature maps, the kernel will have to be
-3-dimensional -- or, equivalently each one of the feature maps will be
+3-dimensional -- or, equivalently, each one of the feature maps will be
 convolved with a distinct kernel -- and the resulting feature maps will
-be summed up elementwise to produce the output feature map.
-
-The convolution depicted in \autoref{fig:numerical_no_padding_no_strides} is an
-instance of a 2-D convolution, but it can be generalized to N-D convolutions.
-For instance, in a 3-D convolution, the kernel would be a {\em cuboid\/} and
-would slide across the height, width and depth of the input feature map.
+be summed up elementwise to produce the output feature map. The convolution
+depicted in \autoref{fig:numerical_no_padding_no_strides} is an instance of a
+2-D convolution, but it can be generalized to N-D convolutions.  For instance,
+in a 3-D convolution, the kernel would be a {\em cuboid\/} and would slide
+across the height, width and depth of the input feature map.
 
 The collection of kernels defining a discrete convolution has a shape
-corresponding to some permutation of $(n, m, k_1, \ldots, k_N)$, where
+corresponding to some assignment of $(n, m, k_1, \ldots, k_N)$, where
 
 \begin{equation*}
 \begin{split}
@@ -1082,7 +1083,7 @@ retaining only odd output elements (\autoref{fig:strides_subsampling}).
 \subsection{Pooling}\label{sec:pooling}
 
 In addition to discrete convolutions themselves, {\em pooling\/} operations
-make up another important building block in CNNs. Pooling operations reduce
+constitute another important building block in CNNs. Pooling operations reduce
 the size of feature maps by using some function to summarize subregions, such
 as taking the average or the maximum value.
 
@@ -1137,11 +1138,13 @@ along axis $j$:
 
 \subsection{Convolution arithmetic}
 
-The analysis of the relationship between convolutional layer properties is eased
-by the fact that they don't interact across axes, i.e., the choice of kernel
-size, stride and zero padding along axis $j$ only affects the output size of
-axis $j$. Because of that, this chapter will focus on the following simplified
-setting:
+The analysis of the relationship between convolutional layer properties is
+eased by the fact that they do not interact across axes, i.e., the choice of
+kernel size, stride and zero padding along axis $j$ only affects the output
+size of axis $j$. Because of that, this chapter focuses on the following
+simplified setting to facilitate the analysis and the visualization, but keep
+in mind that the results outlined here also generalize to the N-D and
+non-square cases:
 
 \begin{itemize}
     \item 2-D discrete convolutions ($N = 2$),
@@ -1151,15 +1154,12 @@ setting:
     \item same zero padding along both axes ($p_1 = p_2 = p$).
 \end{itemize}
 
-This facilitates the analysis and the visualization, but keep in mind that the
-results outlined here also generalize to the N-D and non-square cases.
 
 \subsubsection{No zero padding, unit strides}
 
 The simplest case to analyze is when the kernel just slides across every
-position of the input (i.e., $s = 1$ and $p = 0$).
-\autoref{fig:no_padding_no_strides} provides an example for $i = 4$ and $k =
-3$.
+position of the input (i.e., $s = 1$ and $p = 0$). \autoref{%
+fig:no_padding_no_strides} provides an example for $i = 4$ and $k = 3$.
 
 One way of defining the output size in this case is by the number of possible
 placements of the kernel on the input. Let's consider the width axis: the kernel
@@ -1167,9 +1167,9 @@ starts on the leftmost part of the input feature map and slides by steps of one
 until it touches the right side of the input. The size of the output will be
 equal to the number of steps made, plus one, accounting for the initial position
 of the kernel (\autoref{fig:no_padding_no_strides_explained}). The same logic
-applies for the height axis.
-
-More formally, the following relationship can be inferred:
+applies for the height axis. More formally, the following relationship between
+the parameters of the convolution, the input shape $i$ and the output shape $o$
+can be inferred:
 
 \begin{relationship}\label{rel:no_padding_no_strides}
 For any $i$ and $k$, and for $s = 1$ and $p = 0$,
@@ -1234,7 +1234,7 @@ relationship:
 \begin{relationship}\label{rel:arbitrary_padding_no_strides}
 For any $i$, $k$ and $p$, and for $s = 1$,
 \begin{equation*}
-    o = (i - k) + 2p + 1.
+    o = (i - k) + 2p + 1,
 \end{equation*}
 \end{relationship}
 
@@ -1244,7 +1244,7 @@ For any $i$, $k$ and $p$, and for $s = 1$,
 In practice, two specific instances of zero padding are used quite extensively
 because of their respective properties. Let's discuss them in more detail.
 
-\paragraph{Half (same) padding}
+\subsubsection{Half (same) padding}
 
 Having the output size be the same as the input size (i.e., $o = i$) can be a
 desirable property:
@@ -1256,7 +1256,7 @@ $p = \lfloor k / 2 \rfloor = n$,
 \begin{split}
     o &= i + 2 \lfloor k / 2 \rfloor - (k - 1) \\
       &= i + 2n - 2n \\
-      &= i.
+      &= i,
 \end{split}
 \end{equation*}
 \end{relationship}
@@ -1265,7 +1265,7 @@ $p = \lfloor k / 2 \rfloor = n$,
 padding. \autoref{fig:same_padding_no_strides} provides an example for
 $i = 5$, $k = 3$ and (therefore) $p = 1$.
 
-\paragraph{Full padding}
+\subsubsection{Full padding}
 
 While convolving a kernel generally {\em decreases\/} the output size with
 respect to the input size, sometimes the opposite is required. This can be
@@ -1276,7 +1276,7 @@ For any $i$ and $k$, and for $p = k - 1$ and $s = 1$,
 \begin{equation*}
 \begin{split}
     o &= i + 2(k - 1) - (k - 1) \\
-      &= i + (k - 1).
+      &= i + (k - 1),
 \end{split}
 \end{equation*}
 \end{relationship}
@@ -1301,14 +1301,12 @@ slides by steps of size $s$ until it touches the right side of the input. The
 size of the output is again equal to the number of steps made, plus one,
 accounting for the initial position of the kernel
 (\autoref{fig:no_padding_strides_explained}). The same logic applies for the
-height axis.
-
-From this, the following relationship can be inferred:
+height axis. From this, the following relationship can be inferred:
 
 \begin{relationship}\label{rel:no_padding_strides}
 For any $i$, $k$ and $s$, and for $p = 0$,
 \begin{equation*}
-    o = \left\lfloor \frac{i - k}{s} \right\rfloor + 1.
+    o = \left\lfloor \frac{i - k}{s} \right\rfloor + 1,
 \end{equation*}
 \end{relationship}
 
@@ -1327,7 +1325,7 @@ effective input of size $i + 2p$, in analogy to what was done for
 \begin{relationship}\label{rel:padding_strides}
 For any $i$, $k$, $p$ and $s$,
 \begin{equation*}
-    o = \left\lfloor \frac{i + 2p - k}{s} \right\rfloor + 1.
+    o = \left\lfloor \frac{i + 2p - k}{s} \right\rfloor + 1,
 \end{equation*}
 \end{relationship}
 
@@ -1340,7 +1338,7 @@ ambiguity applies only for $s > 1$.
 \autoref{fig:padding_strides} shows an example with $i = 5$, $k = 3$, $s = 2$
 and $p = 1$, while \autoref{fig:padding_strides_odd} provides an example for
 $i = 6$, $k = 3$, $s = 2$ and $p = 1$. Interestingly, despite having different
-input sizes these convolutions share the same output size. While this doesn't
+input sizes these convolutions share the same output size. While this does not
 affect the analysis for {\em convolutions}, this will complicate the analysis
 in the case of {\em transposed convolutions}.
 
@@ -1441,7 +1439,7 @@ zero padding, the relationship describing the general case is as follows:
 \begin{relationship}\label{rel:pooling}
 For any $i$, $k$ and $s$,
 \begin{equation*}
-    o = \left\lfloor \frac{i - k}{s} \right\rfloor + 1.
+    o = \left\lfloor \frac{i - k}{s} \right\rfloor + 1,
 \end{equation*}
 \end{relationship}
 
@@ -1465,7 +1463,7 @@ fully-connected case are useful in solving the convolutional case.
 
 Like for convolution arithmetic, the dissertation about transposed convolution
 arithmetic is simplified by the fact that transposed convolution properties
-don't interact across axes.
+do not interact across axes.
 
 The chapter will focus on the following setting:
 
@@ -1506,7 +1504,6 @@ the kernel respectively):
 This linear operation takes the input matrix flattened as a 16-dimensional
 vector and produces a 4-dimensional vector that is later reshaped as the $2
 \times 2$ output matrix.
-
 Using this representation, the backward pass is easily obtained by transposing
 $\mathbf{C}$; in other words, the error is backpropagated by multiplying the
 loss with $\mathbf{C}^T$. This operation takes a 4-dimensional vector as input
@@ -1526,7 +1523,7 @@ transposed convolution}.
 
 Transposed convolutions -- also called {\em fractionally strided convolutions\/}
 -- work by swapping the forward and backward passes of a convolution. One way to
-put it is to note that the kernel defines a convolution, but whether it's a
+put it is to note that the kernel defines a convolution, but whether it is a
 direct convolution or a transposed convolution is determined by how the forward
 and backward passes are computed.
 
@@ -1544,11 +1541,10 @@ a direct convolution. The disadvantage is that it usually involves adding many
 columns and rows of zeros to the input, resulting in a much less efficient
 implementation.
 
-Building on what has been introduced so far, this chapter will proceed somewhat
-backwards with respect to the convolution arithmetic chapter, deriving the
-properties of each transposed convolution by referring to the direct
-convolution with which it shares the kernel, and defining the equivalent direct
-convolution.
+Building on what has been introduced so far, this section will proceed somewhat
+backwards with respect to the previous sections, deriving the properties of
+each transposed convolution by referring to the direct convolution with which
+it shares the kernel, and defining the equivalent direct convolution.
 
 \subsection{No zero padding, unit strides, transposed}
 
@@ -1580,12 +1576,10 @@ connectivity pattern of the transposed convolution and use it to guide the
 design of the equivalent convolution. For example, the top left pixel of the
 input of the direct convolution only contribute to the top left pixel of the
 output, the top right pixel is only connected to the top right output pixel,
-and so on.
-
-To maintain the same connectivity pattern in the equivalent convolution it is
-necessary to zero pad the input in such a way that the first (top-left)
-application of the kernel only touches the top-left pixel, i.e., the padding
-has to be equal to the size of the kernel minus one.
+and so on. To maintain the same connectivity pattern in the equivalent
+convolution it is necessary to zero pad the input in such a way that the first
+(top-left) application of the kernel only touches the top-left pixel, i.e., the
+padding has to be equal to the size of the kernel minus one.
 
 Proceeding in the same fashion it is possible to determine similar observations
 for the other elements of the image, giving rise to the following relationship:
@@ -1607,9 +1601,7 @@ strides.
 Knowing that the transpose of a non-padded convolution is equivalent to
 convolving a zero padded input, it would be reasonable to suppose that the
 transpose of a zero padded convolution is equivalent to convolving an input
-padded with {\em less\/} zeros.
-
-It is indeed the case, as shown in
+padded with {\em less\/} zeros. It is indeed the case, as shown in
 \autoref{fig:arbitrary_padding_no_strides_transposed} for $i = 5$, $k = 4$ and
 $p = 2$.
 
@@ -1667,7 +1659,7 @@ p - 1$ and its output size is
         = 1$ and $p' = 1$).}
 \end{figure}
 
-\paragraph{Half (same) padding, transposed}
+\subsubsection{Half (same) padding, transposed}
 
 By applying the same inductive reasoning as before, it is reasonable to expect
 that the equivalent convolution of the transpose of a half padded convolution
@@ -1691,7 +1683,7 @@ by $k' = k$, $s' = s$ and $p' = p$ and its output size is
 \autoref{fig:same_padding_no_strides_transposed} provides an example for $i =
 5$, $k = 3$ and (therefore) $p = 1$.
 
-\paragraph{Full padding, transposed}
+\subsubsection{Full padding, transposed}
 
 Knowing that the equivalent convolution of the transpose of a non-padded
 convolution involves full padding, it is unsurprising that the equivalent of
