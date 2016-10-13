@@ -1680,8 +1680,8 @@ by $k' = k$, $s' = s$ and $p' = p$ and its output size is
 \end{equation*}
 \end{relationship}
 
-\autoref{fig:same_padding_no_strides_transposed} provides an example for $i =
-5$, $k = 3$ and (therefore) $p = 1$.
+\noindent\autoref{fig:same_padding_no_strides_transposed} provides an example
+for $i = 5$, $k = 3$ and (therefore) $p = 1$.
 
 \subsubsection{Full padding, transposed}
 
@@ -1701,8 +1701,8 @@ and its output size is
 \end{equation*}
 \end{relationship}
 
-\autoref{fig:full_padding_no_strides_transposed} provides an example for $i =
-5$, $k = 3$ and (therefore) $p = 2$.
+\noindent\autoref{fig:full_padding_no_strides_transposed} provides an example
+for $i = 5$, $k = 3$ and (therefore) $p = 2$.
 
 \subsection{No zero padding, non-unit strides, transposed}
 
@@ -1711,7 +1711,6 @@ might expect that the transpose of a convolution with $s > 1$ involves an
 equivalent convolution with $s < 1$. As will be explained, this is a valid
 intuition, which is why transposed convolutions are sometimes called {\em
 fractionally strided convolutions}.
-
 \autoref{fig:no_padding_strides_transposed} provides an example for $i = 5$, $k
 = 3$ and $s = 2$ which helps understand what fractional strides involve: zeros
 are inserted {\em between\/} input units, which makes the kernel move around at
@@ -1789,42 +1788,42 @@ of $s$, the analysis can extended to the zero padded case by combining
 \autoref{rel:no_padding_strides_transposed}:
 
 \begin{relationship}\label{rel:padding_strides_transposed}
-A convolution described by $k$, $s$ and $p$ and whose
-input size $i$ is such that $i + 2p - k$ is a multiple of $s$ has an associated
-transposed convolution described by $\tilde{i}'$, $k' = k$, $s' = 1$ and
-$p' = k - p - 1$, where $\tilde{i}'$ is the size of the stretched input
-obtained by adding $s - 1$ zeros between each input unit, and its output size
-is
-\begin{equation*}
-\begin{split}
-    o' = s (i' - 1) + k - 2p.
-\end{split}
-\end{equation*}
+    A convolution described by $k$, $s$ and $p$ and whose
+    input size $i$ is such that $i + 2p - k$ is a multiple of $s$ has an associated
+    transposed convolution described by $\tilde{i}'$, $k' = k$, $s' = 1$ and
+    $p' = k - p - 1$, where $\tilde{i}'$ is the size of the stretched input
+    obtained by adding $s - 1$ zeros between each input unit, and its output size
+    is
+    \begin{equation*}
+    \begin{split}
+        o' = s (i' - 1) + k - 2p.
+    \end{split}
+    \end{equation*}
 \end{relationship}
 
-\autoref{fig:padding_strides_transposed} provides an example for $i = 5$, $k =
-3$, $s = 2$ and $p = 1$.
+\noindent\autoref{fig:padding_strides_transposed} provides an example for $i =
+5$, $k = 3$, $s = 2$ and $p = 1$.
 
 The constraint on the size of the input $i$ can be relaxed by introducing
 another parameter $a \in \{0, \ldots, s - 1\}$ that allows to distinguish
 between the $s$ different cases that all lead to the same $i'$:
 
 \begin{relationship}\label{rel:padding_strides_transposed_odd}
-A convolution described by $k$, $s$ and $p$ has an
-associated transposed convolution described by $a$, $\tilde{i}'$, $k' = k$, $s'
-= 1$ and $p' = k - p - 1$, where $\tilde{i}'$ is the size of the stretched
-input obtained by adding $s - 1$ zeros between each input unit, and $a = (i +
-2p - k) \mod s$ represents the number of zeros added to the top and right edges
-of the input, and its output size is
-\begin{equation*}
-\begin{split}
-    o' = s (i' - 1) + a + k - 2p.
-\end{split}
-\end{equation*}
+    A convolution described by $k$, $s$ and $p$ has an
+    associated transposed convolution described by $a$, $\tilde{i}'$, $k' = k$, $s'
+    = 1$ and $p' = k - p - 1$, where $\tilde{i}'$ is the size of the stretched
+    input obtained by adding $s - 1$ zeros between each input unit, and $a = (i +
+    2p - k) \mod s$ represents the number of zeros added to the top and right edges
+    of the input, and its output size is
+    \begin{equation*}
+    \begin{split}
+        o' = s (i' - 1) + a + k - 2p.
+    \end{split}
+    \end{equation*}
 \end{relationship}
 
-\autoref{fig:padding_strides_odd_transposed} provides an example for $i = 6$, $k
-= 3$, $s = 2$ and $p = 1$.
+\noindent\autoref{fig:padding_strides_odd_transposed} provides an example for
+$i = 6$, $k = 3$, $s = 2$ and $p = 1$.
 
 \begin{figure}[h]
     \centering
@@ -1854,11 +1853,11 @@ of the input, and its output size is
 %
 It is well known that the brain is organized in functional areas and sub-areas
 that process the incoming signal in an incremental fashion. These areas of the
-brain are typically connected both in a \emph{feedforward}, i.e., to neurons
-belonging to deeper (i.e., further away from the sensory input) layers, and in
-a \emph{feedback} fashion (i.e., to previous layers in the hierarchy). This is
-believed to help processing temporal data and allow for an iterative refinement
-of the computation.
+brain are typically connected both in a \emph{feedforward}, i.e., towards
+neurons belonging to deeper (i.e., further away from the sensory input) layers,
+and in a \emph{feedback} fashion (i.e., to previous layers in the hierarchy).
+This is believed to help processing temporal data and allow for an iterative
+refinement of the computation.
 
 Similarly, ANNs are not constrained to process the input data in a feedforward
 way. Recurrent Neural Networks (RNNs) implement feedback loops
@@ -1876,13 +1875,13 @@ nothing prevents from using RNNs with any kind of sequential data.
     \caption{A Recurrent Neural Network (RNN)\label{fig:RNN_loop}}
 \end{figure}
 
-Suppose to be modeling some sequential data $x_0, x_1, \dots , x_t, x_{t+1},
-\dots$ such as an English sentence. At time $t$ it is possible to model the
+Suppose to model some sequential data $x_0, x_1, \dots , x_t, x_{t+1}, \dots$
+such as an English sentence. At time $t$ it is possible to model the
 probability distribution over a dictionary of English words, conditioned on the
 words seen up that moment -- namely $x_0, x_1, \dots , x_{t-1}$. This can be
-used, e.g., in a smart keyboard application to suggest the next most probable
-words to the user, or in an automatic help desk to generate a meaningful answer
-to a question.
+used, for instance, in a smart keyboard application to suggest the next most
+probable words to the user or, in an automatic help desk, to generate a
+meaningful answer to a question.
 
 It might not be immediately obvious what it means in practice to put a loop in
 an ANN and how to backpropagate through it. To better comprehend how RNNs work
@@ -1918,16 +1917,17 @@ backpropagation algorithm (see~\autoref{sec:backprop}) to proceed from the most
 recent time step, backward in time. This algorithm is usually referred to as
 \emph{Backpropagation through time (BPTT)}.
 
-The problem of BPTT is that it requires to apply the chain rule all the way
-from the current time step to $t = 0$ to propagate the gradients through time.
-This results in a long chain of products that can easily go to infinity or
-become zero if the elements of the multiplication are greater or smaller than
-$1$ respectively. These two issues are known in the literature as
-\emph{exploding gradient} and \emph{vanishing gradient} and have been studied
-extensively in the past~\citep[see e.g., ][]{Hochreiter91,Bengio-trnn93}. The
-first one can be partially addressed by \emph{clipping the gradient} when it
-becomes too large, but the second is not easy to overcome and can make training
-these kind of models very hard if not impossible.
+The problem of BPTT is that it requires the application of the chain rule all
+the way from the current time step to $t = 0$ to propagate the gradients
+through time.  This results in a long chain of products that can easily go to
+infinity or become zero if the elements of the multiplication are greater or
+smaller than $1$ respectively. These two issues, i.e., going to infinity and
+becoming zero, are known in the literature as \emph{exploding gradient} and
+\emph{vanishing gradient} and have been studied extensively in the
+past~\citep[see e.g., ][]{Hochreiter91,Bengio-trnn93}. The first one can be
+partially addressed by \emph{clipping the gradient} when it becomes too large,
+but the second is not easy to overcome and can make training these kind of
+models very hard if not impossible.
 
 \subsection{Long Short Term Memory}
 \begin{figure}[h]
@@ -1942,7 +1942,7 @@ these kind of models very hard if not impossible.
 \end{figure}
 
 Long Short Term Memory (LSTM) networks (see~\autoref{fig:LSTM}) have been
-proposed to solve (or at least alleviate) the problems of RNNs with modeling
+proposed to solve (or at least alleviate) the problems of RNNs in modeling
 long term dependencies. LSTMs have been designed to have an internal memory,
 or~\emph{state}, that can be updated and consulted at each time step. As
 opposed to vanilla RNNs, this allows LSTMs to separate their output from the
@@ -2161,9 +2161,9 @@ Recurrent Unit (GRU) with less gates than LSTMs and a different internal
 structure. Along the lines of \autoref{sec:LSTM_coupled}, in GRUs the forget
 and input gates are coupled into an~\emph{update gate} $z_t$. The memory and
 output are also merged into a single state and the internal structure is
-modified to cope with these changes (see~\autoref{fig:GRU}
+modified to cope with these changes (see~\autoref{fig:GRU}).
 
-The advantage of GRUs w.r.t. LSTMs is that having less gates they are less
-memory and computationally intense, which is often a critical aspect for ANNs.
-GRUs have been shown to perform as well as LSTMs in some settings
-(see~\cite{Chung-et-al-NIPSDL2014-small}).
+The advantage of GRUs over LSTMs is the smaller number of gates that makes them
+less memory as well as computationally intense, which is often a critical
+aspect for ANNs. GRUs have been shown to perform as well as LSTMs in some
+settings (see~\cite{Chung-et-al-NIPSDL2014-small}).
