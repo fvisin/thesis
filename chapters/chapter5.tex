@@ -135,15 +135,21 @@ the internal memory of RNNs instead of a fixed window of time.
 
 Videos can be interpreted as a set of frames that interlace spatial information
 through time. The supporting idea of this model builds on this, with the claim
-that space and time cannot be processed sequentially, as done by much of the
-past ML literature, but rather the two should be mixed together in a coherent
+that space and time cannot be processed sequentially -- as done by much of the
+past ML literature -- but rather the two should be mixed together in a coherent
 and joint architecture. The proposed DEConvLSTM intertwines space with time at
 each step of the hierarchy~(see~\autoref{fig:deconvlstm_model}), taking
 inspiration from the ConvLSTM model described in~\cite{ShiCWYWW15}.
 % and pushing that intuition further.
 
+As many successful models for semantic segmentation on static images, the
+DEConvLSTM couples an encoding and a decoding pathway, that respectively shrink
+the resolution of the intermediate feature maps, encoding a rich representation
+of the input, and upsample it to recover the resolution of the input video.
+
 This section will introduce the novelties of the DEConvLSTM model, starting
-with a description of the ConvLSTM model and then building on that.
+with a description of the encoding pathway that builds on the ConvLSTM model
+and then building on that to uncover the novelties of the proposed model.
 
 \begin{figure}[t]
     \centering
@@ -163,11 +169,11 @@ with a description of the ConvLSTM model and then building on that.
 
 \subsection{Convolutional LSTM}
 
-In~\cite{ShiCWYWW15} the authors propose a modification of the well-known LSTM
-with peephole connections, called convolutional LSTM. To allow for a more
-convenient comparison, the equations of the vanilla LSTM with peephole
-connections (that were defined in~\autoref{eq:LSTM_peepholes}) are reported
-here
+In~\cite{ShiCWYWW15} the authors propose a model called convolutional
+LSTM~(ConvLSTM) that is a modification of the well-known LSTM with peephole
+connections. To allow for a more convenient comparison, the equations of the
+vanilla LSTM with peephole connections (that were defined
+in~\autoref{eq:LSTM_peepholes}) are reported here
 
 \begin{equation*}\tag{\ref{eq:LSTM_peepholes} revisited}
 \begin{split}
@@ -212,91 +218,125 @@ convolutions, leading to the following formulation
 
 \noindent where $*$ is the convolution operator. Notably, as opposed to
 classical recurrent architectures, all gates and states here have \emph{spatial
-dimensions}, as they are the result of the application of convolutions on the
+dimensions} as they are the result of the application of convolutions on the
 input of the layer.
 
 The encoding pathway of the DeconvLSTM model builds from this, with two
 modifications: i) it introduces a full, multi-layered, CNN, in place of the
 convolution operator; ii) it replaces the Hadamard product with a convolution.
-This is expressed in a shortened notation in~\autoref{eq:deconvLSTM_enc} by
-incorporating the state weight matrices $W_{\star c}$ into the set of weights
-$W$
-%. This results in the following equations
+This is expressed in~\autoref{eq:deconvLSTM_enc}
+%resulting in the following equations
 
 \begin{equation}\label{eq:deconvLSTM_enc}
 \begin{split}
-    i_t &= \sigma\left(W_i^{(L)} * \dots * W_i^{(1)} * W_i^{(0)} *
-        \left[h_{t-1}, x_t, C_{t-1}\right] + b_i \right)\\
-    f_t &= \sigma\left(W_f^{(L)} * \dots * W_f^{(1)} * W_f^{(0)} *
-        \left[h_{t-1}, x_t, C_{t-1}\right] + b_f \right)\\
-    \tilde C_t &= tanh \left(W_c^{(L)} * \dots * W_c^{(1)} * W_c^{(0)} *
-        \left[h_{t-1}, x_t\right] + b_c \right)\\
+    i_t &= \sigma\left(W_{ix}^{(L)} * \dots * \rho W_{ix}^{(1)} *
+        \rho W_{ix}^{(0)} * x_t + W_i * \left[h_{t-1}, C_{t-1}\right] +
+        b_i \right)\\
+    f_t &= \sigma\left(W_{fx}^{(L)} * \dots * \rho W_{fx}^{(1)} *
+        \rho W_{fx}^{(0)} * x_t + W_f * \left[h_{t-1}, C_{t-1}\right] +
+        b_f \right)\\
+    \tilde C_t &= tanh \left(W_{cx}^{(L)} * \dots * \rho W_{cx}^{(1)} *
+        \rho W_{cx}^{(0)} * x_t + W_c * h_{t-1} + b_c \right)\\
     C_t &= f_t \hadamard C_{t-1} + i_t \hadamard \tilde C_t\\
-    o_t &= \sigma\left(W_o^{(L)} * \dots * W_o^{(1)} * W_o^{(0)} *
-        \left[h_{t-1}, x_t, C_{t-1}\right] + b_o \right)\\
+    o_t &= \sigma\left(W_{ox}^{(L)} * \dots * \rho W_{ox}^{(1)} *
+        \rho W_{ox}^{(0)} * x_t + W_o * \left[h_{t-1}, C_{t-1}\right] +
+        b_o \right)\\
     h_t &= o_t \hadamard tanh \left(C_t\right).
 \end{split}
 \end{equation}
 
-\noindent where the last convolution, $W_\star^{(L)}$, is followed by a pooling
-layer to reduce the dimensionality of the intermediate feature maps. Also, the
-last convolution is followed by a $tanh$ non-linearity (to keep the typical
-LSTM behavior intact) and all the others are followed by a $ReLU$
-non-linearity.
+\noindent A $ReLU$ nonlinearity $\rho$ follows every convolution on the input
+$W_{\star x}^{(\star)}$ apart from the last ones $W_{\star x}^{(L)}$, since the
+usual $\sigma$ nonlinearity is already applied to the output of the layer to
+keep the typical LSTM behavior intact. The last convolutions $W_\star^{(L)}$
+are also followed by a pooling layer (not expressed in the equations) to reduce
+the dimensionality of the intermediate feature maps before the nonlinearity is
+applied.
 
-To replace the Hadamard product allows to reduce the number of
-parameters and is consistent with the idea of retaining the spatial structure
-in the internal state and gates of the LSTM. It also allows the network to
-process videos with a different resolution than the one it was trained on,
-which is often a convenient property.
+The substitution of the Hadamard products with convolutions allows to reduce
+the number of parameters and is consistent with the idea of retaining the
+spatial structure in the internal state and gates of the LSTM. It also allows
+the network to process videos with a different resolution than the one it was
+trained on, which is often a convenient property.
 
 
 \subsection{Transposed Convolutional LSTM}
 
-It became common lately to address the segmentation problem in still images
+It became common lately to address the problem of segmenting still images
 with architectures that first shrink the resolution of the feature maps to
-produce a rich, yet not too heavy, encoding and then upsample the intermediate
-feature maps back to the original image size in order to emit a per-pixel
-prediction~(see~\autoref{sec:reseg}). This kind of structure has proven to be
-very effective in this task with 2D images.
+produce a lower-dimensionality yet rich encoding, and then upsample the
+intermediate feature maps back to the original image size in order to emit a
+per-pixel prediction~(see~\autoref{sec:reseg}). This kind of structure has
+proven to be very effective to segment 2D images.
 
 Transferring this knowledge to the video segmentation task, the DEConvLSTM
-model introduces a Transposed Convolutional LSTM (TransConvLSTM) layer that
-exploits transposed convolutions to recover the resolution lost with the
+model introduces a novel Transposed Convolutional LSTM (TransConvLSTM) layer
+that exploits transposed convolutions to recover the resolution lost due to the
 pooling layers. In the same fashion as for the ConvLSTM layer, the
 TransConvLSTM layer inserts a transposed CNN~\emph{inside} the state update
 function of an LSTM with peephole connections
 
 \begin{equation}\label{eq:deconvLSTM_dec}
 \begin{split}
-    i_t &= \sigma\left(W_i^{(L)} * \dots * \gamma W_i^{(1)} *
-        \gamma W_i^{(0)} * \left[h_{t-1}, x_t, C_{t-1}\right] + b_i \right)\\
-    f_t &= \sigma\left(W_f^{(L)} * \dots * \gamma W_f^{(1)} *
-        \gamma W_f^{(0)} * \left[h_{t-1}, x_t, C_{t-1}\right] + b_f \right)\\
-    \tilde C_t &= tanh \left(W_c^{(L)} * \dots * \gamma W_c^{(1)} *
-        \gamma W_c^{(0)} * \left[h_{t-1}, x_t\right] + b_c \right)\\
+    i_t &= \sigma\left(W_{ix}^{(L)} \circledast \dots \circledast
+        \rho W_{ix}^{(1)} \circledast \rho W_{ix}^{(0)} \circledast x_t +
+        W_i * \left[h_{t-1}, C_{t-1}\right] + b_i \right)\\
+    f_t &= \sigma\left(W_{fx}^{(L)} \circledast \dots \circledast
+        \rho W_{fx}^{(1)} \circledast \rho W_{fx}^{(0)} \circledast x_t +
+        W_f * \left[h_{t-1}, C_{t-1}\right] + b_f \right)\\
+    \tilde C_t &= tanh \left(W_{cx}^{(L)} \circledast \dots \circledast
+        \rho W_{cx}^{(1)} \circledast \rho W_{cx}^{(0)} \circledast x_t +
+        W_c * h_{t-1} + b_c \right)\\
     C_t &= f_t \hadamard C_{t-1} + i_t \hadamard \tilde C_t\\
-    o_t &= \sigma\left(W_o^{(L)} * \dots * \gamma W_o^{(1)} *
-        \gamma W_o^{(0)} * \left[h_{t-1}, x_t, C_{t-1}\right] + b_o \right)\\
+    o_t &= \sigma\left(W_{ox}^{(L)} \circledast \dots \circledast
+        \rho W_{ox}^{(1)} \circledast \rho W_{ox}^{(0)} \circledast x_t +
+        W_o * \left[h_{t-1}, C_{t-1}\right] + b_o \right)\\
     h_t &= o_t \hadamard tanh \left(C_t\right).
 \end{split}
 \end{equation}
 
+\noindent The TransConvLSTM applies multiple layers of transposed convolutions
+($\circledast$) with unit stride and "same" padding, followed by a last
+transposed convolution whose stride is a hyperparameter of the model and whose
+output shape (when stride $> 1$ multiple output shapes are possible, see the
+$a$ parameter in~\autoref{rel:padding_strides_transposed_odd}) is fixed to be
+the same as the one of the corresponding ConvLSTM in the encoding pathway.
+Finally, as was done for the encoding pathway, every convolution on the input
+apart from the last one is followed by a $ReLU$ nonlinearity to keep the
+typical LSTM behavior intact.
+
 \subsection{Bidirectional RNNs}
-Bidirectional RNNs (B-RNNs) \cite{Schuster1997bidirecrnn} have been
-successfully used in the literature for video related tasks \cite{Du2015_CVPR}.
-BRNNs integrate information from both future and past frames by going through
-the video frames both forwards and backwards, ensuring more consistent temporal
-smoothness when making predictions. The output of the respective forward and
-backward passes is then combined via concatenation or sum and used as input to
-the next layer of the architecture or used as final prediction.
+Bidirectional RNNs (Bi-RNNs)~\cite{Schuster1997bidirecrnn} have been
+successfully employed in the literature for image and video related
+tasks~\cite{visin2015renet,Visin_2016_CVPR_Workshops,Du2015_CVPR}. Given an
+input sequence, Bi-RNNs move over it in both directions at the same time, i.e.,
+from the first element forwards and from the last element backwards. This
+allows them to integrate information coming from previous and following
+elements at each position of the sequence. In videos, this ensures a smoother
+temporal consistency in the predictions. In contrast with~\cite{ShiCWYWW15},
+the DEConvLSTM model exploits bidirectional LSTMs to enforce temporal coherence
+in the predictions.
 
-Due to memory constraints, we don't follow the trend of concatenating the B-RNN
-outputs \cite{}, but rather sum them as initially suggested in
-\cite{Schuster1997bidirecrnn}. However, instead of computing the arithmetic
-mean, we learn the parameters of a weighted sum
+The forward and backward passes can be combined at each time step either via
+concatenation over the feature maps axis, as initially suggested in~\cite{
+Schuster1997bidirecrnn}, or by summing them elementwise. Both alternatives have
+been explored in the early exploratory experiments for the DEConvLSTM model,
+including a variant of the sum that rather than performing an arithmetic mean
+learns the parameters of a weighted sum
 
-\[ H_j^{l\leftrightarrow} = \alpha_j^{l} H_j^{l\leftarrow} + (1 - \alpha_j^{l}) H_j^{l\rightarrow}\]
+\begin{equation}
+    RNN_t^{\leftrightarrow} = \alpha_t RNN_t^{\leftarrow} +
+        (1 - \alpha_t) RNN_t^{\rightarrow}, \quad\text{for $t$ in sequence}
+\end{equation}
+
+\noindent and an alternative variant with the same parameter $\alpha$ shared
+across all the time steps. Concatenation seems to give slightly better
+performances and has therefore been selected as combination method for the
+rest of the experiments. However, as a future work, it could be interesting to
+assess whether the accuracy gain justifies the higher memory consumption.
+% Due to memory constraints, we don't follow the trend of concatenating the B-RNN
+% outputs \cite{}, but rather sum them
+
 
 \subsection{Skip Connections}
 
