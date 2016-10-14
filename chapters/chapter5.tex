@@ -308,14 +308,14 @@ typical LSTM behavior intact.
 \subsection{Bidirectional RNNs}
 Bidirectional RNNs (Bi-RNNs)~\cite{Schuster1997bidirecrnn} have been
 successfully employed in the literature for image and video related
-tasks~\cite{visin2015renet,Visin_2016_CVPR_Workshops,Du2015_CVPR}. Given an
-input sequence, Bi-RNNs move over it in both directions at the same time, i.e.,
-from the first element forwards and from the last element backwards. This
-allows them to integrate information coming from previous and following
-elements at each position of the sequence. In videos, this ensures a smoother
-temporal consistency in the predictions. In contrast with~\cite{ShiCWYWW15},
-the DEConvLSTM model exploits bidirectional LSTMs to enforce temporal coherence
-in the predictions.
+tasks~\cite{Graves+Schmidhuber-2009,visin2015renet,Du2015_CVPR,
+Visin_2016_CVPR_Workshops}. Given an input sequence, Bi-RNNs move over it in
+both directions at the same time, i.e., from the first element forwards and
+from the last element backwards. This allows them to integrate information
+coming from previous and following elements at each position of the sequence.
+In videos, this ensures a smoother temporal consistency in the predictions. In
+contrast with~\cite{ShiCWYWW15}, the DEConvLSTM model exploits bidirectional
+LSTMs to enforce temporal coherence in the predictions.
 
 The forward and backward passes can be combined at each time step either via
 concatenation over the feature maps axis, as initially suggested in~\cite{
@@ -339,57 +339,54 @@ assess whether the accuracy gain justifies the higher memory consumption.
 
 
 \subsection{Skip Connections}
+One very popular component of many recent ANN-based architectures are skip
+connections~\citep[see e.g.,~][]{sermanet-cvpr-13,liu2015parsenet,
+long2015fully,Srivastava-et-al-arxiv2015,bell2015inside,he2015deep,
+hariharan2015hypercolumns}, which add a connection between earlier layers in
+the hierarchy and downstream layer~\emph{skipping} the intermediate ones. This
+has been proven to improve the performance of many tasks, especially when
+high resolution spatial information is needed in the last stages. When it comes
+to images and videos semantic segmentation this is a crucial element to recover
+detailed informations on where the objects are, which improves the upsampling
+precision of the decoding pathway.
+
+The DEConvLSTM model follows this well-established practice as well. The
+TransConvLSTM layers are parametrized so that they emit a feature map of the
+same resolution as the corresponding encoding layer~(see~\autoref{%
+fig:deconvlstm_model}). The skip connections reflect this shape pattern linking
+the encoding layers to the decoding layers with the same resolution.
 
 
-\section{Results}\label{sec:deconvLSTM_results}
-
-it has affine transformation, flipping, cropping, warping, etc...
-%have 80% + of accuracy in val in gatech
-% 46 epochs, val loss 0.4873, val jacquard 0.4865...
-% Epoch 53/300 - loss: 0.2103 - cat_masked_accuracy: 0.9281 - val_loss: 0.3016 - val_jaccard: 0.6224
-
-%and still data is missing , and the community is making good efforts to bridge the gap
-%and that with the data that we have for video segmentation we get reasonable results
-
-%to handle variable size images we could just have used something like SPP
-% the argument is that TIME really has to make a difference
-% it is just that we need more data
-% and show that some results are reasonable
-% although not SOTA
-% CNN are very data hungry
-% and that they did not have good results until image net
-% and the next big step is video
-FCN8, FCN8 with convLSTM, our model
-\subsection{FCN8}
-FCN8 network achieved state of the art results on semantic segmentation tasks
-\cite{DBLP:conf/cvpr/LongSD15}. The FCN8 network is divided into two parts : a
-contracting part and a decontracting part, so that the output of the network
-has the same size than the input. The contracting part is adapted from vgg
-\cite{Simonyan14vgg}. The decontracting part is made of 3 transposed
-convolutions, to what paper meaning, add citation, which output a slighty
-larger map than the input. A crop layer then reshape the output to the exact
-same size of the input. Two skip connections are added between layers in the
-contracting path and the corresponding one in decontracting path.
-
-We reused the weights of the contrating path without retraining them. However,
-we retrain all the decontracting path when used.
-
-This FCN8 network is used a baseline in 3 configurations :
-\begin{itemize}
-    \item As is. No modification to the network is done. Only the decontracting
-        path is trained. The network has no temporality taken into account.
-    \item We add a convolutional LSTM layer on top of the network. The time is
-        taken into account only at the top scale.
-    \item The transposed convolutions of the decontracting path are replaced by
-        upsampling LSTM layers. The temporality is taken into account at
-        different scales in the decontracting path. Like in the previous point
-        convolutional LSTM layer is added on top. The skip connections of the
-        original FCN8 are removed.
-\end{itemize}
+\section{Experiments}\label{sec:deconvLSTM_experiments}
+% \subsection{FCN8}
+% FCN8 network achieved state of the art results on semantic segmentation tasks
+% \cite{DBLP:conf/cvpr/LongSD15}. The FCN8 network is divided into two parts : a
+% contracting part and a decontracting part, so that the output of the network
+% has the same size than the input. The contracting part is adapted from vgg
+% \cite{Simonyan14vgg}. The decontracting part is made of 3 transposed
+% convolutions, to what paper meaning, add citation, which output a slighty
+% larger map than the input. A crop layer then reshape the output to the exact
+% same size of the input. Two skip connections are added between layers in the
+% contracting path and the corresponding one in decontracting path.
+%
+% We reused the weights of the contrating path without retraining them. However,
+% we retrain all the decontracting path when used.
+%
+% This FCN8 network is used a baseline in 3 configurations :
+% \begin{itemize}
+%     \item As is. No modification to the network is done. Only the decontracting
+%         path is trained. The network has no temporality taken into account.
+%     \item We add a convolutional LSTM layer on top of the network. The time is
+%         taken into account only at the top scale.
+%     \item The transposed convolutions of the decontracting path are replaced by
+%         upsampling LSTM layers. The temporality is taken into account at
+%         different scales in the decontracting path. Like in the previous point
+%         convolutional LSTM layer is added on top. The skip connections of the
+%         original FCN8 are removed.
+% \end{itemize}
 
 
-\subsection{Datasets}
-
+\subsection{Datasets}\label{sec:deconvLSTM_datasets}
 \subsubsection{CamVid: Motion-based Video Segmentation}
 The Cambridge-driving Labeled Video Database (CamVid)~\cite{
 Brostow2010semantic}~\footnote{http://mi.eng.cam.ac.uk/research/projects/VideoRec/CamVid/}
@@ -413,22 +410,24 @@ dataset: \textit{sky}, \textit{ground}, \textit{buildings}, \textit{porous},
 The dataset was originally built to learn 3D geometric structure of outdoor
 video scenes.
 
+% \subsubsection{Change Detection}
+% \label{sssec:changedet}
+% Change Detection dataset (CDnet) comes after 2 successful benchmarks
+% \cite{wang2014cdnet,goyette2012changedetection}. CDnet contains over 160,000
+% frames obtained from 31 videos and manually annotated. This dataset covers a
+% variety of semantic segmentation scenarios. The categories include Challenging
+% weather, Air turbulence, camera jitter, dynamic background, low resolution
+% traffic videos, intermittent object motion, shadow, thermal, bad weather, low
+% frame rate, night videos, pan-tilt-zoom and turbulence. The official evaluation
+% metrics are Recall (Re), Specificity (Sp), False Positive Rate (FPR), False
+% Negative Rate (FNR), Percentage of Wrong Classifications (PWC), Precision (Pr)
+% and F-Measure (FM).
 
-\subsubsection{Change Detection}
-\label{sssec:changedet}
-Change Detection dataset (CDnet) comes after 2 successful benchmarks
-\cite{wang2014cdnet,goyette2012changedetection}. CDnet contains over 160,000
-frames obtained from 31 videos and manually annotated. This dataset covers a
-variety of semantic segmentation scenarios. The categories include Challenging
-weather, Air turbulence, camera jitter, dynamic background, low resolution
-traffic videos, intermittent object motion, shadow, thermal, bad weather, low
-frame rate, night videos, pan-tilt-zoom and turbulence. The official evaluation
-metrics are Recall (Re), Specificity (Sp), False Positive Rate (FPR), False
-Negative Rate (FNR), Percentage of Wrong Classifications (PWC), Precision (Pr)
-and F-Measure (FM).
 
-\subsection{Experimental Setup}
-\label{ssec:setup}
+\subsection{Data augmentation and preprocessing}
+%it has affine transformation, flipping, cropping, warping, etc...
+
+\subsection{Experimental settings}\label{sec:deconvLSTM_settings}
 In this section, we study the effectiveness of involving the temporal
 information on the task of video spatial segmentaion. Our experiments with
 regarding to our pipeline are designed to find an optimum way of involving the
@@ -448,9 +447,23 @@ convolutional LSTM and upsampling LSTM. (TODO: requires more explanation)
 The convolutional and upsampling layers respectively consist of 70 and 100
 units. We apply batch normalization on each scale.
 
-\subsection{Leveraging time throughout the feature hierarchy}
-\label{ssec:analysis}
+\subsection{Results}\label{sec:deconvLSTM_results}
+%have 80% + of accuracy in val in gatech
+% 46 epochs, val loss 0.4873, val jacquard 0.4865...
+% Epoch 53/300 - loss: 0.2103 - cat_masked_accuracy: 0.9281 - val_loss: 0.3016 - val_jaccard: 0.6224
 
-\section{Discussion}
-\label{sec:disc}
-\section{Conclusion}
+%and still data is missing , and the community is making good efforts to bridge the gap
+%and that with the data that we have for video segmentation we get reasonable results
+
+%to handle variable size images we could just have used something like SPP
+% the argument is that TIME really has to make a difference
+% it is just that we need more data
+% and show that some results are reasonable
+% although not SOTA
+% CNN are very data hungry
+% and that they did not have good results until image net
+% and the next big step is video
+%FCN8, FCN8 with convLSTM, our model
+
+
+\section{Discussion}\label{sec:deconvLSTM_conclusions}
