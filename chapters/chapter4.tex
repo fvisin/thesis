@@ -471,24 +471,25 @@ Oxford Flowers 17 is described in detail in~\cite{Xiaomeng14}.
 %A larger 102 class Oxford Flowers dataset is available from the same authors.
 See~\autoref{fig:reseg_samples_flowers} for some segmentation samples.
 
-\subsubsection{CamVid Dataset}
+\subsubsection{CamVid Dataset}\label{sec:reseg+camvid}
 The Cambridge-driving Labeled Video Database (CamVid)~\cite{
-Brostow2010semantic} is a real-world dataset which consists of images recorded
-from a car with an internally mounted camera, capturing frames of $960 \times
-720$ RGB pixels per frame, with a recording frame rate of 30 frames per second.
-A total of ten minutes of video was recorded, and approximately one frame per
-second has been manually annotated with per pixel class labels, from one of 32
-possible classes. A small number of pixels were labelled as void in the
-original dataset. These do not belong to any of the 32 classes prescribed in
-the original data, and are ignored during evaluation. The CamVid dataset is
-split into 367 training, 101 validation and 233 test images for a total of 701
-images with corresponding annotations. The results presented in this section
-used the same subset of 11 class categories
-as~\cite{badrinarayanan2015segnet} and in order to make the experimental setup
-fully comparable to~\cite{badrinarayanan2015segnet}, were obtained downsampling
-all the images by a factor of 2 resulting in a final $480 \times 360$
-resolution. See~\autoref{fig:reseg_samples_camvid} for some segmentation
-samples.
+Brostow2010semantic}~\footnote{%
+http://mi.eng.cam.ac.uk/research/projects/VideoRec/CamVid/}
+is a real-world dataset which consists of images recorded from a car with an
+internally mounted camera, capturing frames of $960 \times 720$ RGB pixels per
+frame, with a recording frame rate of 30 frames per second.  A total of ten
+minutes of video was recorded, and approximately one frame per second has been
+manually annotated with per pixel class labels, from one of 32 possible
+classes. A small number of pixels were labelled as void in the original
+dataset. These do not belong to any of the 32 classes prescribed in the
+original data, and are ignored during evaluation. The CamVid dataset is split
+into 367 training, 101 validation and 233 test images for a total of 701 images
+with corresponding annotations. The results presented in this section used the
+same subset of 11 class categories as~\cite{badrinarayanan2015segnet} and in
+order to make the experimental setup fully comparable to~\cite{
+badrinarayanan2015segnet}, were obtained downsampling all the images by a
+factor of 2 resulting in a final $480 \times 360$ resolution.
+See~\autoref{fig:reseg_samples_camvid} for some segmentation samples.
 
 \subsection{Data augmentation and preprocessing}\label{sec:data_preprocessing}
 
@@ -544,7 +545,7 @@ those cases.
     \centering{
         \small
         \begin{tabular}{l|c||c}
-            Method & Global & \textbf{Avg IoU}\\
+            Method & Global & \textbf{Avg IoU}\\ \hline
 
             All foreground baseline & 25.4 & 79.9 \\
             All background baseline & 74.7 & 0.0 \\
@@ -564,7 +565,7 @@ those cases.
     \centering{
     \small
         \begin{tabular}{l|c||c}
-            Method & Global & \textbf{Avg IoU}\\
+            Method & Global & \textbf{Avg IoU}\\ \hline
 
             All background baseline & 71.0 & 0.0 \\
             All foreground baseline & 29.0 & 29.2 \\
