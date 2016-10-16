@@ -589,6 +589,7 @@ each layer with an amount of momentum that varied from dataset to dataset.
 
 \subsection{Results}\label{sec:deconvLSTM_results}
 
+%%%% CAMVID %%%%%
 \autoref{tbl:deconvLSTM_camvid} reports the results on the Camvid dataset. All
 the experiments were run with batch size $5$ training on cropped patches of
 $224 \times 224$. The learning procedure was interrupted with early stopping on
@@ -596,9 +597,10 @@ the average Intersection over Union (IoU) of the validation set.
 % AGGIUNGI QUALCHE COMMENTO
 \autoref{tbl:deconvLSTM_camvid_overfit} reports the results of the preliminary
 experiments on Camvid to assess the effect of different optimizers and various
-sequence lengths. The models overfits heavily when the time correlation is
-taken into account. This can be justified by some of the properties of the
-dataset, as will be discussed in~\autoref{sec:deconvLSTM_discussion}.
+sequence lengths. The models has generalization issues on this dataset,
+especially when the time correlation is taken into account. This can be
+justified by the limited number of images of dataset, as will be discussed
+in more detail in~\autoref{sec:deconvLSTM_discussion}.
 
 \begin{table}[t]
     \centering{\small
@@ -610,7 +612,7 @@ dataset, as will be discussed in~\autoref{sec:deconvLSTM_discussion}.
             ReSeg \cite{Visin_2016_CVPR_Workshops} & 88.7 & 58.8 \\
             Dilation \cite{yu2015multi} & n/a & 65.3 \\
             Dilation + FSO - DiscreteFlow \cite{kundu2016feature} & n/a & 66.1 \\
-            \emph{DEConvLSTM} & 83.1 & 46.6
+            \emph{DEConvLSTM} & 84.5 & 49.7
         \end{tabular}
     }
     \caption{Results on the CamVid dataset. Pixel accuracy and average
@@ -625,7 +627,7 @@ dataset, as will be discussed in~\autoref{sec:deconvLSTM_discussion}.
             Optimizer & Sequence length & Test & Validation & Train & \textbf{Test} & Validation & Train\\ \hline
             RMSProp & 3 & 78.0 & 90.2 & 91.5 & 37.8 & 58.4 & 60.3\\
             Adam & 3 & 78.8 & 90.3 & 91.4 & 38.2 & 58.3 & 59.8\\
-            RMSProp & 1 & 83.1 & 93.0 & 93.7 & 46.6 & 67.0 & 74.6%DA AGGIORNARE
+            RMSProp & 1 & 84.5 & 93.9 & 93.7 & 49.7 & 70.0 & 74.6%DA AGGIORNARE
         \end{tabular}
     }
     \caption{Preliminary experiments on the effects of time correlation
@@ -652,7 +654,7 @@ dataset, as will be discussed in~\autoref{sec:deconvLSTM_discussion}.
 % train_acc: 0.915286386415
 % train_jaccard: 0.602986412809
 
-\autoref{tbl:deconvLSTM_camvid} reports the results of the DEConvLSTM model on
+\autoref{tbl:deconvLSTM_gatech} reports the results of the DEConvLSTM model on
 the Gatech Dataset. Remarkably, the performance of the DEConvLSTM model on this
 dataset aligns with the state-of-the-art. As discussed before, many
 modifications (such as data augmentation) can be adopted to increase the
@@ -732,7 +734,7 @@ dataset, since the training set is relatively small for a big model like
 DEConvLSTM. In particular the performance comparison between different lengths
 of the input sequences highlights a strong tendency of the network to lack
 generalization, especially on longer sequences, as shown
-in~\autoref{tbl:deconvLSTM_camvid_overfit}. :TODO is this true??
+in~\autoref{tbl:deconvLSTM_camvid_overfit}. %TODO is this true??
 
 On the contrary, there is evidence in the literature that exploiting the
 temporal correlation between frames improves performance on Gatech~\cite{
