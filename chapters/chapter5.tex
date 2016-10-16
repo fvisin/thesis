@@ -424,8 +424,16 @@ frames (with an average of 190). A pixel-wise segmentation map is provided for
 each frame. There are 8 classes in the dataset: \textit{sky}, \textit{ground},
 \textit{buildings}, \textit{porous}, \textit{humans}, \textit{cars},
 \textit{vertical mix} and \textit{main mix}. The dataset was originally built
-to learn 3D geometric structure of outdoor video scenes.
+to learn 3D geometric structure of outdoor video scenes. A sample with ground
+truth segmentation taken from the Gatech dataset can be seen
+in~\autoref{fig:deconvLSTM_gatech_gt}.
 
+\begin{figure}[t]
+    \centering
+    \includegraphics[width=\columnwidth]{img/deconvLSTM/gatech_gt.png}
+    \caption{An example of ground truth segmentation for the Gatech dataset.}
+    \label{fig:deconvLSTM_gatech_gt}
+\end{figure}
 
 \subsubsection{DAVIS: Densely Annotated Video Segmentation}
 \label{sec:deconvLSTM_davis}
@@ -444,21 +452,21 @@ Finally, the videos are annotated with attributes such as \textit{occlusion},
 \textit{non-linear deformation} and \textit{motion blur}. These annotations
 were not taken into account when training the DEConvLSTM model on this dataset.
 A ground truth segmentation example for the DAVIS dataset can be seen
-in~\autoref{fig:deconvLSTM_davis}.
+in~\autoref{fig:deconvLSTM_davis_gt}.
 
 \begin{figure}[t]
     \centering
-    \includegraphics[width=0.3\columnwidth]{img/deconvLSTM/davis1.jpg}
-    \includegraphics[width=0.3\columnwidth]{img/deconvLSTM/davis2.jpg}
-    \includegraphics[width=0.3\columnwidth]{img/deconvLSTM/davis3.jpg}\\
-    \includegraphics[width=0.3\columnwidth]{img/deconvLSTM/davis4.jpg}
-    \includegraphics[width=0.3\columnwidth]{img/deconvLSTM/davis5.jpg}
-    \includegraphics[width=0.3\columnwidth]{img/deconvLSTM/davis6.jpg}\\
-    \includegraphics[width=0.3\columnwidth]{img/deconvLSTM/davis7.jpg}
-    \includegraphics[width=0.3\columnwidth]{img/deconvLSTM/davis8.jpg}
-    \includegraphics[width=0.3\columnwidth]{img/deconvLSTM/davis9.jpg}\\
+    \includegraphics[width=0.3\columnwidth]{img/deconvLSTM/davis_gt1.jpg}
+    \includegraphics[width=0.3\columnwidth]{img/deconvLSTM/davis_gt2.jpg}
+    \includegraphics[width=0.3\columnwidth]{img/deconvLSTM/davis_gt3.jpg}\\
+    \includegraphics[width=0.3\columnwidth]{img/deconvLSTM/davis_gt4.jpg}
+    \includegraphics[width=0.3\columnwidth]{img/deconvLSTM/davis_gt5.jpg}
+    \includegraphics[width=0.3\columnwidth]{img/deconvLSTM/davis_gt6.jpg}\\
+    \includegraphics[width=0.3\columnwidth]{img/deconvLSTM/davis_gt7.jpg}
+    \includegraphics[width=0.3\columnwidth]{img/deconvLSTM/davis_gt8.jpg}
+    \includegraphics[width=0.3\columnwidth]{img/deconvLSTM/davis_gt9.jpg}\\
     \caption{An example of ground truth segmentation for the DAVIS dataset.}
-    \label{fig:deconvlstm_davis}
+    \label{fig:deconvLSTM_davis_gt}
 \end{figure}
 
 
@@ -518,16 +526,16 @@ removing their mean and dividing by their standard deviation.
 % The convolutional and upsampling layers respectively consist of 70 and 100
 % units. We apply batch normalization on each scale.
 A first exploratory phase allowed to test several different architectures on
-the relatively fast CamVid dataset and select a suitable starting point for the
-rest of the experiments. The main hyperparameters of the DEConvLSTM model are
-the number of encoding and decoding layers, as well as the depth of their inner
-convolutions. As explained in~\autoref{sec:deconvLSTM_skip_connections}, it has
-been chosen by design to constrain the number of decoding layers to be the same
-as the number of encoding layers, to allow for the skip connections structure
-to be symmetrical w.r.t. the middle feature map resolution of the network. The
-number of such layers that empirically appeared to be optimal is 5, and has
-been used consistently throughout the experiments.
-
+the relatively fast CamVid dataset in order to select a suitable starting point
+for the rest of the experiments. The principal hyperparameters of the
+DEConvLSTM model are the number of encoding and decoding layers, as well as the
+depth of their inner convolutions. As explained in~\autoref{%
+sec:deconvLSTM_skip_connections}, it has been chosen by design to constrain the
+number of decoding layers to be the same as the number of encoding layers, to
+allow for the skip connections structure to be symmetrical w.r.t. the middle
+feature map resolution of the network. The number of such layers that
+empirically appeared to be optimal is 5, and has been used consistently
+throughout the experiments.
 Similarly, the number of inner convolutions and transposed convolutions has
 been set to 2 (per layer) and their hyperparameters -- namely the number of
 filters per sublayer~(\textbf{nf}), filters size per sublayer~(\textbf{fs}) and
@@ -585,6 +593,7 @@ each layer with an amount of momentum that varied from dataset to dataset.
 the experiments were run with batch size $5$ training on cropped patches of
 $224 \times 224$. The learning procedure was interrupted with early stopping on
 the average Intersection over Union (IoU) of the validation set.
+% AGGIUNGI QUALCHE COMMENTO
 \autoref{tbl:deconvLSTM_camvid_overfit} reports the results of the preliminary
 experiments on Camvid to assess the effect of different optimizers and various
 sequence lengths. The models overfits heavily when the time correlation is
@@ -601,7 +610,7 @@ dataset, as will be discussed in~\autoref{sec:deconvLSTM_discussion}.
             ReSeg \cite{Visin_2016_CVPR_Workshops} & 88.7 & 58.8 \\
             Dilation \cite{yu2015multi} & n/a & 65.3 \\
             Dilation + FSO - DiscreteFlow \cite{kundu2016feature} & n/a & 66.1 \\
-            DEConvLSTM (sequence length = 3) & 78.8 & 38.2
+            \emph{DEConvLSTM} & 83.1 & 46.6
         \end{tabular}
     }
     \caption{Results on the CamVid dataset. Pixel accuracy and average
@@ -611,17 +620,17 @@ dataset, as will be discussed in~\autoref{sec:deconvLSTM_discussion}.
 
 \begin{table}[t]
     \centering{\small
-        \begin{tabular}{c|c|c|c|c|c|c|c}
-            & & \multicolumn{3}{c}{Global accuracy} & \multicolumn{3}{c}{\textbf{Avg IoU}}\\
-            Optimizer & Sequence length & Test & Validation & Train & Test & Validation & Train\\ \hline
-            RMSProp & 3 & 78.0 & 37.8 & 90.2 & 58.4 & 91.5 & 60.3\\
-            Adam & 3 & 78.8 & 38.2 & 90.3 & 58.3 & 91.4 & 59.8\\
-            RMSProp & 1 & 83.1 & 46.6 & ? & ? & ? & ?
+        \begin{tabular}{c|c||c|c|c||c|c|c}
+            & & \multicolumn{3}{c||}{Global accuracy} & \multicolumn{3}{c}{\textbf{Avg IoU}}\\
+            Optimizer & Sequence length & Test & Validation & Train & \textbf{Test} & Validation & Train\\ \hline
+            RMSProp & 3 & 78.0 & 90.2 & 91.5 & 37.8 & 58.4 & 60.3\\
+            Adam & 3 & 78.8 & 90.3 & 91.4 & 38.2 & 58.3 & 59.8\\
+            RMSProp & 1 & 83.1 & 93.0 & 93.7 & 46.6 & 67.0 & 74.6%DA AGGIORNARE
         \end{tabular}
     }
-    \caption{Preliminary experiments on the CamVid dataset. Pixel accuracy and
-        average Intersection over Union (IoU) are reported. Overfitting is very
-        strong when temporal correlation is exploited.}
+    \caption{Preliminary experiments on the effects of time correlation
+        the CamVid dataset. Pixel accuracy and average Intersection over Union
+        (IoU) are reported. The model seems to fail to generalize properly.}
     \label{tbl:deconvLSTM_camvid_overfit}
 \end{table}
 
@@ -645,13 +654,13 @@ dataset, as will be discussed in~\autoref{sec:deconvLSTM_discussion}.
 
 \autoref{tbl:deconvLSTM_camvid} reports the results of the DEConvLSTM model on
 the Gatech Dataset. Remarkably, the performance of the DEConvLSTM model on this
-dataset aligns to the state-of-the-art. As discussed before, many modifications
-(such as data augmentation) can be adopted to increase the performance of the
-model and fully set the state-of-the-art. The focus of the research carried on
-on this model so far has been mainly to evaluate the proposed architecture in
-non-trivial settings where the time component can be exploited to improve the
-prediction of the model. However as future steps we intend to run more
-experiments with the goal to set a new state-of-the-art.
+dataset aligns with the state-of-the-art. As discussed before, many
+modifications (such as data augmentation) can be adopted to increase the
+performance of the model and fully set the state-of-the-art. The focus of the
+research carried on on this model so far has been mainly to evaluate the
+proposed architecture in non-trivial settings where the time component can be
+exploited to improve the prediction of the model. However as future steps we
+intend to run more experiments with the goal to set a new state-of-the-art.
 
 
 \begin{table}[t]
@@ -677,8 +686,8 @@ experiments with the goal to set a new state-of-the-art.
 % Epoch 53/300 - loss: 0.2103 - cat_masked_accuracy: 0.9281 - val_loss: 0.3016 - val_jaccard: 0.6224
 
 Finally, \autoref{tbl:deconvLSTM_davis} reports the initial results of the
-DEConvLSTM model on the Davis Dataset. This early encouraging result calls for
-more thorough experiments on this dataset.
+DEConvLSTM model on the Davis Dataset. This early result is encouraging and
+calls for more thorough experiments on this dataset.
 
 \begin{table}[t]
     \centering{\small
@@ -716,13 +725,14 @@ set to 1, i.e., when the temporal correlation was not taken into account.
 This is not too surprising, since this dataset is composed by frames captured
 at 30 fps, but only one frame out of approximately 30 is annotated and available
 for training. The experiments show that trying to exploit temporal correlation
-at 1 Hz is very non-trivial, and results in massive overfitting.
+at 1 Hz is very non-trivial, and results in massive lack of generalization.
 
-Overfitting is an important problem when training on the CamVid dataset, since
-the training set is relatively small for a big model like DEConvLSTM. In
-particular the performance comparison between different lengths of the input
-sequences highlights a strong tendency of the network to overfit on longer
-sequences, as shown in~\autoref{tbl:deconvLSTM_camvid_overfit}. TODO is this true??
+Generalization performance is an important problem when training on the CamVid
+dataset, since the training set is relatively small for a big model like
+DEConvLSTM. In particular the performance comparison between different lengths
+of the input sequences highlights a strong tendency of the network to lack
+generalization, especially on longer sequences, as shown
+in~\autoref{tbl:deconvLSTM_camvid_overfit}. :TODO is this true??
 
 On the contrary, there is evidence in the literature that exploiting the
 temporal correlation between frames improves performance on Gatech~\cite{
@@ -774,4 +784,3 @@ ability of RNNs to retain information through several steps of computation.
 
 %/data/lisa/exp/romerosa/deconvRNN/tmp/
 %/data/lisatmp4/romerosa/deconvRNN
-
