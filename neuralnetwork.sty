@@ -152,7 +152,7 @@
       \PackageError{neuralnetwork}{Unknown bias node position: "\nn@biaspos"}
     }
     % Draw node
-    \node[bias neuron] (L\nn@layerindex-0) at (\nn@node@xb, \nn@node@y) {\nn@nodecaption{\nn@layerindex}{0}};
+    \node[bias neuron] (L\nn@layerindex-0) at (\nn@node@xb, \nn@node@y) {1};%{\nn@nodecaption{\nn@layerindex}{0}};
   \fi
   % Adjust unbiased layer if bias nodes have their own top row
   \if \nn@toprow 1
