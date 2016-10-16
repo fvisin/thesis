@@ -43,7 +43,7 @@ was able to vary its own weights, i.e., to find the setting that allowed it to
 exhibit the desired behavior~\citep{Rosenblatt57}.
 
 % PERCEPTRON
-\begin{figure}[h]
+\begin{figure}[t]
     \centering
     \begin{neuralnetwork} [nodespacing=6mm, layerspacing=23mm,
             maintitleheight=2.5em, layertitleheight=5em,
@@ -127,7 +127,7 @@ between the input and the output. Since each of these layers is followed by a
 nonlinearity, the result is a nonlinear transformation that projects the input
 into a linearly separable space.
 
-\begin{figure}[h]
+\begin{figure}[t]
     \centering
     \begin{tikzpicture}[scale=0.5]
         % linearly separable box
@@ -258,7 +258,7 @@ attention and fundings. Since then, they have been constantly the focus of
 study and innovation.
 
 \subsection{MultiLayer Perceptron}\label{sec:MLP}
-\begin{figure}[h]
+\begin{figure}[t]
     \centering
     \begin{neuralnetwork} [nodespacing=7.5mm, layerspacing=23mm,
             maintitleheight=2.5em, layertitleheight=5em,
@@ -336,7 +336,7 @@ most important activation functions will be introduced in the following
 section.
 
 \subsection{Activation functions}\label{sec:activations}
-\begin{figure}[h]
+\begin{figure}[t]
     \centering
     \begin{tikzpicture}[domain=-2.9:2.9]
         % grid
@@ -558,7 +558,7 @@ other classes.
                         {\sum_{k=0}^K{\exp(z_k / T)}}.
 \end{equation}
 
-\begin{figure}[h]
+\begin{figure}[t]
     \centering
     \begin{tikzpicture}
         % grid
@@ -741,13 +741,13 @@ recognition tasks \citep{le1997reading}, their current popularity is due to
 much more recent work, when a deep CNN was used to beat state-of-the-art in the
 ImageNet image classification challenge~\citep{krizhevsky2012imagenet}.
 
-\begin{figure}[h]
-    \centering
-    \includegraphics[width=0.8\textwidth]{img/renet/lenet5.jpg}
-    \caption{\label{fig:lenet} The LeNet architecture for handwritten
-        characters recognition.}
-\end{figure}
-
+% \begin{figure}[t] --> already in ReNet
+%     \centering
+%     \includegraphics[width=0.8\textwidth]{img/renet/lenet5.jpg}
+%     \caption{\label{fig:lenet} The LeNet architecture for handwritten
+%         characters recognition.}
+% \end{figure}
+%
 \autoref{sec:MLP} introduced MLPs, a powerful and very common ANN architecture
 that computes an affine transformation of its inputs followed by an activation
 function. One property of MLPs is that they are dense, in the sense that they
@@ -1817,7 +1817,7 @@ between the $s$ different cases that all lead to the same $i'$:
 \noindent\autoref{fig:padding_strides_odd_transposed} provides an example for
 $i = 6$, $k = 3$, $s = 2$ and $p = 1$.
 
-\begin{figure}[h]
+\begin{figure}[t!]
     \centering
     \includegraphics[width=0.24\textwidth]{pdf/padding_strides_odd_transposed_00.pdf}
     \includegraphics[width=0.24\textwidth]{pdf/padding_strides_odd_transposed_01.pdf}
@@ -1861,10 +1861,17 @@ the next. It is customary to refer to these steps as time-steps, as RNNs are
 often considered in the context of a discretized time evolving domain, but
 nothing prevents from using RNNs with any kind of sequential data.
 
-\begin{figure}[h]
+\begin{figure}[t]
     \centering
     \includegraphics[width=0.15\textwidth]{pdf/RNN_loop.pdf}
     \caption{A Recurrent Neural Network (RNN)\label{fig:RNN_loop}}
+\end{figure}
+
+\begin{figure}[t!]
+    \centering
+    \includegraphics[width=0.6\textwidth]{pdf/RNN_unrolled.pdf}
+    \caption{A Recurrent Neural Network unrolled for $t$%
+             steps\label{fig:RNN_unrolled}}
 \end{figure}
 
 Suppose to model some sequential data $x_0, x_1, \dots , x_t, x_{t+1}, \dots$
@@ -1880,27 +1887,21 @@ an ANN and how to backpropagate through it. To better comprehend how RNNs work
 it is useful to consider its behavior explicitly by \emph{unrolling} the RNN,
 as shown in~\autoref{fig:RNN_unrolled}
 
-\begin{figure}[h]
-    \centering
-    \includegraphics[width=0.6\textwidth]{pdf/RNN_unrolled.pdf}
-    \caption{A Recurrent Neural Network unrolled for $t$%
-             steps\label{fig:RNN_unrolled}}
-\end{figure}
-
 \noindent An RNN applies the same model to each time step of the sequence or,
 equivalently, applies different models at each time step, which share their
 weights. This is similar to what CNNs do over space with convolutions, but is
 rather done over time with feedback connections.
 
-The activation of an RNN at time $t$ depends on the input at time $t$ as well
-as on the information coming from the previous step $t-1$. RNNs have a very
-simple internal structure, that usually amounts to applying some affine
-transformation to the input and to the previous output, and computing some
-non-linearity (typically a tanh) of their sum.
+The activation of an RNN (see~\autoref{fig:RNN_unrolled}) at time $t$ depends
+on the input at time $t$ as well as on the information coming from the previous
+step $t-1$. RNNs have a very simple internal structure, that usually amounts to
+applying some affine transformation to the input and to the previous output,
+and computing some non-linearity (typically a tanh) of their sum.
 
-\begin{figure}[h]
+\begin{figure}[t]
     \centering
     \includegraphics[width=0.6\textwidth]{pdf/RNN_internals.pdf}
+    \includegraphics[width=0.6\textwidth]{pdf/LSTM_notation.pdf}
     \caption{The internal structure of an RNN\label{fig:RNN_internals}}
 \end{figure}
 
@@ -1922,15 +1923,10 @@ but the second is not easy to overcome and can make training these kind of
 models very hard if not impossible.
 
 \subsection{Long Short Term Memory}
-\begin{figure}[h]
+\begin{figure}[t]
     \centering
     \includegraphics[width=0.6\textwidth]{pdf/LSTM.pdf}
     \caption{A Long Short Term Memory (LSTM)\label{fig:LSTM}}
-\end{figure}
-
-\begin{figure}[h]
-    \centering
-    \includegraphics[width=0.6\textwidth]{pdf/LSTM_notation.pdf}
 \end{figure}
 
 Long Short Term Memory (LSTM) networks (see~\autoref{fig:LSTM}) have been
@@ -1940,7 +1936,7 @@ or~\emph{state}, that can be updated and consulted at each time step. As
 opposed to vanilla RNNs, this allows LSTMs to separate their output from the
 information they want to carry over to future steps.
 
-\begin{figure}[h]
+\begin{figure}[t]
     \centering
     \includegraphics[width=0.4\textwidth]{pdf/LSTM_state.pdf}
     \caption{The internal state of LSTMs\label{fig:LSTM_state}}
@@ -1954,7 +1950,7 @@ $C_t$. This is then, once again, propagated to the next time step.
 % The internal memory is updated at each time step
 % with the rest of the architecture.
 
-\begin{figure}[h!]
+\begin{figure}[p]
 \begin{minipage}{0.5\textwidth}
     \centering
     \includegraphics[width=0.8\textwidth]{pdf/LSTM_forget_gate.pdf}
@@ -1982,7 +1978,7 @@ $C_{t-1}$ and results in an intermediate memory state where some of the
 activations can be weaker than $C_{t-1}$ and some others are potentially zeroed
 out~(\autoref{eq:LSTM_forget_gate}).
 
-\begin{figure}[h!]
+\begin{figure}[p]
 \begin{minipage}{0.5\textwidth}
     \centering
     \includegraphics[width=0.8\textwidth]{pdf/LSTM_input_gate.pdf}
@@ -2002,6 +1998,53 @@ out~(\autoref{eq:LSTM_forget_gate}).
 \end{minipage}
 \end{figure}
 
+\begin{figure}[p]
+\begin{minipage}{0.5\textwidth}
+    \centering
+    \includegraphics[width=0.8\textwidth]{pdf/LSTM_output_gate.pdf}
+    \caption{The LSTM output gate\label{fig:LSTM_output_gate}}
+\end{minipage}
+\begin{minipage}{0.5\textwidth}
+    \setlength\abovedisplayshortskip{0pt}
+    \setlength\belowdisplayshortskip{0pt}
+    \strut
+    \begin{equation}\label{eq:LSTM_output_gate}
+    \begin{split}
+        o_t &= \sigma\left(W_o \cdot \left[h_{t-1}, x_t\right] + b_o \right)\\
+        h_t &= o_t \hadamard tanh \left(C_t\right).
+    \end{split}
+    \end{equation}
+    \strut
+\end{minipage}
+\end{figure}
+
+\begin{figure}[p] % METTILO A t SE CAMBI LE EQUAZIONI
+\begin{minipage}{0.5\textwidth}
+    \centering
+    \includegraphics[width=0.8\textwidth]{pdf/LSTM_peepholes.pdf}
+    \caption{LSTM with peepholes\label{fig:LSTM_peepholes}}
+\end{minipage}
+\begin{minipage}{0.5\textwidth}
+    \setlength\abovedisplayshortskip{0pt}
+    \setlength\belowdisplayshortskip{0pt}
+    \strut
+    \begin{equation}\label{eq:LSTM_peepholes}
+    \begin{split}
+        i_t &= \sigma\left(W_i \cdot \left[h_{t-1}, x_t\right] +
+            W_{ic} \circ C_{t-1} + b_i \right)\\
+        f_t &= \sigma\left(W_f \cdot \left[h_{t-1}, x_t\right] +
+            W_{fc} \circ C_{t-1} + b_f \right)\\
+        \tilde C_t &= tanh \left(W_c \cdot \left[h_{t-1}, x_t\right] +
+            b_c \right)\\
+        C_t &= f_t \hadamard C_{t-1} + i_t \hadamard \tilde C_t\\
+        o_t &= \sigma\left(W_o \cdot \left[h_{t-1}, x_t\right] +
+            W_{oc} \hadamard C_{t-1} + b_o \right)\\
+        h_t &= o_t \hadamard tanh \left(C_t\right).
+    \end{split}
+    \end{equation}
+    \strut
+\end{minipage}
+\end{figure}
 The forget gate (\autoref{fig:LSTM_input_gate}) allows the LSTM to discard
 information that is not relevant anymore. Symmetrically, LSTMs have a mechanism
 to add new information to the memory. This behavior is controlled by an
@@ -2029,25 +2072,6 @@ of the output gate. The memory resulting from the transformations due to the
 forget and input gates goes through a tanh nonlinearity and is multiplied by
 the output gate to finally produce the output (\autoref{eq:LSTM_output_gate}).
 
-\begin{figure}[h!]
-\begin{minipage}{0.5\textwidth}
-    \centering
-    \includegraphics[width=0.8\textwidth]{pdf/LSTM_output_gate.pdf}
-    \caption{The LSTM output gate\label{fig:LSTM_output_gate}}
-\end{minipage}
-\begin{minipage}{0.5\textwidth}
-    \setlength\abovedisplayshortskip{0pt}
-    \setlength\belowdisplayshortskip{0pt}
-    \strut
-    \begin{equation}\label{eq:LSTM_output_gate}
-    \begin{split}
-        o_t &= \sigma\left(W_o \cdot \left[h_{t-1}, x_t\right] + b_o \right)\\
-        h_t &= o_t \hadamard tanh \left(C_t\right).
-    \end{split}
-    \end{equation}
-    \strut
-\end{minipage}
-\end{figure}
 
 Putting it all together, the equations that govern the behavior of an LSTM are
 
@@ -2065,34 +2089,6 @@ Putting it all together, the equations that govern the behavior of an LSTM are
 
 \subsubsection{LSTMs with peepholes}
 
-\begin{figure}[t]
-\begin{minipage}{0.5\textwidth}
-    \centering
-    \includegraphics[width=0.8\textwidth]{pdf/LSTM_peepholes.pdf}
-    \caption{LSTM with peepholes\label{fig:LSTM_peepholes}}
-\end{minipage}
-\begin{minipage}{0.5\textwidth}
-    \setlength\abovedisplayshortskip{0pt}
-    \setlength\belowdisplayshortskip{0pt}
-    \strut
-    \begin{equation}\label{eq:LSTM_peepholes}
-    \begin{split}
-        i_t &= \sigma\left(W_i \cdot \left[h_{t-1}, x_t\right] +
-            W_{ic} \circ C_{t-1} + b_i \right)\\
-        f_t &= \sigma\left(W_f \cdot \left[h_{t-1}, x_t\right] +
-            W_{fc} \circ C_{t-1} + b_f \right)\\
-        \tilde C_t &= tanh \left(W_c \cdot \left[h_{t-1}, x_t\right] +
-            b_c \right)\\
-        C_t &= f_t \hadamard C_{t-1} + i_t \hadamard \tilde C_t\\
-        o_t &= \sigma\left(W_o \cdot \left[h_{t-1}, x_t\right] +
-            W_{oc} \hadamard C_{t-1} + b_o \right)\\
-        h_t &= o_t \hadamard tanh \left(C_t\right).
-    \end{split}
-    \end{equation}
-    \strut
-\end{minipage}
-\end{figure}
-
 \cite{gers2000recurrent} suggests one variant of LSTMs where the gates also
 have information about the state of the LSTM. Note that, as illustrated
 in~\autoref{fig:LSTM_peepholes}, the output gate peeps into $C_t$, the state
@@ -2102,7 +2098,28 @@ in~\autoref{eq:LSTM_peepholes}).
 
 \subsubsection{LSTMs with coupled forget and input gates}\label{sec:LSTM_coupled}
 
-\begin{figure}[h!]
+Another variant of LSTMs replaces the input gate with $1 - f_t$
+(see~\autoref{fig:LSTM_coupled}), so that the forget gate governs both
+behaviors. This boils down to forgetting only when a new input is going to be
+written. The modified state update equation is~\autoref{eq:LSTM_coupled}.
+
+\subsection{Gated Recurrent Unit (GRU)}
+
+
+In 2014 \cite{Cho2014a} proposed a new kind of recurrent network called Gated
+Recurrent Unit (GRU) with less gates than LSTMs and a different internal
+structure. Along the lines of \autoref{sec:LSTM_coupled}, in GRUs the forget
+and input gates are coupled into an~\emph{update gate} $z_t$. The memory and
+output are also merged into a single state and the internal structure is
+modified to cope with these changes (see~\autoref{fig:GRU}).
+
+The advantage of GRUs over LSTMs is the smaller number of gates that makes them
+less memory as well as computationally intense, which is often a critical
+aspect for ANNs. GRUs have been shown to perform as well as LSTMs in some
+settings (see~\cite{Chung-et-al-NIPSDL2014-small}).
+
+
+\begin{figure}[pt]
 \begin{minipage}{0.5\textwidth}
     \centering
     \includegraphics[width=0.8\textwidth]{pdf/LSTM_coupled.pdf}
@@ -2119,14 +2136,7 @@ in~\autoref{eq:LSTM_peepholes}).
 \end{minipage}
 \end{figure}
 
-Another variant of LSTMs replaces the input gate with $1 - f_t$
-(see~\autoref{fig:LSTM_coupled}), so that the forget gate governs both
-behaviors. This boils down to forgetting only when a new input is going to be
-written. The modified state update equation is~\autoref{eq:LSTM_coupled}.
-
-\subsection{Gated Recurrent Unit (GRU)}
-
-\begin{figure}[ht]
+\begin{figure}[pt]
 \begin{minipage}{0.5\textwidth}
     \centering
     \includegraphics[width=0.8\textwidth]{pdf/GRU.pdf}
@@ -2147,15 +2157,3 @@ written. The modified state update equation is~\autoref{eq:LSTM_coupled}.
     \strut
 \end{minipage}
 \end{figure}
-
-In 2014 \cite{Cho2014a} proposed a new kind of recurrent network called Gated
-Recurrent Unit (GRU) with less gates than LSTMs and a different internal
-structure. Along the lines of \autoref{sec:LSTM_coupled}, in GRUs the forget
-and input gates are coupled into an~\emph{update gate} $z_t$. The memory and
-output are also merged into a single state and the internal structure is
-modified to cope with these changes (see~\autoref{fig:GRU}).
-
-The advantage of GRUs over LSTMs is the smaller number of gates that makes them
-less memory as well as computationally intense, which is often a critical
-aspect for ANNs. GRUs have been shown to perform as well as LSTMs in some
-settings (see~\cite{Chung-et-al-NIPSDL2014-small}).
