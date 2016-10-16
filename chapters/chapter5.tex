@@ -66,7 +66,7 @@ Szegedy-et-al-arxiv2014} and object detection~\citep{Girshick-et-al-arxiv2013,
 Sermanet13overfeat} and their application has become ubiquitous in many well
 known and widely used commercial products.
 
-More recently, pixel-wise prediction of still images has enjoyed the attention
+Recently, pixel-wise prediction of still images has enjoyed the attention
 of the computer vision community. In contrast to image classification and
 object detection this \emph{structured prediction} problem requires each
 pixel to be classified, which demands for a more fine detail understanding of
@@ -92,7 +92,7 @@ volumetric pixel (or voxel) is used to describe a local portion of the data
 that extends across space in three dimensions, temporal voxels refer to 3D
 portions of the data that span over a contiguous two-dimensional space and over
 a one-dimensional sequence in the temporal domain.
-Works in this direction usually define a fixed {\emph a priori} window on the
+Works in this direction usually define a fixed \emph{ a priori} window on the
 temporal dimension to obtain a voxel-wise prediction~\citep{Tran16v2v}.
 
 The most common way to address video related tasks with neural network
@@ -139,7 +139,8 @@ that space and time cannot be processed sequentially -- as done by much of the
 past ML literature -- but rather the two should be mixed together in a coherent
 and joint architecture. The proposed DEConvLSTM intertwines space with time at
 each step of the hierarchy~(see~\autoref{fig:deconvlstm_model}), taking
-inspiration from the ConvLSTM model described in~\cite{ShiCWYWW15}.
+inspiration from the convolutional LSTM (ConvLSTM) model described in~\cite{
+ShiCWYWW15}.
 % and pushing that intuition further.
 
 As many successful models for semantic segmentation on static images, the
@@ -167,11 +168,11 @@ and then building on that to uncover the novelties of the proposed model.
 
 \subsection{Convolutional LSTM}
 
-In~\cite{ShiCWYWW15} the authors propose a model called convolutional
-LSTM~(ConvLSTM) that is a modification of the well-known LSTM with peephole
-connections. To allow for a more convenient comparison, the equations of the
-vanilla LSTM with peephole connections (that were defined
-in~\autoref{eq:LSTM_peepholes}) are reported here
+In~\cite{ShiCWYWW15} the authors propose the ConvLSTM model that is a
+modification of the well-known LSTM with peephole connections. To allow for a
+more convenient comparison, the equations of the vanilla LSTM with peephole
+connections (that were defined in~\autoref{eq:LSTM_peepholes}) are reported
+here
 
 \begin{equation*}\tag{\ref{eq:LSTM_peepholes} revisited}
 \begin{split}
@@ -342,11 +343,13 @@ connections~\citep[see e.g.,~][]{sermanet-cvpr-13,liu2015parsenet,
 long2015fully,Srivastava-et-al-arxiv2015,bell2015inside,he2015deep,
 hariharan2015hypercolumns}, which add a connection between earlier layers in
 the hierarchy and downstream layer~\emph{skipping} the intermediate ones. This
-has been proven to improve the performance of many tasks, especially when
-high resolution spatial information is needed in the last stages. When it comes
-to images and videos semantic segmentation this is a crucial element to recover
-detailed informations on where the objects are, which improves the upsampling
-precision of the decoding pathway.
+has the desirable property of ensuring a gradient flow to the early layers of
+the architecture even in very deep models and has been proven to improve the
+performance of many tasks. Furthermore, skip connections are especially useful
+when high resolution spatial information is needed in the last stages. When it
+comes to images and videos semantic segmentation this is a crucial element to
+recover detailed informations on where the objects are, which improves the
+upsampling precision of the decoding pathway.
 
 The DEConvLSTM model follows this well-established practice as well. The
 TransConvLSTM layers are parametrized so that they emit a feature map of the
@@ -414,41 +417,6 @@ $480 \times 360$ resolution. The dataset contains video sequences but has
 mostly been used for still image semantic segmentation.
 
 
-\subsubsection{DAVIS: Densely Annotated Video Segmentation}
-\label{sec:deconvLSTM_davis}
-The DAVIS dataset~\cite{Perazzi2016}~\footnote{
-https://graphics.ethz.ch/~perazzif/davis/} has been made publicly available
-very recently. It contains 50 high-resolution Full HD video sequences, with
-all the frames densely labeled. The sequences have been carefully chosen to
-contain the typical major challenges of video segmentation and the dataset
-comes with a comprehensive benchmark of many state-of-the-art methods on
-three complementary metrics that measure the spatial accuracy of the
-segmentation, the quality of the silhouette and the temporal coherence. Due to
-memory restrictions, these tests were run on a version of the dataset
-downsampled at 480p resolution. To make it possible to compare with this
-state-of-the-art, the DEConvLSTM has been trained on the resized version too.
-Finally, the videos are annotated with attributes such as \textit{occlusion},
-\textit{non-linear deformation} and \textit{motion blur}. These annotations
-were not taken into account when training the DEConvLSTM model on this dataset.
-A ground truth segmentation example for the DAVIS dataset can be seen
-in~\autoref{fig:deconvLSTM_davis_gt}.
-
-\begin{figure}[t]
-    \centering
-    \includegraphics[width=0.3\columnwidth]{img/deconvLSTM/davis_gt1.jpg}
-    \includegraphics[width=0.3\columnwidth]{img/deconvLSTM/davis_gt2.jpg}
-    \includegraphics[width=0.3\columnwidth]{img/deconvLSTM/davis_gt3.jpg}\\
-    \includegraphics[width=0.3\columnwidth]{img/deconvLSTM/davis_gt4.jpg}
-    \includegraphics[width=0.3\columnwidth]{img/deconvLSTM/davis_gt5.jpg}
-    \includegraphics[width=0.3\columnwidth]{img/deconvLSTM/davis_gt6.jpg}\\
-    \includegraphics[width=0.3\columnwidth]{img/deconvLSTM/davis_gt7.jpg}
-    \includegraphics[width=0.3\columnwidth]{img/deconvLSTM/davis_gt8.jpg}
-    \includegraphics[width=0.3\columnwidth]{img/deconvLSTM/davis_gt9.jpg}\\
-    \caption{An example of ground truth segmentation for the DAVIS dataset.}
-    \label{fig:deconvLSTM_davis_gt}
-\end{figure}
-
-
 \subsubsection{Gatech: Geometric Context Video Segmentation}
 \label{sec:deconvLSTM_gatech}
 The Gatech dataset~\cite{VideoGeometricContext2013}~\footnote{%
@@ -468,6 +436,41 @@ in~\autoref{fig:deconvLSTM_gatech_gt}.
     \includegraphics[width=\columnwidth]{img/deconvLSTM/gatech_gt.png}
     \caption{An example of ground truth segmentation for the Gatech dataset.}
     \label{fig:deconvLSTM_gatech_gt}
+\end{figure}
+
+
+\subsubsection{DAVIS: Densely Annotated Video Segmentation}
+\label{sec:deconvLSTM_davis}
+The DAVIS dataset~\cite{Perazzi2016}~\footnote{
+https://graphics.ethz.ch/~perazzif/davis/} has been made publicly available
+very recently. It contains 50 high-resolution Full HD video sequences, with
+all the frames densely labeled. The sequences have been carefully chosen to
+contain the typical major challenges of video segmentation and the dataset
+comes with a comprehensive benchmark of many state-of-the-art methods on
+three complementary metrics that measure the spatial accuracy of the
+segmentation, the quality of the silhouette and the temporal coherence. Due to
+memory restrictions, these tests were run on a version of the dataset
+downsampled at 480p resolution. To make it possible to compare with this
+state-of-the-art, the DEConvLSTM has been trained on the resized version too.
+Finally, the videos are annotated with attributes such as \textit{occlusion},
+\textit{non-linear deformation} and \textit{motion blur}. These annotations
+were not taken into account when training the DEConvLSTM model on this dataset.
+A ground truth segmentation example for the DAVIS dataset can be seen
+in~\autoref{fig:deconvlstm_davis_gt}.
+
+\begin{figure}[t]
+    \centering
+    \includegraphics[width=0.3\columnwidth]{img/deconvLSTM/davis_gt1.jpg}
+    \includegraphics[width=0.3\columnwidth]{img/deconvLSTM/davis_gt2.jpg}
+    \includegraphics[width=0.3\columnwidth]{img/deconvLSTM/davis_gt3.jpg}\\
+    \includegraphics[width=0.3\columnwidth]{img/deconvLSTM/davis_gt4.jpg}
+    \includegraphics[width=0.3\columnwidth]{img/deconvLSTM/davis_gt5.jpg}
+    \includegraphics[width=0.3\columnwidth]{img/deconvLSTM/davis_gt6.jpg}\\
+    \includegraphics[width=0.3\columnwidth]{img/deconvLSTM/davis_gt7.jpg}
+    \includegraphics[width=0.3\columnwidth]{img/deconvLSTM/davis_gt8.jpg}
+    \includegraphics[width=0.3\columnwidth]{img/deconvLSTM/davis_gt9.jpg}\\
+    \caption{An example of ground truth segmentation for the DAVIS dataset.}
+    \label{fig:deconvlstm_davis_gt}
 \end{figure}
 
 
@@ -502,8 +505,8 @@ flipping and rotating them.
 
 In the same spirit, the only preprocessing technique adopted -- apart from
 resizing the videos to allow a comparison with the state-of-the-art
-(see~\autoref{sec:deconvLSTM_datasets}) -- was to normalize them frame-wise by
-removing their mean and dividing by their standard deviation.
+(see~\autoref{sec:deconvLSTM_datasets}) -- was to randomly crop the frames
+during training to reduce the memory usage and speed up the training.
 
 \subsection{Experimental settings}\label{sec:deconvLSTM_settings}
 % In this section, we study the effectiveness of involving the temporal
@@ -602,18 +605,20 @@ The main goal of these experiments was not to reach state-of-the-art
 performances, but rather to access the sensitivity of the model to different
 hyperparameters. \autoref{tbl:deconvLSTM_camvid_overfit} reports the results of
 some of these preliminary experiments on different optimizers and various
-sequence lengths. Clearly the models has generalization issues on this dataset,
-especially when the time correlation is taken into account. This is not too
-surprising given the limited number of images in the CamVid dataset, as will be
-discussed in more detail in~\autoref{sec:deconvLSTM_discussion}.
+sequence lengths. The models suffers from some generalization issues on this
+dataset. This is not too surprising given the limited number of images in the
+CamVid dataset, as will be discussed in more detail
+in~\autoref{sec:deconvLSTM_discussion}.
 
-For completeness, \autoref{tbl:deconvLSTM_camvid} compares the results of the
-DEConvLSTM model with the state-of-the-art on Camvid. Clearly there is a
-margin for improvement, which can be probably gained reducing the
-generalization issues of the model with stronger regularization and relying on
-data augmentation to diminish the overfitting. Not too much effort was spent on
-hyperparameters tuning on this dataset, as the main goal was to gain confidence
-with the model rather than to reach the state-of-the-art.
+The results of the DEConvLSTM model with sequences of length $3$, finetuned for
+100 epochs on images at full resolution is compared
+in~\autoref{tbl:deconvLSTM_camvid} with the state-of-the-art on Camvid. The
+model performs comparably to the state-of-the-art of the last year; there is a
+margin for improvement, which could be probably gained at least in part by
+reducing the generalization issues with stronger regularization and relying on
+data augmentation to diminish the overfitting. However not too much effort was
+spent on hyperparameters tuning on this dataset, as the main goal was to gain
+confidence with the model rather than to reach the state-of-the-art.
 
 \begin{table}[t]
     \centering{\small
@@ -624,8 +629,8 @@ with the model rather than to reach the state-of-the-art.
             SegNet \cite{badrinarayanan2015segnet} &  88.6 & 50.2 \\
             ReSeg \cite{Visin_2016_CVPR_Workshops} & 88.7 & 58.8 \\
             Dilation \cite{yu2015multi} & n/a & 65.3 \\
-            Dilation + FSO - DiscreteFlow \cite{kundu2016feature} & n/a & 66.1 \\
-            \emph{DEConvLSTM} & 84.5 & 49.7
+            \textbf{Dilation + FSO - DiscreteFlow} \cite{kundu2016feature} & n/a & \textbf{66.1} \\
+            \emph{DEConvLSTM (finetuned)} & 87.0 & 53.9
         \end{tabular}
     }
     \caption{Results on the CamVid dataset. Pixel accuracy and average
@@ -643,7 +648,7 @@ with the model rather than to reach the state-of-the-art.
             RMSProp & 1 & 84.5 & 93.9 & 93.7 & 49.7 & 70.0 & 74.6%DA AGGIORNARE
         \end{tabular}
     }
-    \caption{Preliminary experiments on the effects of time correlation
+    \caption{The results of the experiments on the effects of time correlation
         the CamVid dataset. Pixel accuracy and average Intersection over Union
         (IoU) are reported. The model seems to fail to generalize properly.}
     \label{tbl:deconvLSTM_camvid_overfit}
@@ -668,44 +673,19 @@ with the model rather than to reach the state-of-the-art.
 % train_jaccard: 0.602986412809
 
 
-%%%%%% DAVIS %%%%%%%%%%
-\autoref{tbl:deconvLSTM_davis} reports the initial results of the
-DEConvLSTM model on the Davis Dataset. This early result is encouraging and
-calls for more thorough experiments on this dataset.
-
-\begin{table}[t]
-    \centering{\small
-        \begin{tabular}{l||c}
-            Method & \textbf{Avg IoU}\\ \hline
-
-            Temporal superpixels \cite{chang2013video} & 35.8 \\
-            SeamSeg \cite{ramakanth2014seamseg} & 55.6 \\
-            Efficient hierarchical graph-based video segmentation \cite{
-                grundmann2010efficient} & 59.6 \\
-            Jumpcut \cite{fan2015jumpcut} & 60.7 \\
-            Fully Connected Object Proposals for Video Segmentation \cite{
-                perazzi2015fully} & 63.1 \\
-            \textbf{Bilateral space video segmentation} \cite{
-                marki2016bilateral} & 66.5 \\
-            DEConvLSTM & 56.8
-        \end{tabular}
-    }
-    \caption{Results on the Davis dataset. Average Intersection over Union
-        (IoU) is reported.}
-    \label{tbl:deconvLSTM_davis}
-\end{table}
-
-
 %%%%%%%%% GATECH %%%%%%%%%
-Finally, \autoref{tbl:deconvLSTM_gatech} reports the results of the DEConvLSTM
-model on the Gatech Dataset. Remarkably, the performance of the DEConvLSTM
-model on this dataset aligns with the state-of-the-art. As discussed before,
-many modifications (such as data augmentation) can be adopted to increase the
-performance of the model and fully set the state-of-the-art. The focus of the
-research carried on on this model so far has been mainly to evaluate the
-proposed architecture in non-trivial settings where the time component can be
-exploited to improve the prediction of the model. However as future steps we
-intend to run more experiments with the goal to set a new state-of-the-art.
+The most of the training effort was spent on the Gatech dataset, a well known
+dataset for structured prediction. Remarkably, the performance of the
+DEConvLSTM model on this dataset, reported in \autoref{tbl:deconvLSTM_gatech},
+aligns with the state-of-the-art. As discussed before, many modifications (such
+as data augmentation) can be adopted to increase the performance of the model
+and fully improve the state-of-the-art. The main focus of the research carried
+on this model so far has been to evaluate the proposed architecture in
+non-trivial settings where the time component has to be exploited to obtain
+good predictions. The results show that the proposed architecture is successful
+on this task. As future steps, more experimentation is needed e.g., adding data
+augmentation, finetuning the network on full resolution sequences (i.e.,
+without cropping the frames).
 
 \begin{table}[t]
     \centering{\small
@@ -726,11 +706,80 @@ intend to run more experiments with the goal to set a new state-of-the-art.
 \end{table}
 
 
+%%%%%% DAVIS %%%%%%%%%%
+Encouraged by the good results on Gatech, we quickly tested the network on the
+recently introduced DAVIS dataset for dense semantic segmentation. With only
+cursory hyperparameter search around the settings that worked best on the
+Gatech dataset, the DEConvLSTM obtains results comparable with the
+state-of-the-art of a few years ago. \autoref{tbl:deconvLSTM_davis} reports the
+results of the initial experiments with the DEConvLSTM model on this dataset
+and \autoref{fig:deconvlstm_gatech_sample} shows an example of prediction of
+the model.
+
+The experiments conducted on this dataset are not enough to draw conclusions,
+but one failure mode of the DEConvLSTM model on this task seems to be not to
+properly recognize what to segment. The task in DAVIS is to segment only the
+main element in the scene. By inspecting the segmentation samples (see
+e.g.,~\autoref{fig:deconvlstm_gatech_failure}) it appears that sometimes the
+network has a hard time identifying what to segment and what to ignore and ends
+up focusing too much on the background, heavily decreasing the overall
+segmentation performance. More experiments have to be conducted to address this
+issue. One option could be to
+% impose a stronger spatial prior with, e.g., a CRF, to focus more on the
+% central part of the frame where the objects of interest are usually placed.
+% Alternatively,
+increase the capacity of the temporal pathway to rely more on the temporal
+information to segment the main element of the scene that is usually the one
+that moves and changes the most. This early result is very encouraging and
+calls for more thorough experiments on this dataset.
+
+\begin{table}[t]
+    \centering{\small
+        \begin{tabular}{l||c}
+            Method & \textbf{Avg IoU}\\ \hline
+
+            Temporal superpixels \cite{chang2013video} & 35.8 \\
+            SeamSeg \cite{ramakanth2014seamseg} & 55.6 \\
+            Efficient hierarchical graph-based video segmentation \cite{
+                grundmann2010efficient} & 59.6 \\
+            Jumpcut \cite{fan2015jumpcut} & 60.7 \\
+            Fully Connected Object Proposals for Video Segmentation \cite{
+                perazzi2015fully} & 63.1 \\
+            \textbf{Bilateral space video segmentation} \cite{
+            marki2016bilateral} & \textbf{66.5} \\
+                \emph{DEConvLSTM} & 56.8
+        \end{tabular}
+    }
+    \caption{Results on the Davis dataset. Average Intersection over Union
+        (IoU) is reported.}
+    \label{tbl:deconvLSTM_davis}
+\end{table}
+
+\begin{figure}[t]
+    \centering
+    \includegraphics[trim={0 15mm 0 0},width=0.8\columnwidth]{img/deconvLSTM/paragliding-0.png}\\
+    \caption{An example of segmentation produced by the DEConvLSTM model on
+        the DAVIS dataset.}
+    \label{fig:deconvlstm_gatech_sample}
+\end{figure}
+
+\begin{figure}[t]
+    \centering
+    \includegraphics[trim={0 15mm 0 0},width=0.8\columnwidth]{img/deconvLSTM/drift-0.png}\\
+    \includegraphics[trim={0 15mm 0 0},width=0.8\columnwidth]{img/deconvLSTM/bmx-trees-0.png}
+    \caption{A frequent failure mode of the model on the DAVIS dataset is to
+        focus on segmenting the background rather than the main element in the
+        scene.}
+    \label{fig:deconvlstm_gatech_failure}
+\end{figure}
+
+
+
 \section{Discussion}\label{sec:deconvLSTM_discussion}
 One of the first goals of the experiments with the DEConvLSTM model was to
 assess the effectiveness of exploiting the temporal correlation among frames in
 the task of video spatial segmentation. To this end several tests were run on
-CamVid, training the same model varying the length of the sequence.
+CamVid, training the same model with different lengths of the sequence.
 
 CamVid has been mostly used in the literature in a single image
 segmentation setting, rather than considering the frames altogether as a video.
@@ -743,33 +792,40 @@ at 1 Hz is very non-trivial, and results in massive lack of generalization.
 
 Generalization performance is an important problem when training on the CamVid
 dataset, since the training set is relatively small for a big model like
-DEConvLSTM. In particular the performance comparison between different lengths
-of the input sequences highlights a strong tendency of the network to lack
-generalization, especially on longer sequences, as shown
-in~\autoref{tbl:deconvLSTM_camvid_overfit}. %TODO is this true??
+DEConvLSTM. In particular the performance gap between different lengths of the
+input sequences highlights a tendency of the network to fail at generalizing
+properly on the test set, as shown in~\autoref{tbl:deconvLSTM_camvid_overfit}.
+%TODO is this still true?? compare seq length!
 
 On the contrary, there is evidence in the literature that exploiting the
-temporal correlation between frames improves performance on Gatech~\cite{
-Tran16v2v} so no test was performed in this direction on this dataset. The
-results reported in \autoref{tbl:deconvLSTM_gatech} show the interesting
-potential of the DEConvLSTM model on the video semantic segmentation task.
+temporal correlation between frames improves performance on Gatech~\citep{
+Tran16v2v}. For this reason no test was performed in this direction on this
+dataset. The results reported in \autoref{tbl:deconvLSTM_gatech} show that
+the DEConvLSTM model is an interesting architecture for the video semantic
+segmentation task. Furthermore, generalization seems to be much better on
+Gatech w.r.t. CamVid, in fact the drop in performance between the validation
+and the test set is remarkably contained, as opposed to the $10-15\%$ drop
+typically experienced in CamVid.
 
-Unfortunately the model did not range as well on the Davis dataset. The failure
-mode in this case seems to be the task itself: the algorithm is expected to
-segment the only main element in the scene. Apparently the network struggles
-identifying what to segment and what not to and ends up focusing too much on
-the background, heavily decreasing the segmentation performances.
+Unfortunately the model did not fare as well with the same hyperparameters on
+the Davis dataset. The results on this dataset are not conclusive as not enough
+experimentation has been conducted to draw any conclusion. It seems that the
+model could benefit from an exploration of the hyperparameters that best push
+it to focus more on the main object of the scene. This could of course also be
+obtained by more invasive modifications of the model, e.g., the addition of an
+attention mechanism or of a spatial prior that could be learned by a CRF.
 
-One interesting discovery is that using the per-batch statistics at training as
-well as at test time (rather than the more common strategy of re-using the
-training running statistics at test time) significantly improved the results on
-all the three datasets. Another crucial factor to achieve a good optimization
-is to select the right amount of momentum in the computation of the batch
-normalization statistics. We argue that this the reason for both behaviors lies
-in the high variance of the input data. The datasets are in fact composed by
-sequences of frames coming from different videos that can vary consistently in
-terms of e.g. brightness, scale and noise. Relying too heavily on past
-statistics in this setting can be harmful.
+One interesting discovery, valid for all the experiments ran so far, is
+that using the per-batch statistics at training as well as at test time (rather
+than the more common strategy of re-using the training running statistics at
+test time) significantly improved the results on all the three datasets.
+Another crucial factor to achieve a good optimization is to select the right
+amount of momentum in the computation of the batch normalization statistics. We
+argue that this the reason for both behaviors lies in the high variance of the
+input data. The datasets are in fact composed by sequences of frames coming
+from different videos that can vary consistently in terms of e.g. brightness,
+scale and noise. Relying too heavily on past statistics in this setting can be
+harmful.
 
 Video semantic segmentation is a hard task to tackle. CNNs are known to be
 data hungry, as proved by the great performance leap that followed the
