@@ -414,27 +414,6 @@ $480 \times 360$ resolution. The dataset contains video sequences but has
 mostly been used for still image semantic segmentation.
 
 
-\subsubsection{Gatech: Geometric Context Video Segmentation}
-\label{sec:deconvLSTM_gatech}
-The Gatech dataset~\cite{VideoGeometricContext2013}~\footnote{%
-http://www.cc.gatech.edu/cpl/projects/videogeometriccontext/}
-is a geometric scene understanding dataset, which consists of 63 videos for
-training/validation and 38 for testing. Each video has between 50 and 300
-frames (with an average of 190). A pixel-wise segmentation map is provided for
-each frame. There are 8 classes in the dataset: \textit{sky}, \textit{ground},
-\textit{buildings}, \textit{porous}, \textit{humans}, \textit{cars},
-\textit{vertical mix} and \textit{main mix}. The dataset was originally built
-to learn 3D geometric structure of outdoor video scenes. A sample with ground
-truth segmentation taken from the Gatech dataset can be seen
-in~\autoref{fig:deconvLSTM_gatech_gt}.
-
-\begin{figure}[t]
-    \centering
-    \includegraphics[width=\columnwidth]{img/deconvLSTM/gatech_gt.png}
-    \caption{An example of ground truth segmentation for the Gatech dataset.}
-    \label{fig:deconvLSTM_gatech_gt}
-\end{figure}
-
 \subsubsection{DAVIS: Densely Annotated Video Segmentation}
 \label{sec:deconvLSTM_davis}
 The DAVIS dataset~\cite{Perazzi2016}~\footnote{
@@ -469,6 +448,27 @@ in~\autoref{fig:deconvLSTM_davis_gt}.
     \label{fig:deconvLSTM_davis_gt}
 \end{figure}
 
+
+\subsubsection{Gatech: Geometric Context Video Segmentation}
+\label{sec:deconvLSTM_gatech}
+The Gatech dataset~\cite{VideoGeometricContext2013}~\footnote{%
+http://www.cc.gatech.edu/cpl/projects/videogeometriccontext/}
+is a geometric scene understanding dataset, which consists of 63 videos for
+training/validation and 38 for testing. Each video has between 50 and 300
+frames (with an average of 190). A pixel-wise segmentation map is provided for
+each frame. There are 8 classes in the dataset: \textit{sky}, \textit{ground},
+\textit{buildings}, \textit{porous}, \textit{humans}, \textit{cars},
+\textit{vertical mix} and \textit{main mix}. The dataset was originally built
+to learn 3D geometric structure of outdoor video scenes. A sample with ground
+truth segmentation taken from the Gatech dataset can be seen
+in~\autoref{fig:deconvLSTM_gatech_gt}.
+
+\begin{figure}[t]
+    \centering
+    \includegraphics[width=\columnwidth]{img/deconvLSTM/gatech_gt.png}
+    \caption{An example of ground truth segmentation for the Gatech dataset.}
+    \label{fig:deconvLSTM_gatech_gt}
+\end{figure}
 
 
 % \subsubsection{Change Detection}
@@ -589,18 +589,31 @@ each layer with an amount of momentum that varied from dataset to dataset.
 
 \subsection{Results}\label{sec:deconvLSTM_results}
 
+The DEConvLSTM model has been studied on three different datasets. The first
+set of experiments was run on CamVid to fix some of the hyperparameters of the
+model. Afterwards, the bigger Gatech and DAVIS datasets were taken into
+account.
+
 %%%% CAMVID %%%%%
-\autoref{tbl:deconvLSTM_camvid} reports the results on the Camvid dataset. All
-the experiments were run with batch size $5$ training on cropped patches of
-$224 \times 224$. The learning procedure was interrupted with early stopping on
-the average Intersection over Union (IoU) of the validation set.
-% AGGIUNGI QUALCHE COMMENTO
-\autoref{tbl:deconvLSTM_camvid_overfit} reports the results of the preliminary
-experiments on Camvid to assess the effect of different optimizers and various
-sequence lengths. The models has generalization issues on this dataset,
-especially when the time correlation is taken into account. This can be
-justified by the limited number of images of dataset, as will be discussed
-in more detail in~\autoref{sec:deconvLSTM_discussion}.
+All the experiments on CamVid were run with batch size $5$, training on cropped
+patches of $224 \times 224$. The learning procedure was interrupted with early
+stopping on the average Intersection over Union (IoU) of the validation set.
+The main goal of these experiments was not to reach state-of-the-art
+performances, but rather to access the sensitivity of the model to different
+hyperparameters. \autoref{tbl:deconvLSTM_camvid_overfit} reports the results of
+some of these preliminary experiments on different optimizers and various
+sequence lengths. Clearly the models has generalization issues on this dataset,
+especially when the time correlation is taken into account. This is not too
+surprising given the limited number of images in the CamVid dataset, as will be
+discussed in more detail in~\autoref{sec:deconvLSTM_discussion}.
+
+For completeness, \autoref{tbl:deconvLSTM_camvid} compares the results of the
+DEConvLSTM model with the state-of-the-art on Camvid. Clearly there is a
+margin for improvement, which can be probably gained reducing the
+generalization issues of the model with stronger regularization and relying on
+data augmentation to diminish the overfitting. Not too much effort was spent on
+hyperparameters tuning on this dataset, as the main goal was to gain confidence
+with the model rather than to reach the state-of-the-art.
 
 \begin{table}[t]
     \centering{\small
@@ -654,40 +667,9 @@ in more detail in~\autoref{sec:deconvLSTM_discussion}.
 % train_acc: 0.915286386415
 % train_jaccard: 0.602986412809
 
-\autoref{tbl:deconvLSTM_gatech} reports the results of the DEConvLSTM model on
-the Gatech Dataset. Remarkably, the performance of the DEConvLSTM model on this
-dataset aligns with the state-of-the-art. As discussed before, many
-modifications (such as data augmentation) can be adopted to increase the
-performance of the model and fully set the state-of-the-art. The focus of the
-research carried on on this model so far has been mainly to evaluate the
-proposed architecture in non-trivial settings where the time component can be
-exploited to improve the prediction of the model. However as future steps we
-intend to run more experiments with the goal to set a new state-of-the-art.
 
-
-\begin{table}[t]
-    \centering{\small
-        \begin{tabular}{l||c}
-            Method & \textbf{Global accuracy}\\ \hline
-
-            2D-V2V \cite{Tran16v2v} & 55.7 \\
-            V2V-0 \cite{Tran16v2v} & 66.7 \\
-            Conv3b + Up \cite{Tran16v2v} & 69.7 \\
-            Conv4b + Up \cite{Tran16v2v} & 72.7 \\
-            Conv5b + Up \cite{Tran16v2v} & 72.1 \\
-            \textbf{V2V} \cite{Tran16v2v} & \textbf{76.0} \\
-            \textbf{DEConvLSTM} & \textbf{76.1}
-        \end{tabular}
-    }
-    \caption{Results on the Gatech dataset. Pixel accuracy is reported.}
-    \label{tbl:deconvLSTM_gatech}
-\end{table}
-
-%have 80% + of accuracy in val in gatech
-% 46 epochs, val loss 0.4873, val jacquard 0.4865...
-% Epoch 53/300 - loss: 0.2103 - cat_masked_accuracy: 0.9281 - val_loss: 0.3016 - val_jaccard: 0.6224
-
-Finally, \autoref{tbl:deconvLSTM_davis} reports the initial results of the
+%%%%%% DAVIS %%%%%%%%%%
+\autoref{tbl:deconvLSTM_davis} reports the initial results of the
 DEConvLSTM model on the Davis Dataset. This early result is encouraging and
 calls for more thorough experiments on this dataset.
 
@@ -711,6 +693,36 @@ calls for more thorough experiments on this dataset.
     \caption{Results on the Davis dataset. Average Intersection over Union
         (IoU) is reported.}
     \label{tbl:deconvLSTM_davis}
+\end{table}
+
+
+%%%%%%%%% GATECH %%%%%%%%%
+Finally, \autoref{tbl:deconvLSTM_gatech} reports the results of the DEConvLSTM
+model on the Gatech Dataset. Remarkably, the performance of the DEConvLSTM
+model on this dataset aligns with the state-of-the-art. As discussed before,
+many modifications (such as data augmentation) can be adopted to increase the
+performance of the model and fully set the state-of-the-art. The focus of the
+research carried on on this model so far has been mainly to evaluate the
+proposed architecture in non-trivial settings where the time component can be
+exploited to improve the prediction of the model. However as future steps we
+intend to run more experiments with the goal to set a new state-of-the-art.
+
+\begin{table}[t]
+    \centering{\small
+        \begin{tabular}{l||c}
+            Method & \textbf{Global accuracy}\\ \hline
+
+            2D-V2V \cite{Tran16v2v} & 55.7 \\
+            V2V-0 \cite{Tran16v2v} & 66.7 \\
+            Conv3b + Up \cite{Tran16v2v} & 69.7 \\
+            Conv4b + Up \cite{Tran16v2v} & 72.7 \\
+            Conv5b + Up \cite{Tran16v2v} & 72.1 \\
+            \textbf{V2V} \cite{Tran16v2v} & \textbf{76.0} \\
+            \textbf{DEConvLSTM} & \textbf{76.1}
+        \end{tabular}
+    }
+    \caption{Results on the Gatech dataset. Pixel accuracy is reported.}
+    \label{tbl:deconvLSTM_gatech}
 \end{table}
 
 
