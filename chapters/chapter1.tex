@@ -25,7 +25,13 @@
 The dream of machines that can think and act as substitutes for humans in their
 jobs dates back to the '60s, if not before. We are still not at that point,
 although in the last decade the field experienced outstanding advancements and
-has been the object of increasing interest. Machine Learning (ML) set the
+has been the object of increasing interest.
+
+Artificial intelligence (AI) is a broad field that aims to develop intelligent
+software that can for instance acquire knowledge from its interaction with the
+world, find optimized strategies for problem solving, automate tasks, detect
+patterns in audio, video and textual data, play games, drive cars and much
+more. Machine Learning (ML), a subset of artificial intelligence, set the
 state-of-art in many fields, such as e.g., image classification~\cite{
 Krizhevsky-2012,szegedy2016inception,visin2015renet}, semantic
 segmentation~\cite{chen2015semantic, Visin_2016_CVPR_Workshops}, video
@@ -42,18 +48,19 @@ Despite its many successes, machine learning is no lamp genie that can tackle
 any problem by simply providing it with enough data. To get results in machine
 learning requires a meticulous analysis of the characteristics of the problem,
 clever architecture modelling, smart engineering, as well as careful inspection
-of complex and extremely nonlinear compositions of transformations.  Most of
+of complex and extremely nonlinear compositions of transformations. Most of
 all, it requires good organization, intuition and patience, since many of the
 experiments can last days if not weeks -- even on big clusters of GPUs.
 
-My research has focused on visual scene understanding. My claim is that
-understanding a visual scene -- be it an image or a video -- requires capturing
-the scene semantics, and that this has to be done by building an incremental
-representation of the context while processing the elements of the observed
-environment scene. For this reason I decided to focus on Recurrent Neural
-Networks (RNNs), a family of neural networks with memory -- or state -- that
-can decide autonomously when to store, retrieve or delete information from
-their memory.
+Many areas of research could benefit from the application of machine learning
+techniques, I chose to focus my research on visual scene understanding. My
+claim is that understanding a visual scene -- be it an image or a video --
+requires capturing the scene semantics, and that this has to be done by
+building an incremental representation of the context while processing the
+elements of the observed environment scene. For this reason I decided to focus
+on Recurrent Neural Networks (RNNs), a family of neural networks with memory --
+or state -- that can decide autonomously when to store, retrieve or delete
+information from their memory.
 
 As a first step to address the problem of image understanding, I focused on
 object classification, i.e., the problem of selecting the class an object in a
@@ -131,7 +138,7 @@ convolutional. We improved on the original model by stacking several
 convolutions inside the RNN state (as opposed to only one) and by introducing a
 \emph{deconvolutional RNN}, whose state is a stack of multiple transposed
 convolutions. This model achieved so far comparable results with the
-state-of-the-art on two datasets and encouraging results on a third.
+state-of-the-art on one datasets and encouraging results on two others.
 
 % As future steps for this research, I plan to conclude the video segmentation
 % paper in time to submit it to the CVPR conference 2017. I am also working on
@@ -145,14 +152,40 @@ state-of-the-art on two datasets and encouraging results on a third.
 % provide us with suitable datasets to perform bowel polyps detection and
 % classification and potentially commercialize our model.
 
-The rest of this manuscript is organized as follows: \autoref{sec:background}
-introduces the most important models and concepts needed to understand the work
-done; \autoref{sec:renet} introduces the problem of object classification and
-describes in detail the ReNet model and its results; \autoref{sec:reseg}
-defines what is referred to as semantic segmentation and how ReSeg tackles that
-problem. Finally, \autoref{sec:video_segmentation} moves to video understanding
-and specifically video semantic segmentation and highlights the advantages of
-convolutional-deconvolutional RNNs in this context. In
-\autoref{sec:conclusion} summarizes the main contribution of this research and
-proposes some of the many possible future directions of research that can build
-on top of this work.
+\section{Main contributions}
+The main contribution of my research have been the analysis of RNN-based
+models in the context of visual data. The ReNet model proved to be an effective
+alternative to the ubiquitous CNNs for object classification and draw the
+attention of the research community. The subsequent ReSeg model tackled with
+success the much harder problem of semantic segmentation, where a fine-grained
+understanding of the image structure has to be gained. This paper was selected
+at the CVPR 2016 DeepVision Workshop for the best paper award and will be
+expanded with a more in-depth analysis of the properties of the architecture in
+a chapter of the upcoming book on the CVPR 2016 DeepVision Workshop. Finally I
+moved to the analysis of videos for dense segmentation, a very challenging task
+characterized by a high computational burden and scarce amounts of labeled
+data. To address this task I proposed a model that merges direct convolutions,
+transposed convolutions and RNNs in a unique coherent structure. The DEConvLSTM
+model proved to be a valid architecture for video semantic segmentation,
+pairing the state of the art on one of the historically most used datasets on
+this task and achieving encouraging results on two other dataset with just
+cursory exploration.
+
+
+\section{Outline}
+The rest of this manuscript is organized as follows:
+
+\begin{itemize}
+    \item \autoref{sec:background}: introduces the most important models and
+        concepts needed to understand the work done;
+    \item \autoref{sec:renet} introduces the problem of object classification
+        and describes in detail the ReNet model and its results;
+    \item \autoref{sec:reseg} defines what is referred to as semantic
+        segmentation and how ReSeg tackles that problem;
+    \item \autoref{sec:video_segmentation} moves to video understanding and
+        specifically the task of video semantic segmentation and highlights the
+        advantages of convolutional-deconvolutional RNNs in this context;
+    \item \autoref{sec:conclusion} summarizes the main contribution of this
+        research and proposes some of the many possible future directions of
+        research that can build on top of this work.
+\end{itemize}

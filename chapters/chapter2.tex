@@ -1,22 +1,15 @@
 \chapter{Background}\label{sec:background}
 
 %============================= INTRODUCTION =================================
-Artificial intelligence (AI) is a broad field that aims to develop intelligent
-software that can for instance acquire knowledge from its interaction with the
-world, find optimized strategies for problem solving, automate tasks, detect
-patterns in audio, video and textual data, play games, drive cars and much
-more.
-
 Machine learning is a complex subfield of AI that witnessed a very quick
 expansion in the recent years. It aims to enable computers to \emph{learn} how
 to tackle problems by detecting patterns and regularities in the training data
 and trying to generalize this extracted knowledge to new, unseen data.
-
 Among its many powerful tools, artificial neural networks are models that take
 inspiration from what is known about the human brain, by mimicking its
 connectivity patterns, learning rules and signals propagation, under the
-constraints imposed by our limited knowledge of the brain and a less powerful
-hardware.
+constraints imposed by our limited knowledge of the brain and the intrinsically
+different "hardware" at our disposal.
 
 While it is beyond the scope of this document to give a formal and in-depth
 introduction to every concept needed to fully comprehend Machine Learning,
@@ -72,21 +65,20 @@ exhibit the desired behavior~\citep{Rosenblatt57}.
     \caption{\label{fig:perceptron}A representation of the Perceptron.}
 \end{figure}
 
-\noindent The activation rule of the perceptron is very simple and is at the
-base of many modern neural networks. Given an $n$-dimensional input
-$\mathbf{x}$, the weighted sum of each dimension of the input $x_i$ and its
-corresponding weight $w_i$ -- often referred to as \emph{preactivation} -- is
-computed as
+The activation rule of the perceptron is very simple and is at the base of many
+modern neural networks. Given an $n$-dimensional input $\mathbf{x}$, the
+weighted sum of each dimension of the input $x_i$ and its corresponding weight
+$w_i$ -- often referred to as \emph{preactivation} -- is computed as
 
 \begin{equation*}
-    z = \sum_{i=0}^{n}(w_i \cdot x_i),
+    z = \sum_{i=1}^{n}(w_i \cdot x_i) + b,
 \end{equation*}
 
 \noindent where to simplify the notation the bias term $b$ has been replaced
-by an equivalent input term $x_0=1$. Note that this is simply the dot
-product of the weight vector $\mathbf{w}$ and the input vector $\mathbf{x}$.
-The result of this first affine transformation is then passed through a step
-function of the form
+by an equivalent input term $x_0=1$ weighted by $w_0$. Note that this is simply
+the dot product of the weight vector $\mathbf{w}$ and the input vector
+$\mathbf{x}$. The result of this first affine transformation is then passed
+through a step function of the form
 \begin{equation*}
     y =
         \begin{cases}
@@ -106,9 +98,9 @@ them to a different class.
 
 The behavior of the Perceptron is indeed remarkable, but the biggest innovation
 of~\cite{Rosenblatt57} is most probably the update algorithm that allowed one
-to modify the weights of the model in a Hebbian rule fashion. The weights and
-the bias -- also called the \emph{parameters} of the network -- are
-\emph{learned} according to the following rule:
+to modify the weights of the model. The weights and the bias -- also called the
+\emph{parameters} of the network -- are \emph{learned} according to the
+following rule:
 
 \begin{equation}\label{eq:perceptron_lr}
     w_i^{\text{new}} = w_i^{\text{old}} + \eta \cdot (\hat {y} - y) \cdot x_i,
@@ -868,7 +860,7 @@ represented, but it is not uncommon to have multiple feature maps stacked one
 onto another.\footnote{An example of this is what was referred to earlier as
     {\em channels\/} for images and sound clips.}
 
-A {\em kernel\/} (shaded area) with values:
+A {\em kernel\/} (shaded area) with the following weights:
 
 \begin{figure}[H]
     \centering
@@ -2073,7 +2065,7 @@ Putting it all together, the equations that govern the behavior of an LSTM are
 
 \subsubsection{LSTMs with peepholes}
 
-\begin{figure}[h!]
+\begin{figure}[t]
 \begin{minipage}{0.5\textwidth}
     \centering
     \includegraphics[width=0.8\textwidth]{pdf/LSTM_peepholes.pdf}
