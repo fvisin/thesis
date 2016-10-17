@@ -313,8 +313,8 @@ $p_{i,\cdot}$ vertically a first time with two RNNs $f^{\downarrow}$ and
 $f^{\uparrow}$, with $U$ recurrent units each, that move top-down and bottom-up
 respectively. Note that the processing of each column is independent and can be
 done in parallel. This is a very important performance difference of the ReSeg
-model w.r.t. to other architectures in the literature that enforce to handle
-the data in a more constrainedly sequential nature.
+model with respect to other architectures in the literature that enforce to
+handle the data in a more constrainedly sequential nature.
 
 \begin{figure}[t]
     \advance\leftskip-0.2\textwidth
@@ -657,9 +657,9 @@ In the rest of this section, the architectural choices for both
 sets of parameters will be detailed.
 
 Initial experiments on upsampling showed that transposed convolutional layers
-seem to provide a better performance w.r.t. less sophisticated (not learned)
-tiling strategies such as nearest neighbor tiling or bilinear interpolation
-when there is enough data to learn the transformation.
+seem to provide a better performance with respect to less sophisticated (not
+learned) tiling strategies such as nearest neighbor tiling or bilinear
+interpolation when there is enough data to learn the transformation.
 
 All the transposed convolution upsampling layers were followed by a
 ReLU~\cite{Krizhevsky2012-alexnet} non-linearity and initialized with the
@@ -770,7 +770,7 @@ state-of-the-art both in terms of global accuracy and average IoU.
 Finally, \autoref{tbl:camvid_SOTA} presents the results on CamVid dataset using
 the full ReSeg architecture. This model exhibits state-of-the-art performance
 in terms of IoU when compared to both standard segmentation methods and neural
-network based methods, showing an increase of $17\%$ w.r.t.\ to the recent
+network based methods, showing an increase of $17\%$ with respect to the recent
 SegNet model. It is worth highlighting that incorporating sub-model averaging
 to SegNet model, as in \cite{Kendall2015bayesiansegnet}, boosts the original
 model performance, as expected. Therefore, introducing sub-model averaging to
@@ -820,11 +820,11 @@ However, this remains to be tested.
 
 As pointed out earlier, the experiments on the Weizmann Horse dataset were
 treated as a test playground to acquire knowledge on the sensitivity of the
-model w.r.t. the preprocessing and the hyperparameters. The preliminary
-experiments show that processing the input images with the first layers of
-the VGG-16 pre-trained network improves the results. Other image manipulation
-techniques, such as pre-processing the input with Local Contrast Normalization
-(LCN), do not seem to improve the performance of the model
+model with respect to the preprocessing and the hyperparameters. The
+preliminary experiments show that processing the input images with the first
+layers of the VGG-16 pre-trained network improves the results. Other image
+manipulation techniques, such as pre-processing the input with Local Contrast
+Normalization (LCN), do not seem to improve the performance of the model
 (see~\autoref{tbl:camvid_params}) and were therefore not used in the following
 experiments.
 
@@ -857,12 +857,13 @@ an increase in misclassified pixels in the output segmentation mask. This
 behavior is clearly visible in~\autoref{fig:camvid_class_balance}.
 
 The metrics reported on all the datasets are the per-pixel accuracy~(\emph{%
-Global acc}), computed as the percentage of true positives w.r.t.\ the total
-number of pixels in the image, as well as the average per-class Intersection
-over Union (\emph{Avg IoU}), computed on each class as true positive divided by
-the sum of true positives, false positives and false negatives and then
-averaged. In the full semantic segmentation setting the per-class accuracy and
-the average per-class accuracy (\emph{Avg class acc}) are also reported.
+Global acc}), computed as the percentage of true positives with respect to the
+total number of pixels in the image, as well as the average per-class
+Intersection over Union (\emph{Avg IoU}), computed on each class as true
+positive divided by the sum of true positives, false positives and false
+negatives and then averaged. In the full semantic segmentation setting the
+per-class accuracy and the average per-class accuracy (\emph{Avg class acc})
+are also reported.
 
 \begin{figure}[t]
     \centering

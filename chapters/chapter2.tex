@@ -619,10 +619,10 @@ its output, which is given only for the last layer.
 To address this obstacle it suffices to notice that the computation performed
 by each activation function is a nonlinear, but differentiable function of the
 inputs. This allows for the computation of the partial derivatives of the error
-(e.g., the expected value of the quadratic loss) w.r.t. the weights of the
-network. In other words, it is possible to use calculus to determine the amount
-by which each neuron of the last layer contributed to causing the error, and
-then further split the responsibility of each of them among the ones of the
+(e.g., the expected value of the quadratic loss) with respect to the weights of
+the network. In other words, it is possible to use calculus to determine the
+amount by which each neuron of the last layer contributed to causing the error,
+and then further split the responsibility of each of them among the ones of the
 preceding layer. In this way, the error can be \emph{backpropagated} through
 the layers of the network, assigning to each weight its amount of blame. This
 information can be used by an \emph{optimization algorithm} to iteratively
@@ -663,8 +663,8 @@ $\mathbf{y(x)}$ and represents the output of the network for one input sample
 $\mathbf{x}$.
 
 It is possible to compute the fraction of the error that can be attributed to
-each neuron of the network by taking the derivative of the error w.r.t. to its
-weights
+each neuron of the network by taking the derivative of the error with respect
+to its weights
 
 \begin{align}\label{eq:backprop_step1}
 \begin{split}

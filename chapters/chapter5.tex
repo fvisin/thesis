@@ -540,10 +540,10 @@ DEConvLSTM model are the number of encoding and decoding layers, as well as the
 depth of their inner convolutions. As explained in~\autoref{%
 sec:deconvLSTM_skip_connections}, we chose to constrain, by design, the number
 of decoding layers to be the same as the number of encoding layers, to allow
-for the skip connections structure to be symmetrical w.r.t. the middle feature
-map resolution of the network. The number of encoding (and therefore decoding)
-layers that empirically appeared to be optimal is 5, and has been used
-consistently throughout the experiments.  Similarly, the number of inner
+for the skip connections structure to be symmetrical with respect to the middle
+feature map resolution of the network. The number of encoding (and therefore
+decoding) layers that empirically appeared to be optimal is 5, and has been
+used consistently throughout the experiments.  Similarly, the number of inner
 convolutions and transposed convolutions has been set to 2 (per layer) and
 their hyperparameters -- namely the number of filters per
 sublayer~(\textbf{nf}), filters size per sublayer~(\textbf{fs}) and stride per
@@ -812,10 +812,10 @@ temporal correlation between frames improves performance on the Gatech
 dataset~\citep{Tran16v2v}. The results reported in \autoref{%
 tbl:deconvLSTM_gatech} show that the DEConvLSTM model is an interesting
 architecture for the video semantic segmentation task. Furthermore,
-generalization seems to be much better on Gatech w.r.t. CamVid, in fact the
-drop in performance between the validation and the test set is remarkably
-contained around $2\%$, as opposed to the $10-15\%$ drop typically experienced
-in CamVid.
+generalization seems to be much better on Gatech with respect to CamVid, in
+fact the drop in performance between the validation and the test set is
+remarkably contained around $2\%$, as opposed to the $10-15\%$ drop typically
+experienced in CamVid.
 
 Unfortunately the model did not fare as well \emph{with the same
 hyperparameters} on the Davis dataset. The results on this dataset are not

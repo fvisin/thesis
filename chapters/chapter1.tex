@@ -128,16 +128,16 @@ due to the very high cost of labelling each pixel of each frame of a video; in
 many cases labels are imprecise and noisy, or missing a well defined semantic
 (e.g. the classes "porous" and "vertical mix" are difficult to define
 unequivocally), which makes learning harder. Still, it is a challenging but
-important problem to tackle and there seems to be room for improvement w.r.t.
-the current state of the art on the path traced by ReSeg. The proposed model
-combines the benefits of CNNs -- namely the exploitation of the topological
-structure in the images and the processing speed -- and the ability to retain
-temporal and spatial context information of RNNs. The idea builds on~\cite{
-xingjian2015convolutional} that introduced an RNN model whose internal state is
-convolutional. We improved on the original model by stacking several
-convolutions inside the RNN state (as opposed to only one) and by introducing a
-\emph{deconvolutional RNN}, whose state is a stack of multiple transposed
-convolutions. This model achieved so far comparable results with the
+important problem to tackle and there seems to be room for improvement with
+respect to the current state of the art on the path traced by ReSeg. The
+proposed model combines the benefits of CNNs -- namely the exploitation of the
+topological structure in the images and the processing speed -- and the ability
+to retain temporal and spatial context information of RNNs. The idea builds
+on~\cite{ xingjian2015convolutional} that introduced an RNN model whose
+internal state is convolutional. We improved on the original model by stacking
+several convolutions inside the RNN state (as opposed to only one) and by
+introducing a \emph{deconvolutional RNN}, whose state is a stack of multiple
+transposed convolutions. This model achieved so far comparable results with the
 state-of-the-art on one datasets and encouraging results on two others.
 
 % As future steps for this research, I plan to conclude the video segmentation
