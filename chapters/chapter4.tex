@@ -284,37 +284,19 @@ pipeline
 
 \subsection{ReNet layer}
 
-As depicted in~\autoref{fig:first_layer}, each recurrent layer is composed
-by 4 RNNs coupled together in such a way to capture the local and global
-spatial structure of the input data.
-
-\begin{figure}[t]
-    \begin{center}
-        \includegraphics[width=0.3\columnwidth]{img/reseg/first_layer.pdf}
-        \caption{A ReNet layer. The blue and green dots on the input
-            image/feature map represent the steps of $f^{\downarrow}$ and
-            $f^{\uparrow}$ respectively. On the concatenation of the resulting
-            feature maps, $f^{\rightarrow}$ (yellow dots) and $f^{\leftarrow}$
-            (red dots) are subsequently swept. Their feature maps are finally
-            concatenated to form the output of the ReNet layer, depicted as a
-            blue heatmap in the figure.}
-        \label{fig:first_layer}
-        \vspace{-5mm}
-    \end{center}
-\end{figure}
-
-
-Specifically, the model takes as an input an image (or the feature map of the
-previous layer) $\mathbf{X}$ of elements $x \in \RR^{H \times W \times C}$,
-where $H$, $W$ and $C$ are respectively the height, width and number of
-channels (or features) and splits it into $I \times J$ patches $p_{i,j} \in
-\RR^{H_p \times W_p \times C}$. It then sweeps along each of its columns
-$p_{i,\cdot}$ vertically a first time with two RNNs $f^{\downarrow}$ and
-$f^{\uparrow}$, with $U$ recurrent units each, that move top-down and bottom-up
-respectively. Note that the processing of each column is independent and can be
-done in parallel. This is a very important performance difference of the ReSeg
-model with respect to other architectures in the literature that enforce to
-handle the data in a more constrainedly sequential nature.
+As in the ReNet model, each recurrent layer is composed by 4 RNNs coupled
+together in such a way to capture the local and global spatial structure of the
+input data. Specifically, the model takes as an input an image (or the feature
+map of the previous layer) $\mathbf{X}$ of elements $x \in \RR^{H \times W
+\times C}$, where $H$, $W$ and $C$ are respectively the height, width and
+number of channels (or features) and splits it into $I \times J$ patches
+$p_{i,j} \in \RR^{H_p \times W_p \times C}$. It then sweeps along each of its
+columns $p_{i,\cdot}$ vertically a first time with two RNNs $f^{\downarrow}$
+and $f^{\uparrow}$, with $U$ recurrent units each, that move top-down and
+bottom-up respectively. Note that the processing of each column is independent
+and can be done in parallel. This is a very important performance difference of
+the ReSeg model with respect to other architectures in the literature that
+enforce to handle the data in a more constrainedly sequential nature.
 
 \begin{figure}[t]
     \advance\leftskip-0.2\textwidth

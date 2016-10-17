@@ -138,8 +138,12 @@ of~\citet{Graves+Schmidhuber-2009}.
 \begin{figure}[t]
     \centering
     \includegraphics[width=0.3\textwidth]{img/renet/renet_first_layer.pdf}
-    \caption{A ReNet layer is composed by two sublayers, a vertical one and an
-        horizontal one.}
+    \caption{A ReNet layer. The blue and green dots on the input image/feature
+        map represent the steps of $f_{VFWD}$ and $f_{VREV}$ respectively. On
+        the concatenation of the resulting feature maps, $f_{HFWD}$ (yellow
+        dots) and $f_{HREV}$ (red dots) are subsequently swept. The output of
+        the feature maps are finally concatenated to form the output of the
+        ReNet layer, depicted as a blue heatmap in the figure.}
     \label{fig:renet_layer}
     \vspace{-3mm}
 \end{figure}
