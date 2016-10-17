@@ -597,7 +597,7 @@ each layer with an amount of momentum that varied from dataset to dataset.
 
 \subsection{Results}\label{sec:deconvLSTM_results}
 
-The DEConvLSTM model has been studied on three different datasets. The first
+The DEConvLSTM model has been studied on three different datasets. A first
 set of experiments was run on CamVid to fix some of the hyperparameters of the
 model. Afterwards, the bigger Gatech and DAVIS datasets were taken into
 account.
@@ -607,19 +607,19 @@ All the experiments on CamVid were run with batch size $5$, training on cropped
 patches of $224 \times 224$. The learning procedure was interrupted with early
 stopping on the average Intersection over Union (IoU) of the validation set.
 The main goal of these experiments was not to reach state-of-the-art
-performance, but rather to access the sensitivity of the model to different
+performance, but rather to assess the sensitivity of the model to different
 hyperparameters. \autoref{tbl:deconvLSTM_camvid_overfit} reports the results of
 some of these preliminary experiments on different optimizers and various
-sequence lengths. The models suffers from some generalization issues on this
+sequence lengths. The models suffer from some generalization issues on this
 dataset. This is not too surprising given the limited number of images in the
 CamVid dataset, as will be discussed in more detail
 in~\autoref{sec:deconvLSTM_discussion}.
 
-The results of the DEConvLSTM model with sequences of length $3$, finetuned for
-100 epochs on images at full resolution is compared
+The results of the DEConvLSTM model with sequences of length $3$, fine-tuned
+for 100 epochs on images at full resolution is compared
 in~\autoref{tbl:deconvLSTM_camvid} with the state-of-the-art on Camvid. The
 model performs comparably to the state-of-the-art of the last year; there is a
-margin for improvement, which could be probably gained at least in part by
+margin for improvement, which could be probably gained, at least in part, by
 reducing the generalization issues with stronger regularization and relying on
 data augmentation to diminish the overfitting. However not too much effort was
 spent on hyperparameters tuning on this dataset, as the main goal was to gain
@@ -628,7 +628,7 @@ confidence with the model rather than to reach the state-of-the-art.
 \begin{table}[t]
     \centering{\small
         \begin{tabular}{l|c||c}
-            Method & Global accuracy & \textbf{Avg IoU}\\ \hline
+            Method & Global accuracy & Avg IoU\\ \hline
 
             SegNet-Basic \citep{badrinarayanan2015segnet} & 82.8 & 46.3 \\
             SegNet \citep{badrinarayanan2015segnet} &  88.6 & 50.2 \\
@@ -646,8 +646,8 @@ confidence with the model rather than to reach the state-of-the-art.
 \begin{table}[t]
     \centering{\small
         \begin{tabular}{c|c||c|c|c||c|c|c}
-            & & \multicolumn{3}{c||}{Global accuracy} & \multicolumn{3}{c}{\textbf{Avg IoU}}\\
-            Optimizer & Sequence length & Test & Validation & Train & \textbf{Test} & Validation & Train\\ \hline
+            & & \multicolumn{3}{c||}{Global accuracy} & \multicolumn{3}{c}{Avg IoU}\\
+            Optimizer & Sequence length & Test & Validation & Train & Test & Validation & Train\\ \hline
             RMSProp & 3 & 78.0 & 90.2 & 91.5 & 37.8 & 58.4 & 60.3\\
             Adam & 3 & 78.8 & 90.3 & 91.4 & 38.2 & 58.3 & 59.8\\
             RMSProp & 1 & 84.5 & 93.9 & 93.7 & 49.7 & 70.0 & 74.6%DA AGGIORNARE
@@ -682,22 +682,22 @@ confidence with the model rather than to reach the state-of-the-art.
 The most of the training effort was spent on the Gatech dataset, a well known
 dataset for structured prediction. The performance of the DEConvLSTM model on
 this dataset is remarkable, as reported in \autoref{tbl:deconvLSTM_gatech}. The
-model aligns with the state-of-the-art without resorting to, e.g., data
-augmentation techniques, or finetuning on full resolution (i.e., without
-cropping the frames), which can be expected to further improve the result,
-fully setting a new state-of-the-art for this dataset. The first goal of the
-research carried on on this model has been to evaluate the effectiveness of the
-proposed architecture in non-trivial settings where the time component has to
-be exploited to obtain convincing predictions. The results on this dataset show
+model aligns with the state-of-the-art without resorting to data augmentation
+techniques, or finetuning on full resolution (i.e., without cropping the
+frames), which can be expected to further improve the result, setting a
+new state-of-the-art for this dataset. The first goal of the research carried
+on on this model has been to evaluate the effectiveness of the proposed
+architecture in non-trivial settings where the time component has to be
+exploited to obtain convincing predictions. The results on this dataset show
 that the proposed architecture can address successfully the video segmentation
-task and suggest to carry on experimentation, e.g., adding data augmentation,
-finetuning the network on full resolution sequences, to further improve the
+task and suggest to carry on experimentation, e.g., adding data augmentation
+and finetuning the network on full resolution sequences, to further improve the
 state of the art.
 
 \begin{table}[t]
     \centering{\small
         \begin{tabular}{l||c}
-            Method & \textbf{Global accuracy}\\ \hline
+            Method & Global accuracy\\ \hline
 
             2D-V2V \citep{Tran16v2v} & 55.7 \\
             V2V-0 \citep{Tran16v2v} & 66.7 \\
@@ -716,36 +716,36 @@ state of the art.
 
 
 %%%%%% DAVIS %%%%%%%%%%
-Encouraged by the good results on Gatech, we quickly tested the network on the
+Encouraged by the good results on Gatech, we also tested the network on the
 recently introduced DAVIS dataset for dense semantic segmentation. With only
 cursory hyperparameter search around the settings that worked best on the
 Gatech dataset, the DEConvLSTM obtains results comparable with the
 state-of-the-art of a few years ago. \autoref{tbl:deconvLSTM_davis} reports the
 results of the initial experiments with the DEConvLSTM model on this dataset
-and \autoref{fig:deconvlstm_gatech_sample} shows an example of prediction of
-the model.
+and \autoref{fig:deconvlstm_gatech_sample} shows an example of prediction made
+by the model.
 
-The experiments conducted on this dataset are not enough to draw conclusions,
-but one failure mode of the DEConvLSTM model on this task seems to be not to
-properly recognize what to segment. The task in DAVIS is to segment only the
-main element in the scene. By inspecting the segmentation samples (see
-e.g.,~\autoref{fig:deconvlstm_gatech_failure}) it appears that sometimes the
-network has a hard time identifying what to segment and what to ignore and ends
-up focusing too much on the background, heavily decreasing the overall
+The experiments conducted on this dataset are not enough to draw final
+conclusions, but one failure mode of the DEConvLSTM model on this task seems to
+be not to properly recognize what to segment. The task in DAVIS is to segment
+only the main element in the scene. By inspecting the segmentation samples
+(see, e.g.,~\autoref{fig:deconvlstm_gatech_failure}) it appears that sometimes
+the network has a hard time identifying what to segment and what to ignore and
+ends up focusing too much on the background, heavily decreasing the overall
 segmentation performance. More experiments have to be conducted to address this
-issue. One option could be to
+issue; one option could be to
 % impose a stronger spatial prior with, e.g., a CRF, to focus more on the
 % central part of the frame where the objects of interest are usually placed.
 % Alternatively,
 increase the capacity of the temporal pathway to rely more on the temporal
-information to segment the main element of the scene that is usually the one
-that moves and changes the most. This early result is very encouraging and
-calls for more thorough experiments on this dataset.
+information to segment the main element of the scene that in these datasets is
+usually the one that moves and changes the most. This early result is very
+encouraging and calls for more thorough experiments on this dataset.
 
 \begin{table}[t]
     \centering{\small
         \begin{tabular}{l||c}
-            Method & \textbf{Avg IoU}\\ \hline
+            Method & Avg IoU\\ \hline
 
             Temporal superpixels \citep{chang2013video} & 35.8 \\
             SeamSeg \citep{ramakanth2014seamseg} & 55.6 \\
@@ -769,8 +769,8 @@ calls for more thorough experiments on this dataset.
 \begin{figure}[t]
     \centering
     \includegraphics[trim={0 15mm 0 0},width=0.8\columnwidth]{img/deconvLSTM/paragliding-0.png}\\
-    \caption{An example of segmentation produced by the DEConvLSTM model on
-        the DAVIS dataset.}
+    \caption{An example of proper segmentation produced by the DEConvLSTM model
+        on the DAVIS dataset.}
     \label{fig:deconvlstm_gatech_sample}
 \end{figure}
 
@@ -788,8 +788,8 @@ calls for more thorough experiments on this dataset.
 
 \section{Discussion}\label{sec:deconvLSTM_discussion}
 One of the first goals of the experiments with the DEConvLSTM model was to
-assess the effectiveness of exploiting the temporal correlation among frames in
-the task of video spatial segmentation. To this end several tests were run on
+assess its effectiveness in exploiting the temporal correlation among frames in
+the task of video spatial segmentation. To this end, several tests were run on
 CamVid, training the same model with different lengths of the sequence.
 
 CamVid has been mostly used in the literature in a single image
@@ -817,8 +817,8 @@ fact the drop in performance between the validation and the test set is
 remarkably contained around $2\%$, as opposed to the $10-15\%$ drop typically
 experienced in CamVid.
 
-Unfortunately the model did not fare as well \emph{with the same
-hyperparameters} on the Davis dataset. The results on this dataset are not
+Unfortunately the model did not perform as well when trained \emph{using the
+same hyperparameters} on the Davis dataset. The results on this dataset are not
 conclusive as the dataset is fairly new and not enough experimentation has been
 conducted to draw any conclusion. It seems that the model could benefit from an
 exploration of the hyperparameters that best push it to focus more on the main
@@ -826,13 +826,14 @@ object of the scene. This could of course also be obtained by more invasive
 modifications of the model, e.g., the addition of an attention mechanism or of
 a spatial prior that could be learned by a CRF, or in a more trivial way just
 by adding a hand-engineered spatial prior, as the object of interest tends to
-be centered in the frames. However, since our interest lies more in the
-learning capabilities of the model rather than the absolute performance value,
-we plan to focus mostly on the study of the hyperparameters of the current
-architecture.
+be centered in the frames. Nevertheless, since our interest lies more in
+assessing the learning capabilities of the model rather than in obtaining the
+absolute performance value, we plan to focus mostly on the study of variations
+of the current architecture rather than on relying on hand engineered solutions
+to improve the final score.
 
-One interesting discovery, valid for all the experiments ran so far, is
-that using the per-batch statistics at test time (rather than the more common
+One interesting discovery, valid for all the experiments ran so far, is that
+using the per-batch statistics at test time (rather than the more common
 strategy of re-using the running statistics collected during training)
 significantly improved the results on all the three datasets. Another crucial
 factor to achieve a good optimization is to select the right amount of momentum
@@ -851,13 +852,14 @@ with large amounts of densely annotated video data are still missing, even if
 the community is beginning to make an effort to fill in the gap~\citep[
 see~e.g.,~][]{Perazzi2016,lin2014microsoft}. More work is needed to speed up
 the models, study new loss functions that allow to optimize more closely
-non-derivable metrics such as IoU, reuse computation exploiting similarity in
-consecutive frames. Nonetheless it is already possible to challenge non-neural
-methods and reach reasonable results - when not state-of-the-art performance.
-Indeed the results obtained with DEConvLSTM show that coupling CNNs, transposed
-CNNs and LSTMs can be an effective way to tackle structured prediction problems
-in video, building on the speed of CNNs to process spacial information and on
-the ability of RNNs to retain information through several steps of computation.
+non-derivable metrics such as IoU and reuse computation exploiting similarity
+in consecutive frames. Nonetheless it is already possible to challenge
+non-neural methods and reach reasonable results - when not state-of-the-art
+performance.  Indeed the results obtained with DEConvLSTM show that coupling
+CNNs, transposed CNNs and LSTMs can be an effective way to tackle structured
+prediction problems in video, building on the speed of CNNs to process spatial
+information and on the ability of RNNs to retain information through several
+steps of computation.
 
 %to handle variable size images we could just have used something like SPP
 % the argument is that TIME really has to make a difference

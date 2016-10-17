@@ -2,24 +2,24 @@
 
 Machine Learning is a fascinating field of research. In the era of knowledge,
 being able to find the right information in enormous amounts of data (e.g., the
-internet), summarize it in a form that is compact and yet retains all the
+internet) and summarize it in a form that is compact and yet retains all the
 content one is interested in, is a key factor of success or failure in many
 fields. The potential of this technology may seem endless, yet our
 understanding of many of its inner mechanisms is still partial and it is easy
 to underestimate the non-trivial amount of knowledge and experience required to
 be successful.  Nonetheless, the field is advancing very fast in a number of
 exciting directions and ML already established the state-of-the-art in many
-areas.
+areas of application.
 
-I am particularly interested in applying ML to vision problems. We as humans
-rely heavily on vision for our daily operations and improvements in the
+I am particularly interested in applying ML to vision problems because we, as
+humans, rely heavily on vision for our daily operations. Improvements in the
 technology at our disposal to interpret visual data can have a direct and
 remarkably rapid impact on many practical applications such as detecting
 street signs, pedestrians, cars and other key landmarks to assist or automate
 driving; automatically analyze medical images detecting, e.g., anomalies,
 tumors, ulcers and bleeding; aid surgeons during surgeries; retrieve images and
 videos given a description or some keywords; automatically caption images and
-videos; assist humans in all those repetitive but critical tasks such as video
+videos; assist humans in all those repetitive, yet critical tasks such as video
 surveillance and counter-terrorism; improve human-machine interaction; improve
 the quality of life for visually impaired people.
 
@@ -28,48 +28,49 @@ their ability to store, retrieve and update information across subsequent steps
 of computation. I believe one of the key factors to interpret images is to
 process them in an iterative fashion, keeping trace of every element that can
 be needed for the interpretation of unseen parts of the image. If this is
-important with images, being able to compress and store information to
+important with still images, being able to compress and store information to
 fully understand the semantic of videos is even more crucial.
 
 I firstly addressed the problem of object classification, introducing ReNet, a
-novel model that, in contrast with most of the literature at the time, was
-based on RNNs. The carefully designed interaction between the RNNs allowed the
-model to capture the full context of the image already at the first layer.
-Driven by the positive results and the encouraging interest of the community, I
-addressed the much more challenging task of semantic segmentation, moving from
-classifying one image with an object label to classifying each single pixel of
-the image as being part of one of the provided categories. The proposed ReSeg
-model takes advantage from a similar inner structure as ReNet, further improved
-by the adoption of pretrained CNNs to extract rich local descriptors from the
-images, as well as the addition of transposed convolutional layers to upsample
-the intermediate feature maps in a trainable end-to-end fashion. This model was
-selected by the organizers of the DeepVision Workshop at CVPR 2016 to receive
-the best paper award. Moreover, an extended version of the ReSeg paper with
-more experiments and more in-depth analysis of the properties of the model will
-become a chapter of the upcoming book on the CVPR 2016 DeepVision Workshop.
+novel model that, in contrast with most of the literature at the time, is
+based on 4 intertwined RNNs. The carefully designed interaction between these
+RNNs allowed the model to capture the full context of the image already at the
+first layer. Driven by the positive results and the encouraging interest of
+the community, I addressed the much more challenging task of semantic
+segmentation, moving from classifying one image with an object label to
+classifying each single pixel of the image as being part of one of the provided
+categories. The proposed ReSeg model takes advantage from a similar inner
+structure as ReNet, further improved by the adoption of pretrained CNNs to
+extract rich local descriptors from the images, as well as the addition of
+transposed convolutional layers to upsample the intermediate feature maps in a
+trainable end-to-end fashion. This model was selected by the organizers of the
+DeepVision Workshop at CVPR 2016 to receive the best paper award. Moreover, an
+extended version of the ReSeg paper with more experiments and more in-depth
+analysis of the properties of the model will become a chapter of the upcoming
+book on the CVPR 2016 DeepVision Workshop.
 
 To conclude my analysis of RNN-based model applied to visual data I moved from
 semantic segmentation in images, to semantic segmentation in videos. The
 complexity of the problem in this case is dramatically increased by the lack of
-huge amounts of labeled data that make it more challenging to beat ad-hoc
+large amounts of labeled data that make it more challenging to beat ad-hoc
 hand-engineered classical computer vision methods. Moreover, the training time
 on these datasets is considerably longer and makes experimenting with large
-model slow and in some cases unfeasible. To tackle video segmentation required
-a very careful inspection of every component of the model and an accurate
-planning of the experiments. To address this task I proposed a model that
-merges direct convolutions, transposed convolutions and RNNs in a unique
+model slow and in some cases unfeasible. To deal with video segmentation
+required a very careful inspection of every component of the model and an
+accurate planning of the experiments. To address this task I proposed a model
+that merges direct convolutions, transposed convolutions and RNNs in a unique
 coherent structure. The proposed DEConvLSTM model exploits the speed of CNNs to
-process spacial information and the ability of RNNs to retain information
+process spatial information and the ability of RNNs to retain information
 through several steps of computation. This model proved to be a valid
 architecture for video semantic segmentation, pairing the state of the art on
 one of the historically most used datasets on this task and achieving results
 aligned with the state-of-the-art of the last year on two other datasets with
-just cursory exploration.
+just cursory hyperparameters exploration.
 
 Video semantic segmentation is a hard task to solve, yet it is clearly the next
 milestone for computer vision research. The advancement in hardware and
 software technologies will impact the training speed, which currently
-represents a big impediment to quick experimentation of ideas in many fields,
+represents a big impediment to a quick experimentation of ideas in many fields,
 including video semantic segmentation. Moreover, CNNs are known to be data
 hungry, as proved by the great performance leap that followed the introduction
 of large datasets for object classification~\citep{ILSVRCarxiv14}. Good
@@ -78,19 +79,23 @@ even if the community is beginning to make an effort to fill in the
 gap~\citep[see~e.g.,~][]{Perazzi2016,lin2014microsoft}.
 
 To compensate for the lack of data, a direction of research I intend to
-investigate is to initialize the internal direct convolutions of the DEConvLSTM
-model with pretrained VGG-16 weights, modifying the shape of the ConvLSTM
-layers to mimic those of the VGG-16 model. The performance of the DEConvLSTM
-model could be also improved by, e.g., finetuning on full resolution images (as
-opposed to cropped patches, as done during the rest of the training to keep the
-training time contained inside reasonable limits), adding data augmentation to
-partially address the lack of training data, study new loss functions that
-allow to optimize more closely non-derivable metrics such as IoU, add
-skip-connections between the convolutions and the transposed convolutions
-\emph{inside} the ConvLSTM and TransConvLSTM layers (i.e., connecting the
-inner convolution of one ConvLSTM layer to the inner transposed convolution of
-the corresponding TransConvLSTM layer), and reuse computation exploiting
-similarity in consecutive frames.
+investigate is the initialization of the internal direct convolutions of the
+DEConvLSTM model with pretrained VGG-16 weights, modifying the shape of the
+ConvLSTM layers to mimic those of the VGG-16 model. The performance of the
+DEConvLSTM model could be also improved by finetuning on full resolution
+images, as opposed to cropped patches, as done during the rest of the training
+to keep the training time contained inside reasonable limits. Other possible
+improvements are the addition of data augmentation, to partially address the
+lack of training data, the introduction of new loss functions that allow to
+optimize more closely non-derivable metrics such as IoU and the reuse
+computation exploiting similarity in consecutive frames. Finally another
+interesting improvement would be to add skip-connections between the
+convolutions and the transposed convolutions \emph{inside} the ConvLSTM and
+TransConvLSTM layers (i.e., connecting the inner convolution of one ConvLSTM
+layer to the inner transposed convolution of the corresponding TransConvLSTM
+layer). This is unfortunately non-trivial to implement in most of current
+frameworks for ML, due to very optimized but not always flexible implementation
+of loops, which are a core part of RNNs.
 
 There are many other exciting possible directions of research in this field,
 such as the introduction of temporal attention mechanisms to decouple a coarse
@@ -100,6 +105,6 @@ the ones currently used in image classification~\citep[see, e.g.,~][]{
 szegedy2016inception,he2015deep}; exploiting semi-supervised approaches such as
 predicting the next frame to improve the performance with unlabeled data; train
 in a multi-objective setting, e.g., trying to predict the video segmentation
-and the caption of the video at the same time; use hierarchical
+and the caption of the video at the same time; using hierarchical
 LSTMs~\citep[see, e.g.,~][]{Koutnik-et-al-ICML2014, chung2016hierarchical} to
 better capture the time dependencies between far away frames.
