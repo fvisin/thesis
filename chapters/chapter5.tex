@@ -392,8 +392,37 @@ coming from the skipped connections is always preserved.
 %         original FCN8 are removed.
 % \end{itemize}
 
-
 \subsection{Datasets}\label{sec:deconvLSTM_datasets}
+
+\begin{figure}[t]
+    \centering
+    \includegraphics[width=0.8\columnwidth]{img/deconvLSTM/camvid_gt.jpg}
+    \caption{An example of ground truth segmentation for the CamVid dataset.}
+    \label{fig:deconvlstm_camvid_gt}
+\end{figure}
+
+\begin{figure}[t]
+    \centering
+    \includegraphics[width=\columnwidth]{img/deconvLSTM/gatech_gt.png}
+    \caption{An example of ground truth segmentation for the Gatech dataset.}
+    \label{fig:deconvLSTM_gatech_gt}
+\end{figure}
+
+\begin{figure}[t]
+    \centering
+    \includegraphics[width=0.3\columnwidth]{img/deconvLSTM/davis_gt1.jpg}
+    \includegraphics[width=0.3\columnwidth]{img/deconvLSTM/davis_gt2.jpg}
+    \includegraphics[width=0.3\columnwidth]{img/deconvLSTM/davis_gt3.jpg}\\
+    \includegraphics[width=0.3\columnwidth]{img/deconvLSTM/davis_gt4.jpg}
+    \includegraphics[width=0.3\columnwidth]{img/deconvLSTM/davis_gt5.jpg}
+    \includegraphics[width=0.3\columnwidth]{img/deconvLSTM/davis_gt6.jpg}\\
+    \includegraphics[width=0.3\columnwidth]{img/deconvLSTM/davis_gt7.jpg}
+    \includegraphics[width=0.3\columnwidth]{img/deconvLSTM/davis_gt8.jpg}
+    \includegraphics[width=0.3\columnwidth]{img/deconvLSTM/davis_gt9.jpg}\\
+    \caption{An example of ground truth segmentation for the DAVIS dataset.}
+    \label{fig:deconvlstm_davis_gt}
+\end{figure}
+
 
 \subsubsection{CamVid: Motion-based Video Segmentation}
 \label{sec:deconvLSTM_camvid}
@@ -415,14 +444,6 @@ sequences but has mostly been used for still image semantic segmentation in the
 literature. See~\autoref{fig:deconvlstm_camvid_gt} for a sample with ground
 truth from each of the three sequences.
 
-\begin{figure}[t]
-    \centering
-    \includegraphics[width=0.8\columnwidth]{img/deconvLSTM/camvid_gt.jpg}
-    \caption{An example of ground truth segmentation for the Gatech dataset.}
-    \label{fig:deconvlstm_camvid_gt}
-\end{figure}
-
-
 
 \subsubsection{Gatech: Geometric Context Video Segmentation}
 \label{sec:deconvLSTM_gatech}
@@ -437,13 +458,6 @@ each frame. There are 8 classes in the dataset: \textit{sky}, \textit{ground},
 to learn 3D geometric structure of outdoor video scenes. A sample with ground
 truth segmentation taken from the Gatech dataset can be seen
 in~\autoref{fig:deconvLSTM_gatech_gt}.
-
-\begin{figure}[t]
-    \centering
-    \includegraphics[width=\columnwidth]{img/deconvLSTM/gatech_gt.png}
-    \caption{An example of ground truth segmentation for the Gatech dataset.}
-    \label{fig:deconvLSTM_gatech_gt}
-\end{figure}
 
 
 \subsubsection{DAVIS: Densely Annotated Video Segmentation}
@@ -464,22 +478,6 @@ Finally, the videos are annotated with attributes such as \textit{occlusion},
 were not taken into account when training the DEConvLSTM model on this dataset.
 A ground truth segmentation example for the DAVIS dataset can be seen
 in~\autoref{fig:deconvlstm_davis_gt}.
-
-\begin{figure}[t]
-    \centering
-    \includegraphics[width=0.3\columnwidth]{img/deconvLSTM/davis_gt1.jpg}
-    \includegraphics[width=0.3\columnwidth]{img/deconvLSTM/davis_gt2.jpg}
-    \includegraphics[width=0.3\columnwidth]{img/deconvLSTM/davis_gt3.jpg}\\
-    \includegraphics[width=0.3\columnwidth]{img/deconvLSTM/davis_gt4.jpg}
-    \includegraphics[width=0.3\columnwidth]{img/deconvLSTM/davis_gt5.jpg}
-    \includegraphics[width=0.3\columnwidth]{img/deconvLSTM/davis_gt6.jpg}\\
-    \includegraphics[width=0.3\columnwidth]{img/deconvLSTM/davis_gt7.jpg}
-    \includegraphics[width=0.3\columnwidth]{img/deconvLSTM/davis_gt8.jpg}
-    \includegraphics[width=0.3\columnwidth]{img/deconvLSTM/davis_gt9.jpg}\\
-    \caption{An example of ground truth segmentation for the DAVIS dataset.}
-    \label{fig:deconvlstm_davis_gt}
-\end{figure}
-
 
 % \subsubsection{Change Detection}
 % \label{sssec:changedet}

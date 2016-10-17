@@ -1,5 +1,35 @@
 \chapter*{Abstract}
-\lettrine{A}{bstract} goes here.
+%\lettrine{A}{bstract}
+Machine Learning is a fascinating field of research. In the era of knowledge,
+being able to find the right information in enormous amounts of data (e.g., the
+internet), summarize it in a form that is compact and yet retains all the
+content one is interested in, is a key factor of success or failure in many
+fields. I am particularly interested in applying ML to vision problems because
+we as humans rely heavily on vision for our daily operations. Improvements in
+the technology at our disposal to interpret visual data can have a direct and
+remarkably rapid impact on many practical applications such as assist or
+automate driving; analyze medical images; aid surgeons during surgeries;
+improve the quality of life for visually impaired people.
 
-
-
+This manuscript presents my work on Recurrent Neural Networks and RNN-based
+models applied to visual data, describing three models I proposed, namely
+ReNet, ReSeg and DEConvLSTM. The first is a RNN-based alternative to CNNs for
+object classification. The carefully designed interaction between the RNNs
+allows the model to capture the full context of the image in just one layer as
+opposed to the many layers typically required by CNN-based models. The
+evolution of this model for semantic segmentation, called ReSeg, takes
+advantage from a similar inner structure as ReNet, further improved by the
+adoption of pretrained CNNs as well as the addition of transposed convolutional
+layers. This model was selected as the best paper by the organizers of the
+DeepVision Workshop at CVPR 2016, and an extended version of this work will
+become a chapter of the upcoming book on the CVPR 2016 DeepVision Workshop.
+Finally, the DEConvLSTM architecture addresses the much harder task of semantic
+segmentation in videos. To address this task I proposed a model that merges
+direct convolutions, transposed convolutions and RNNs in a unique coherent
+structure. The DEConvLSTM model exploits the speed of CNNs to process spacial
+information and the ability of RNNs to retain information through several steps
+of computation, and proved to be a valid architecture for video semantic
+segmentation. For each model the architecture is first presented in detail,
+followed by a description of the experimental settings and of the datasets used
+to evaluate the model. Finally, the results on each dataset are compared to the
+state-of-the-art and discussed thoroughly.
