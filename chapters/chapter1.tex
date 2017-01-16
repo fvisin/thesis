@@ -27,17 +27,17 @@ jobs dates back to the '60s, if not before. We are still not at that point,
 although in the last decade the field experienced outstanding advancements and
 has been the object of increasing interest.
 
-Artificial intelligence (AI) is a broad field that aims to develop intelligent
+Artificial Intelligence~(AI) is a broad field that aims to develop intelligent
 software that can for instance acquire knowledge from its interaction with the
 world, find optimized strategies for problem solving, automate tasks, detect
 patterns in audio, video and textual data, play games, drive cars and much
 more. Machine Learning (ML), a subset of artificial intelligence, set the
-state-of-art in many fields, such as e.g., image classification~\cite{
+state-of-art in many fields, such as e.g., image classification~\citep{
 Krizhevsky-2012,szegedy2016inception,visin2015renet}, semantic
-segmentation~\cite{chen2015semantic, Visin_2016_CVPR_Workshops}, video
+segmentation~\citep{chen2015semantic, Visin_2016_CVPR_Workshops}, video
 understanding~\citep{srivastava2015unsupervised, Xu-et-al-arxiv2015}, natural
 language processing and machine translation~\citep{Bahdanau-et-al-arxiv2014}.
-Much of this research is already in commercial products we use every day, such
+Much of this research already led to commercial products we use every day, such
 as e.g., speech recognition and speech synthesis in phones, face detection in
 cameras and social networks, or traffic signs enhancement in cars. Even more
 impressively, a ML algorithm recently won several games of go~\citep{
@@ -73,18 +73,18 @@ CNN-based model presented in~\cite{Krizhevsky-2012} improved the state of the
 art by $10\%$. Since then, CNNs-based models dominated the object
 classification panorama.
 
-In~\cite{visin2015renet} my co-authors and I presented ReNet, an alternative to
-the ubiquitous CNNs for object classification. Our model is based on 4 RNNs
-that scan the image in 4 directions. RNNs have the potential to store in their
-memory any information that is relevant to retain the context of the part of
-the image they have seen up to that moment. The first two RNNs scan each line
-of the image reading one pixel (or patch, depending on the configuration) at
-the time from left to right and from right to left, respectively. The two
-resulting feature maps (i.e., output of each of these RNNs) are concatenated in
-each position over the channel axis, yielding a composite feature map where
-each position has information on the context of the full row as, in each
-position, it is a concatenation of an RNN reaching the position from the right
-and of an RNN reaching the same position from the left.
+In~\cite{visin2015renet} I presented ReNet, an alternative to the ubiquitous
+CNNs for object classification. The model is based on 4 RNNs that scan the
+image in 4 directions. RNNs have the potential to store in their memory any
+information that is relevant to retain the context of the part of the image
+they have seen up to that moment. The first two RNNs scan each line of the
+image reading one pixel (or patch, depending on the configuration) at a time
+from left to right and from right to left, respectively. The two resulting
+feature maps (i.e., output of each of these RNNs) are concatenated in each
+position over the channel axis, yielding a composite feature map where each
+position has information on the context of the full row as, in each position,
+it is a concatenation of an RNN reaching the position from the right and of an
+RNN reaching the same position from the left.
 
 The second two RNNs sweep over the composite feature map vertically, top-down
 and bottom-up respectively. By reading the composite feature map, each RNN has
@@ -100,10 +100,10 @@ CNN state-of-the-art on three widely used datasets.
 
 Encouraged by the results of ReNet and the positive feedback from the
 scientific community, I worked on a second model based on ReNet, to perform
-fine-grained Object Segmentation (i.e., to classify each pixel of the image as
+fine-grained object segmentation (i.e., to classify each pixel of the image as
 belonging to a specific class). Being able to classify objects without losing
 information on their position in the image can be exploited to allow very
-precise pixel-level Object Localization, which is essential to many
+precise pixel-level object localization, which is essential to many
 applications and to a proper understanding of the image.
 
 ReSeg~\citep{Visin_2016_CVPR_Workshops} takes advantage of the inner structure
@@ -117,8 +117,10 @@ this results in an intermediate feature map that has a smaller resolution
 than the image. To be able to classify each pixel, the original resolution has
 to be recovered. Thus, one or more transposed convolutional layers~\citep{
 dumoulin2016guide} upsample the feature map to the desired size. ReSeg obtained
-state-of-the-art on three datasets and won the best paper award at the
-DeepVision Workshop at CVPR 2016.
+state-of-the-art on three datasets and was selected for the best paper award at
+the DeepVision Workshop at CVPR 2016. Furthermore, an extended version of this
+work will become a chapter of the upcoming book on the CVPR 2016 DeepVision
+Workshop.
 
 The natural next step in the direction of visual scene understanding is the
 processing of videos to exploit the temporal correlation between frames and
@@ -126,18 +128,19 @@ improve the performance of the algorithm. It is not trivial to work with videos
 in the domain of semantic segmentation: big enough dataset are still lacking
 due to the very high cost of labelling each pixel of each frame of a video; in
 many cases labels are imprecise and noisy, or missing a well defined semantic
-(e.g. the classes "porous" and "vertical mix" are difficult to define
-unequivocally), which makes learning harder. Still, it is a challenging but
-important problem to tackle and there seems to be room for improvement with
-respect to the current state of the art on the path traced by ReSeg. The
-proposed model combines the benefits of CNNs -- namely the exploitation of the
-topological structure in the images and the processing speed -- and the ability
-to retain temporal and spatial context information of RNNs. The idea builds
-on~\cite{ xingjian2015convolutional} that introduced an RNN model whose
-internal state is convolutional. We improved on the original model by stacking
-several convolutions inside the RNN state (as opposed to only one) and by
-introducing a \emph{deconvolutional RNN}, whose state is a stack of multiple
-transposed convolutions. This model achieved so far comparable results with the
+(e.g. the classes "porous" and "vertical mix" of the Gatech dataset described
+in \autoref{sec:deconvLSTM_gatech}) are difficult to define unequivocally,
+which makes learning harder. Still, it is a challenging but important problem
+to tackle and there seems to be room for improvement with respect to the
+current state of the art on the path traced by ReSeg. The proposed model
+combines the benefits of CNNs -- namely the exploitation of the topological
+structure in the images and the processing speed -- and the ability to retain
+temporal and spatial context information of RNNs. The idea builds on~\cite{
+    xingjian2015convolutional} that introduced an RNN model whose internal
+state is convolutional. We improved on the original model by stacking several
+convolutions inside the RNN state (as opposed to only one) and by introducing a
+\emph{deconvolutional RNN}, whose state is a stack of multiple transposed
+convolutions. This model achieved so far comparable results with the
 state-of-the-art on one datasets and encouraging results on two others.
 
 % As future steps for this research, I plan to conclude the video segmentation
@@ -155,7 +158,7 @@ state-of-the-art on one datasets and encouraging results on two others.
 \section{Main contributions}
 The main contribution of my research have been the analysis of RNN-based
 models in the context of visual data. The ReNet model proved to be an effective
-alternative to the ubiquitous CNNs for object classification and draw the
+alternative to the ubiquitous CNNs for object classification and drew the
 attention of the research community. The subsequent ReSeg model tackled with
 success the much harder problem of semantic segmentation, where a fine-grained
 understanding of the image structure has to be gained. This paper was selected

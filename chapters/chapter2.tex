@@ -7,30 +7,31 @@ to tackle problems by detecting patterns and regularities in the training data
 and trying to generalize this extracted knowledge to new, unseen data.
 Among its many powerful tools, artificial neural networks are models that take
 inspiration from what is known about the human brain, by mimicking its
-connectivity patterns, learning rules and signals propagation, under the
+connectivity patterns, learning rules and signal propagation, under the
 constraints imposed by our limited knowledge of the brain and the intrinsically
 different "hardware" at our disposal.
 
 While it is beyond the scope of this document to give a formal and in-depth
-introduction to every concept needed to fully comprehend Machine Learning,
+introduction to every concept needed to fully comprehend machine learning,
 the following sections will introduce Artificial Neural Networks (ANNs), with a
 specific focus on two of the most used kinds of neural networks i.e.,
 Convolutional Neural Networks (CNNs) and Recurrent Neural Networks (RNNs). The
-interested reader can find a more detailed overview of Machine Learning
-in~\cite{bishop-book2006,Goodfellow-et-al-2016-Book}
+interested reader can find a more detailed overview of machine learning and of
+its subfield deep learning in the books by~\cite{bishop-book2006} and
+\cite{Goodfellow-et-al-2016-Book} respectively.
 
 %================================== SECTION ==================================
 \section{Artificial neural networks}\label{sec:NN}
 Biological brains are composed by a large number of simple elements, called
 neurons, that are highly interconnected. The number of neurons in the human
 brain is estimated to be around $10^{11}$, each one connected to a little less
-than $10^{4}$ other neurons, for a total between $10^{14}$ and $10^{15}$
-synapses~\cite{drachman2005we}. The activity of each of these either excites or
-inhibits the surrounding neurons it is connected to, generating a complex
-network of interactions. Artificial Neural Networks (ANNs) take inspiration
-from this understanding of the human brain, building networks composed of many
-artificial neurons, small elements that perform very simple operations on their
-inputs.
+than $10^{4}$ other neurons, resulting in a total between $10^{14}$ and
+$10^{15}$ synapses~\citep{drachman2005we}. The activity of each of these either
+excites or inhibits the surrounding neurons it is connected to, generating a
+complex network of interactions. Artificial Neural Networks (ANNs) take
+inspiration from this understanding of the human brain, building networks
+composed of many artificial neurons, small elements that perform very simple
+operations on their inputs.
 
 \subsection{Brief history of neural networks}
 In 1943 McCulloch and Pitts defined a mathematical model of how a biological
@@ -66,19 +67,20 @@ exhibit the desired behavior~\citep{Rosenblatt57}.
 \end{figure}
 
 The activation rule of the perceptron is very simple and is at the base of many
-modern neural networks. Given an $n$-dimensional input $\mathbf{x}$, the
-weighted sum of each dimension of the input $x_i$ and its corresponding weight
-$w_i$ -- often referred to as \emph{preactivation} -- is computed as
+modern neural networks. Given an $n$-dimensional input $\mathbf{x = (x_1,
+\dots, x_n)}$, the weighted sum of each dimension of the input $x_i$ and its
+associated weight $w_i$ is computed as
 
 \begin{equation*}
     z = \sum_{i=1}^{n}(w_i \cdot x_i) + b,
 \end{equation*}
 
-\noindent where to simplify the notation the bias term $b$ has been replaced
-by an equivalent input term $x_0=1$ weighted by $w_0$. Note that this is simply
-the dot product of the weight vector $\mathbf{w}$ and the input vector
-$\mathbf{x}$. The result of this first affine transformation is then passed
-through a step function of the form
+\noindent where the weight $w_i$ is often referred to as \emph{preactivation}
+and to simplify the notation the bias term $b$ will often be replaced by an
+equivalent input term $x_0=1$ weighted by $w_0=b$. Note that this is simply the
+dot product of the weight vector $\mathbf{w = (w_1, \dots, w_n)}$ and the input
+vector $\mathbf{x}$. The result of this first affine transformation is then
+passed through a step function of the form
 \begin{equation*}
     y =
         \begin{cases}
@@ -98,18 +100,19 @@ them to a different class.
 
 The behavior of the Perceptron is indeed remarkable, but the biggest innovation
 of~\cite{Rosenblatt57} is most probably the update algorithm that allowed one
-to modify the weights of the model. The weights and the bias -- also called the
-\emph{parameters} of the network -- are \emph{learned} according to the
-following rule:
+to modify the weights of the model. Given a training pair $(\mathbf{x}, y)$
+consisting of an input and its corresponding desired output, the weights and
+the bias -- also called the \emph{parameters} of the network -- are
+\emph{learned} according to the following rule:
 
 \begin{equation}\label{eq:perceptron_lr}
-    w_i^{\text{new}} = w_i^{\text{old}} + \eta \cdot (\hat {y} - y) \cdot x_i,
+    w_i^{\text{new}} = w_i^{\text{old}} - \eta \cdot (\hat {y} - y) \cdot x_i,
 \end{equation}
 
-\noindent where $\hat y$ is the target (i.e., desired) value, $y$ is the output
-of the Perceptron, $x_i^t$ and $w_i^t$ are respectively the $i$-th input and
-weight at time $t$ and $\eta$ is a scaling factor that allows to adjust the
-magnitude by which the weights are modified.
+\noindent where $\hat y$ is the output of the Perceptron, $y$ is the target
+(i.e., desired) value, $x_i$ and $w_i^{\text{old}}$ are respectively the $i$-th
+input and weight at the previous iteration and $\eta$ is a scaling factor that
+allows to adjust the magnitude by which the weights are modified.
 
 The introduction of a model that could learn from data
 %This discovery
@@ -120,12 +123,12 @@ Perceptron, demonstrating that a single layered Perceptron could not model
 basic operations like the XOR logic operation~\citep{Minsky69}. The limit of
 Perceptrons is that they can only solve linearly separable problems, and fail
 at tackling nonlinearly separable problems like the
-XOR~(see~\autoref{fig:XOR}). This is not the case for MultiLayer
+XOR~(see~\autoref{fig:XOR}). This is not the case for Multi-Layer
 Perceptrons~(MLP, depicted in~\autoref{fig:MLP}), an evolution of Perceptrons
 that introduces one or more intermediate layers (called \emph{hidden layers})
-between the input and the output. Since each of these layers is followed by a
-nonlinearity, the result is a nonlinear transformation that projects the input
-into a linearly separable space.
+between the input and the output. Since Since in each of these layers the
+preactivation is followed by a nonlinearity, the result is a nonlinear
+transformation that can project the input into a linearly separable space.
 
 \begin{figure}[t]
     \centering
@@ -227,9 +230,9 @@ into a linearly separable space.
 
 The excessive enthusiasm for the early successes of ANNs turned into strong
 disappointment: even if~\cite{Minsky69} showed that an MLP could model the XOR
-bitwise operation, it also pointed out that Rosenblatt's learning algorithm was
-limited to single layered Perceptrons and could not autonomously learn how to
-solve the problem. The expectation of an artificial intelligence that could
+bitwise operation, they also pointed out that Rosenblatt's learning algorithm
+was limited to single layered Perceptrons and could not autonomously learn how
+to solve the problem. The expectation of an artificial intelligence that could
 learn by itself to solve problems and interact with humans appeared suddenly
 unrealistic and most of the research community lost interest in ANNs. The field
 experienced a severe slow down and most of the fundings were cut.
@@ -239,7 +242,7 @@ model of human memory that did not only give insights on how the brain works,
 but was also useful in practical applications and had a sound and detailed
 mathematical grounding. At the same time, at the US-Japan Joint Conference on
 Cooperative/Competitive Neural Networks, Japan announced a renewed effort in
-building Neural Networks and the fear that the US might be left behind renewed
+building neural networks and the fear that the US might be left behind renewed
 their effort on this topic.
 
 The breakthrough that completely restored the interest in the field came in
@@ -247,9 +250,9 @@ The breakthrough that completely restored the interest in the field came in
 algorithm~\citep{Linnainmaa70,Werbos74} that allowed to train ANNs composed by
 multiple layers by performing gradient descent~(see \autoref{sec:backprop}).
 However once again the expectation was set too high and AI was expected to
-allow to do things like translate languages, carry on conversations and
-interpret pictures. In late 80s and early 90s AI fundings were cut again when
-those very high demands had not been attended.
+allow to do things like translating languages, carring on conversations and
+interpreting pictures. In late 80s and early 90s AI fundings were cut again
+when those very high demands had not been attended.
 
 Despite that, many researcher were convinced by then of the potential of AI
 and kept working on it. By 2006 ANNs established the state of the art in many
@@ -291,8 +294,8 @@ study and innovation.
 Perceptron in~\autoref{fig:perceptron}, the MLP has multiple hidden layers,
 where each neuron of one hidden layer is connected to all the neurons of the
 previous and the next layer. Each connection from the $i$-th neuron of layer
-$l-1$ to the $j$-th neuron of layer $(l)$ is associated to a weight
-$w_{ij}^{(l)}$, and all the weights are stored in a matrix $\mathbf{W}$.
+$l-1$ to the $j$-th neuron of layer $l$ is associated to a weight
+$w_{ij}^{(l)}$, and all the weights are stored in a matrix $\mathbf{W^{(l)}}$.
 
 Similarly to the Perceptron case, each layer computes an affine transformation
 
@@ -300,19 +303,19 @@ Similarly to the Perceptron case, each layer computes an affine transformation
     \mathbf{z}^{(l)} = \mathbf{W}^{(l)} \cdot \mathbf{a}^{(l-1)},
 \end{equation}
 
-\noindent followed by a nonlinearity -- usually more smooth than the one
-used in the Perceptron -- called \emph{activation function}
+\noindent followed by a nonlinearity $\sigma$ -- usually more smooth than the
+one used in the Perceptron -- called \emph{activation function}
 
 \begin{equation}\label{eq:MLP_activation}
     \mathbf{a}^{(l)} = \sigma(\mathbf{z}^{(l)}).
 \end{equation}
 
 One hidden layer can thus be seen as a function $h^{(l)}$ that depends on some
-\emph{parameters} -- namely the vector of weights $\mathbf{w}^{(l)}$ and the
-bias of the layer $b^{(l)}$ -- as well as some \emph{hyperparameters}, such as
-the number of neurons and the choice of activation function. It is common
-to denote the set of trainable parameters that fully characterize a layer as
-$\boldsymbol{\theta}$.
+\emph{parameters} specific to that layer -- namely a matrix of weights
+$\mathbf{w}^{(l)}$ and the bias vector $b^{(l)}$ -- as well as some
+\emph{hyperparameters}, such as the number of neurons and the choice of
+activation function. It is common to denote the set of trainable parameters
+that fully characterize a layer as $\boldsymbol{\theta^{(l)}}$.
 
 The processing performed by the hierarchy of layers of the MLP results in the
 output vector $\mathbf{y}$ and is equivalent to a composition of multiple
@@ -321,7 +324,7 @@ functions
 \begin{equation}\label{eq:fn_composition}
     \textbf{y} = h^{(L)}_{\boldsymbol{\theta}} \composition
         h^{(L-1)}_{\boldsymbol{\theta}} \composition
-        \dots \composition h^{(1)}_{\boldsymbol{\theta}},
+        \dots \composition h^{(1)}_{\boldsymbol{\theta}}.
 \end{equation}
 
 \noindent Although very common and widely used, the MLP is not the only
@@ -371,7 +374,8 @@ section.
             node[below = 1.2em of a.east, anchor=east] {$Leaky ReLU(z)$};
     \end{tikzpicture}
     \caption{Some of the most common activation functions: sigmoid, tanh, ReLU
-        and Leaky ReLU. Best viewed in colors.\label{fig:activations}}
+        and Leaky ReLU. ReLU and Leaky ReLU are overlapping for $z \geq 0$.
+        Best viewed in colors.\label{fig:activations}}
 \end{figure}
 
 The activation function is one of the most important component of an ANN. As
@@ -403,14 +407,15 @@ negative numbers it asymptotes to $0$ while for large positive numbers it
 asymptotes to $1$. It is defined as
 
 \begin{equation}\label{eq:logistic}
-    logistic(\mathbf{z}) = \frac{1}{1+\exp(-\mathbf{z})},
+    logistic(\mathbf{z}) = \frac{1}{1+\exp(-\mathbf{z})}.
 \end{equation}
 
 \noindent The logistic function has probably been the most used nonlinearity
-historically due to its possible interpretation as the firing rate of a neuron
-given its potential (i.e., the level of excitement provoked by its incoming
-spikes): when the potential is low the neuron fires less often whereas when the
-potential is high the frequency of the spikes increases.
+historically due to its possible interpretation as the firing rate of a neuron,
+or its probability to fire, given its potential (i.e., the level of excitement
+provoked by its incoming spikes): when the potential is low the neuron fires
+less often whereas when the potential is high the frequency of the spikes
+increases.
 
 Another very important property of the logistic function is that it is very
 fast to compute its derivative, once solved analytically:
@@ -435,8 +440,8 @@ The use of the logistic function is not as widespread as it used to be though,
 due to two major drawbacks:
 \begin{itemize}
     \item \emph{Saturation kills the gradient:}
-        backpropagation~\autoref{sec:backprop} relies on the gradient of the
-        error to determine the parameters update. The logistic function
+        backpropagation~(see~\autoref{sec:backprop}) relies on the gradient of
+        the error to determine the parameters update. The logistic function
         saturates at both ends, resulting in a very small or zero gradient.
         This problem -- often referred to as~\emph{vanishing gradient} -- makes
         training very slow or prevents it in some cases. This also makes the
@@ -445,10 +450,10 @@ due to two major drawbacks:
         logistic function is close to zero.
     \item \emph{The output is not zero-centered:} the dynamics of ANNs are
         usually complex and difficult to inspect, but it is widely believed
-        that normalizing (i.e., zero-centered with unit variance) the
-        intermediate activations of the network helps
-        training~(\cite{Ioffe+Szegedy-2015,Laurent2015,arpit2016normalization,
-        cooijmans2016recurrent}). The output of the logistic function is always
+        that normalizing the intermediate activations of the network (i.e., to
+        zero-center their mean and impose unit variance) helps
+        training~\citep{Ioffe+Szegedy-2015,Laurent2015,arpit2016normalization,
+        cooijmans2016recurrent}. The output of the logistic function is always
         positive, which causes the mean activation to be non-zero. This could
         introduce undesirable dynamics that could slow down or prevent
         training.
@@ -470,8 +475,8 @@ by small amounts, thanks to its codomain. It is defined as
 
 \subsubsection{Rectified Linear Unit (ReLU)}\label{sec:relu}
 Since its introduction, the Rectified Linear Unit
-(ReLu)~\cite{Jarrett-ICCV2009-small,Nair+Hinton-2010} has become the
-nonlinearity of choice in many applications~\cite{Krizhevsky-2012,
+(ReLu)~\citep{Jarrett-ICCV2009-small,Nair+Hinton-2010} has become the
+nonlinearity of choice in many applications~\citep{Krizhevsky-2012,
 LeCun-et-al-Nature2015,Glorot+al-AI-2011-small}. It is defined as
 
 \begin{equation}\label{eq:relu}
@@ -516,28 +521,30 @@ drawbacks:
         ever being active again. In this case every input will put the ReLU
         unit on the flat zero side. This will prevent any gradient flow and the
         unit will never leave this state becoming \emph{de~facto} "dead". This
-        can be alleviated using a lower learning rate or choosing some
+        can be alleviated by using a lower learning rate or choosing some
         modification of ReLU less sensitive to this problem.
 \end{itemize}
 
 \subsubsection{Leaky Rectified Linear Unit (Leaky ReLU)}\label{sec:lrelu}
 Leaky ReLUs are one of the most adopted alternatives to ReLUs. They have been
 proposed as a way to alleviate the dying units problem of ReLUs, by preventing
-the unit from saturating allowing a small gradient to always flow through the
-unit, potentially recovering extreme values of the weights. Leaky ReLUs are
+the unit from saturating thus allowing a small gradient to always flow through
+the unit, potentially recovering extreme values of the weights. Leaky ReLUs are
 defined as
 
 \begin{equation}\label{eq:lrelu}
-    leaky\_relu(\mathbf{z}) = max(\beta*\mathbf{z}, \mathbf{z}).
+    leaky\_relu(\mathbf{z}) = max(\beta*\mathbf{z}, \mathbf{z}),
 \end{equation}
+
+\noindent where $\beta$ is a small constant.
 
 \subsubsection{Softmax}\label{sec:softmax}
 One peculiar nonlinearity that deserves a particular mention is the softmax.
 This function differs from the previously described activations in that it
-does not only depend on the value of one dimension (or neuron), but rather on
-that of all the dimensions (or neurons) in the layer. The softmax is a
-\emph{squashing~function} that maps its input to a categorical distribution.
-It is defined as
+does not only depend on the value of the preactivation in one dimension (i.e.,
+the value of one unit), but rather on the preactivation in all the dimensions
+altogether. The softmax is a \emph{squashing~function} that maps its input to a
+categorical distribution. It is defined as
 
 \begin{equation}\label{eq:softmax}
     softmax(z_i) = \frac{\exp(z_i)}{\sum_{k=0}^K{\exp(z_k)}},
@@ -604,7 +611,7 @@ other classes.
     \caption{The behaviour of softmax as temperature $T$ grows. The plots have
         been obtained considering a bidimensional input setting where the
         preactivation associated to the second class $z_1$ is always $1$. As
-        $T$ increases, the function becomes steeper.\label{fig:softmax}}
+        $T$ decreases, the function becomes steeper.\label{fig:softmax}}
 \end{figure}
 
 \subsection{Backpropagation}\label{sec:backprop}
@@ -638,7 +645,7 @@ minimize some error
 
 \begin{equation}
     %w_{ij}^{(l)} = w_{ij}^{(l)} + \eta \frac{\partial E}{\partial w_{ij}^{(l)}}
-    \mathbf{W} = \mathbf{W} + \eta \frac{\partial E}{\partial \mathbf{W}},
+    \mathbf{W} = \mathbf{W} - \eta \frac{\partial E}{\partial \mathbf{W}},
 \end{equation}
 
 \noindent where $\eta$ is a scaling factor typically referred to as
@@ -647,62 +654,62 @@ minimize some error
 It is easier to understand backpropagation with a practical example. Consider
 once again~\autoref{fig:MLP}: the network processes a bidimensional input
 $\mathbf{x}$ and, after three layers of affine transformations followed by
-nonlinearities, returns a unidimensional value $\mathbf{y}$. The correct output
-$\mathbf{\hat y}$ is given and is used to compute the error, or~\emph{cost},
-with some \emph{differentiable} metric. For this example consider the
-mean squared error (MSE)
+nonlinearities, returns a unidimensional value $\mathbf{\hat y}$. The correct
+output $\mathbf{y}$ is given and is used to compute the error, or~\emph{cost},
+with some \emph{differentiable} metric. For this example consider the mean
+squared error (MSE)
 
 \begin{equation}\label{eq:MSE}
-    E_{mse} = \frac{1}{M} \sum_{\mathcal{D}}\frac{1}{2}(\mathbf{\hat y} - \mathbf{y})^2,
+    E_{mse} = \frac{1}{M} \sum_{\mathcal{D}}\frac{1}{2}(\mathbf{y} - \mathbf{\hat y})^2,
 \end{equation}
 
 \noindent the summation is done over a dataset $\mathcal{D}$ of $M$ samples,
 each composed by an input $\mathbf{x}$ and its associated desired output
-$\mathbf{\hat y}$. $\mathbf{y}$ is used as a compact notation for
-$\mathbf{y(x)}$ and represents the output of the network for one input sample
+$\mathbf{y}$. $\mathbf{\hat y}$ is used as a compact notation for
+$\mathbf{\hat y(x)}$ and represents the output of the network for one input sample
 $\mathbf{x}$.
 
 It is possible to compute the fraction of the error that can be attributed to
 each neuron of the network by taking the derivative of the error with respect
-to its weights
+to it
 
 \begin{align}\label{eq:backprop_step1}
 \begin{split}
     \frac{\partial E_{mse}}{\partial w_{ij}^{(l)}} &=
     \frac{\partial}{\partial w_{ij}^{(l)}}\left(
         \frac{1}{m}\sum_{\mathcal{D}}\left[
-        \frac{1}{2}(\mathbf{\hat y} - \mathbf{y})^2\right]\right) \\
+        \frac{1}{2}(\mathbf{y} - \mathbf{\hat y})^2\right]\right) \\
     &= \frac{1}{m}\sum_{\mathcal{D}} \left[\frac{1}{2}
         \frac{\partial}{\partial w_{ij}^{(l)}}
-        \left(\mathbf{\hat y} - \mathbf{y}\right)^2\right] \\
-    &= \frac{1}{m}\sum_{\mathcal{D}}\left[(\mathbf{\hat y} - \mathbf{y})
-        \cdot \frac{\partial}{\partial w_{ij}^{(l)}}(-\mathbf{y})\right] \\
+        \left(\mathbf{y} - \mathbf{\hat y}\right)^2\right] \\
+    &= \frac{1}{m}\sum_{\mathcal{D}}\left[(\mathbf{y} - \mathbf{\hat y})
+        \cdot \frac{\partial}{\partial w_{ij}^{(l)}}(-\mathbf{\hat y})\right] \\
 \end{split}
 \end{align}
 
 Backpropagation allows one to compute the partial derivative
-$\frac{\partial}{\partial w_{ij}^{(l)}}(-\mathbf{y})$
+$\frac{\partial}{\partial w_{ij}^{(l)}}(-\mathbf{\hat y})$
 exploiting the chain rule of derivation. Consider e.g., the weights of the
 second layer $\mathbf{W}^{(2)}$
 
 \begin{align}\label{eq:backprop_step2}
 \begin{split}
-    -\frac{\partial\mathbf{y}}{\partial \mathbf{W}^{(2)}} &=
-        -\frac{\partial \mathbf{y}}     {\partial \mathbf{z}^{(4)}} \cdot
+    -\frac{\partial\mathbf{\hat y}}{\partial \mathbf{W}^{(2)}} &=
+        -\frac{\partial \mathbf{\hat y}}{\partial \mathbf{z}^{(4)}} \cdot
         \frac{\partial \mathbf{z}^{(4)}}{\partial \mathbf{W}^{(2)}} \\
-    &= -\frac{\partial \mathbf{y}}      {\partial \mathbf{z}^{(4)}} \cdot
+    &= -\frac{\partial \mathbf{\hat y}} {\partial \mathbf{z}^{(4)}} \cdot
         \frac{\partial \mathbf{z}^{(4)}}{\partial \mathbf{a}^{(3)}} \cdot
         \frac{\partial \mathbf{a}^{(3)}}{\partial \mathbf{W}^{(2)}} \\
-    &= -\frac{\partial \mathbf{y}}      {\partial \mathbf{z}^{(4)}} \cdot
+    &= -\frac{\partial \mathbf{\hat y}} {\partial \mathbf{z}^{(4)}} \cdot
         \frac{\partial \mathbf{z}^{(4)}}{\partial \mathbf{a}^{(3)}} \cdot
         \frac{\partial \mathbf{a}^{(3)}}{\partial \mathbf{z}^{(3)}} \cdot
         \frac{\partial \mathbf{z}^{(3)}}{\partial \mathbf{W}^{(2)}} \\
-    &= -\frac{\partial \mathbf{y}}      {\partial \mathbf{z}^{(4)}} \cdot
+    &= -\frac{\partial \mathbf{\hat y}} {\partial \mathbf{z}^{(4)}} \cdot
         \frac{\partial \mathbf{z}^{(4)}}{\partial \mathbf{a}^{(3)}} \cdot
         \frac{\partial \mathbf{a}^{(3)}}{\partial \mathbf{z}^{(3)}} \cdot
         \frac{\partial \mathbf{z}^{(3)}}{\partial \mathbf{a}^{(2)}} \cdot
         \frac{\partial \mathbf{a}^{(2)}}{\partial \mathbf{W}^{(2)}} \\
-    &= -\frac{\partial \mathbf{y}}      {\partial \mathbf{z}^{(4)}} \cdot
+    &= -\frac{\partial \mathbf{\hat y}} {\partial \mathbf{z}^{(4)}} \cdot
         \frac{\partial \mathbf{z}^{(4)}}{\partial \mathbf{a}^{(3)}} \cdot
         \frac{\partial \mathbf{a}^{(3)}}{\partial \mathbf{z}^{(3)}} \cdot
         \frac{\partial \mathbf{z}^{(3)}}{\partial \mathbf{a}^{(2)}} \cdot
@@ -711,21 +718,33 @@ second layer $\mathbf{W}^{(2)}$
 \end{split}
 \end{align}
 
-\noindent From \autoref{eq:MLP_affine} and \autoref{eq:MLP_activation} follows
+\noindent Since $\partial\sigma(\mathbf{a})=\sigma' \hadamard
+\partial\mathbf{a}$, from \autoref{eq:MLP_affine} and
+\autoref{eq:MLP_activation} follows
 
 \begin{equation}\label{eq:backprop_step3}
-    -\frac{\partial\mathbf{y}}{\partial \mathbf{W}^{(2)}} =
-    -\sigma'(\mathbf{z}^{(4)}) \cdot
-        \mathbf{W}^{(4)} \cdot
-        \sigma'(\mathbf{z}^{(3)}) \cdot
-        \mathbf{W}^{(3)} \cdot
-        \sigma'(\mathbf{z}^{(2)}) \cdot
-        \mathbf{a}^{(1)},
+    -\frac{\partial\mathbf{\hat y}}{\partial \mathbf{W}^{(2)}} =
+        \sigma'(\mathbf{z}^{(4)}) \hadamard \mathbf{W}^{(4)} \cdot
+        \sigma'(\mathbf{z}^{(3)}) \hadamard \mathbf{W}^{(3)} \cdot
+        \sigma'(\mathbf{z}^{(2)}) \hadamard \mathbf{a}^{(1)^T},
 \end{equation}
 
-\noindent where $\sigma'$ can be computed analytically and depends on the
-activation function of choice (see e.g.~\autoref{eq:logistic_derivative} and
-\autoref{eq:relu_derivative})
+\noindent where $\mathbf{a} \hadamard \mathbf{b}$ represents the elementwise
+product of two vectors $\mathbf{a}$ and $\mathbf{b}$, also known as the
+Hadamard product. By applying the rule $\mathbf{A} \cdot (\mathbf{B} \hadamard
+\mathbf{C}) = (\mathbf{A} \hadamard \mathbf{B}) \cdot \mathbf{C}$,
+\autoref{eq:backprop_step3} can be rewritten as
+
+\begin{equation}\label{eq:backprop_step4}
+    -\frac{\partial\mathbf{\hat y}}{\partial \mathbf{W}^{(2)}} =
+        \sigma'(\mathbf{z}^{(4)}) \hadamard \mathbf{W}^{(4)} \cdot
+        \sigma'(\mathbf{z}^{(3)}) \hadamard \mathbf{W}^{(3)} \cdot
+        \sigma'(\mathbf{z}^{(2)}) \hadamard \mathbf{a}^{(1)}.
+\end{equation}
+
+Note that $\sigma'$ can be computed analytically and depends on the activation
+function of choice (see e.g.~\autoref{eq:logistic_derivative} and
+\autoref{eq:relu_derivative}).
 
 % The rest of this chapter will focus on two very common kinds of ANNs
 % respectively characterized by a feedforward and feedback connectivity pattern,
@@ -749,19 +768,20 @@ ImageNet image classification challenge~\citep{krizhevsky2012imagenet}.
 % \end{figure}
 %
 \autoref{sec:MLP} introduced MLPs, a powerful and very common ANN architecture
-that computes an affine transformation of its inputs followed by an activation
-function. One property of MLPs is that they are dense, in the sense that they
-often connect all the units of one layer to all the units of the next layer
-(often referred to as being \emph{fully connected}). When the input has a
-structure, a dense connectivity pattern might be wasteful and it is usually
-preferable to be able to exploit the data structure. The reason for this is
-twofold: first, adapting the connectivity pattern to the structure of the data
-reduces the number of operations performed by the network and, consequently,
-the computation time; second, constraining the connectivity pattern has the
-effect of forcing the network to focus on what is important, yielding faster
-training and better performance.
+that computes at each layer an affine transformation of its inputs followed by
+an activation function. One property of MLPs is that they are dense, in the
+sense that they often connect all the units of one layer to all the units of
+the next layer (often referred to as being \emph{fully connected}). When the
+input has a structure, a dense connectivity pattern might be wasteful and it is
+usually preferable to be able to exploit the data structure. The reason for
+this is twofold: first, adapting the connectivity pattern to the structure of
+the data reduces the number of parameters and of operations performed by the
+network and, consequently, the memory usage and the computation time; second,
+constraining the connectivity pattern can have the effect of forcing the
+network to focus on what is important, yielding faster training and better
+performance.
 
-Convolutional neural networks (CNNs) are an example of a model that exploits
+Convolutional neural networks (CNNs) are an example of models that exploit
 the structure of the data. The intuition behind CNNs is that many kinds of data
 -- such as images or audio clips -- have a \emph{local} topological structure
 that does not depend on the specific location in the global reference system.
@@ -782,18 +802,18 @@ though, it would be common to apply multiple kernels at once with the same
 convolution, hence obtaining a tensor of feature maps.
 
 The convolution operation can be seen as the repetition of two operations: the
-superimposition of one or more kernels, followed by a shift -- or \emph{stride}
--- of the kernel to allow the subsequent applications of the filter. This
-system would work successfully in most cases, but it would fail to detect hands
-that are not completely contained in the image. The typical solution adopted to
-overcome this limitation is to \emph{pad} the image by adding a frame (usually
-of zeros) around it on every side. This ensures that on the borders of the
-image the convolution performs both a complete superimposition of the kernel on
-every position in the image, as well as a partial ones (that is, a
-superimposition that is partially on the image and partially on the padding).
-In the padded half hand scenario, this partial superimposition over the image
-would cause an activation that is not as strong as in the case of a full
-overlap, but not zero either.
+superimposition of one or more kernels in one position, followed by a shift --
+or \emph{stride} -- of the kernels to allow their subsequent applications in
+the next position. This system works successfully in most cases, but it would
+most likely fail to e.g., detect hands that are not completely contained in the
+image. The typical solution adopted to overcome this limitation is to
+\emph{pad} the image by adding a frame (usually of zeros) around it on every
+side. This ensures that on the borders of the image the convolution performs
+both a complete superimposition of the kernel on every position in the image,
+as well as partial ones (that is, a superimposition that is partially on the
+image and partially on the padding).  In the padded half hand scenario, this
+partial superimposition over the image would cause an activation that is not as
+strong as in the case of a full overlap, but not zero either.
 
 The elements described so far fully define a convolution. The shape of the
 feature maps produced by a convolutional layer is affected by the shape of its
@@ -1248,7 +1268,7 @@ $p = \lfloor k / 2 \rfloor = n$,
 \begin{split}
     o &= i + 2 \lfloor k / 2 \rfloor - (k - 1) \\
       &= i + 2n - 2n \\
-      &= i,
+      &= i.
 \end{split}
 \end{equation*}
 \end{relationship}
@@ -1268,7 +1288,7 @@ For any $i$ and $k$, and for $p = k - 1$ and $s = 1$,
 \begin{equation*}
 \begin{split}
     o &= i + 2(k - 1) - (k - 1) \\
-      &= i + (k - 1),
+      &= i + (k - 1).
 \end{split}
 \end{equation*}
 \end{relationship}
@@ -1298,7 +1318,7 @@ height axis. From this, the following relationship can be inferred:
 \begin{relationship}\label{rel:no_padding_strides}
 For any $i$, $k$ and $s$, and for $p = 0$,
 \begin{equation*}
-    o = \left\lfloor \frac{i - k}{s} \right\rfloor + 1,
+    o = \left\lfloor \frac{i - k}{s} \right\rfloor + 1.
 \end{equation*}
 \end{relationship}
 
@@ -1317,7 +1337,7 @@ effective input of size $i + 2p$, in analogy to what was done for
 \begin{relationship}\label{rel:padding_strides}
 For any $i$, $k$, $p$ and $s$,
 \begin{equation*}
-    o = \left\lfloor \frac{i + 2p - k}{s} \right\rfloor + 1,
+    o = \left\lfloor \frac{i + 2p - k}{s} \right\rfloor + 1.
 \end{equation*}
 \end{relationship}
 
@@ -1422,16 +1442,16 @@ mean or average pooling, which all share the same idea of aggregating the input
 locally by applying a nonlinearity to the content of some patches \citep{%
 boureau-cvpr-10,boureau-icml-10,boureau-iccv-11,ICML2011Saxe_551}.
 
-Some readers may have noticed that the treatment of convolution arithmetic only
-relies on the assumption that some function is repeatedly applied onto subsets
-of the input. This means that the relationships derived in the previous chapter
-can be reused in the case of pooling arithmetic. Since pooling does not involve
-zero padding, the relationship describing the general case is as follows:
+Notice that the treatment of convolution arithmetic only relies on the
+assumption that some function is repeatedly applied onto subsets of the input.
+This means that the relationships derived in the previous chapter can be reused
+in the case of pooling arithmetic. Since pooling does not involve zero padding,
+the relationship describing the general case is as follows:
 
 \begin{relationship}\label{rel:pooling}
 For any $i$, $k$ and $s$,
 \begin{equation*}
-    o = \left\lfloor \frac{i - k}{s} \right\rfloor + 1,
+    o = \left\lfloor \frac{i - k}{s} \right\rfloor + 1.
 \end{equation*}
 \end{relationship}
 
@@ -1447,6 +1467,7 @@ pattern that is compatible with said convolution. For instance, one might use
 such a transformation as the decoding layer of a convolutional autoencoder or to
 project feature maps to a higher-dimensional space.
 
+\sloppy
 Once again, the convolutional case is considerably more complex than the
 fully-connected case, which only requires to use a weight matrix whose shape
 has been transposed. However, since every convolution boils down to an
@@ -1455,20 +1476,9 @@ fully-connected case are useful in solving the convolutional case.
 
 Like for convolution arithmetic, the dissertation about transposed convolution
 arithmetic is simplified by the fact that transposed convolution properties
-do not interact across axes.
-
-The chapter will focus on the following setting:
-
-\begin{itemize}
-    \item 2-D transposed convolutions ($N = 2$),
-    \item square inputs ($i_1 = i_2 = i$),
-    \item square kernel size ($k_1 = k_2 = k$),
-    \item same strides along both axes ($s_1 = s_2 = s$),
-    \item same zero padding along both axes ($p_1 = p_2 = p$).
-\end{itemize}
-
-\noindent Once again, the results outlined generalize to the N-D and non-square
-cases.
+do not interact across axes. The usual simplified setting will be taken in
+account, but as before the results outlined generalize to the N-D and
+non-square cases.
 
 \subsection{Convolution as a matrix operation}
 
@@ -1477,7 +1487,7 @@ Take for example the convolution represented in
 into vectors from left to right, top to bottom, the convolution could be
 represented as a sparse matrix $\mathbf{C}$ where the non-zero elements are the
 elements $w_{i,j}$ of the kernel (with $i$ and $j$ being the row and column of
-the kernel respectively):
+the $3x3$ kernel $K=(w_{0,0}..w_{2, 2})$ respectively):
 \begin{equation*}
 \setcounter{MaxMatrixCols}{20}
 \resizebox{.98\hsize}{!}{$%
@@ -1528,15 +1538,15 @@ $\mathbf{C}^T$ and $(\mathbf{C}^T)^T = \mathbf{C}$ respectively.\footnote{The
     some\/} convolution with respect to its input, which is usually how
     transposed convolutions are implemented in practice.}
 
-Finally note that it is always possible to emulate a transposed convolution with
-a direct convolution. The disadvantage is that it usually involves adding many
-columns and rows of zeros to the input, resulting in a much less efficient
+Finally note that it is always possible to emulate a transposed convolution
+with a direct convolution. The disadvantage is that it usually involves adding
+many columns and rows of zeros to the input, resulting in a much less efficient
 implementation.
 
-Building on what has been introduced so far, this section will proceed somewhat
-backwards with respect to the previous sections, deriving the properties of
-each transposed convolution by referring to the direct convolution with which
-it shares the kernel, and defining the equivalent direct convolution.
+Building on what has been introduced so far, this section will derive the
+properties of each transposed convolution by referring to the direct
+convolution with which it shares the kernel, and defining the equivalent direct
+convolution.
 
 \subsection{No zero padding, unit strides, transposed}
 
@@ -1705,9 +1715,9 @@ for $i = 5$, $k = 3$ and (therefore) $p = 2$.
     \caption{\label{fig:full_padding_no_strides_transposed} The transpose of
         convolving a $3 \times 3$ kernel over a $5 \times 5$ input using full
         padding and unit strides (i.e., $i = 5$, $k = 3$, $s = 1$ and $p = 2$).
-        It is equivalent to convolving a $3 \times 3$ kernel over a $7 \times 7$
-        input using unit strides (i.e., $i' = 7$, $k' = k$, $s' = 1$ and $p' =
-        0$).}
+        It is equivalent to convolving a $3 \times 3$ kernel over a $7 \times
+        7$ input using unit strides (i.e., $i' = 7$, $k' = k$, $s' = 1$ and
+        $p' = 0$).}
 \end{figure}
 
 \begin{figure}[p]
@@ -1721,8 +1731,8 @@ for $i = 5$, $k = 3$ and (therefore) $p = 2$.
         \times 2$ strides (i.e., $i = 5$, $k = 3$, $s = 2$ and $p = 0$). It is
         equivalent to convolving a $3 \times 3$ kernel over a $2 \times 2$ input
         (with $1$ zero inserted between inputs) padded with a $2 \times 2$
-        border of zeros using unit strides (i.e., $i' = 2$, $\tilde{i}' = 3$, $k'
-        = k$, $s' = 1$ and $p' = 2$).}
+        border of zeros using unit strides (i.e., $i' = 2$, $\tilde{i}' = 3$,
+        $k' = k$, $s' = 1$ and $p' = 2$).}
 \end{figure}
 
 \begin{figure}[p]
@@ -1733,11 +1743,11 @@ for $i = 5$, $k = 3$ and (therefore) $p = 2$.
     \includegraphics[width=0.24\textwidth]{pdf/padding_strides_transposed_03.pdf}
     \caption{\label{fig:padding_strides_transposed} The transpose of convolving
         a $3 \times 3$ kernel over a $5 \times 5$ input padded with a $1 \times
-        1$ border of zeros using $2 \times 2$ strides (i.e., $i = 5$, $k = 3$, $s
-        = 2$ and $p = 1$). It is equivalent to convolving a $3 \times 3$ kernel
-        over a $2 \times 2$ input (with $1$ zero inserted between inputs) padded
-        with a $1 \times 1$ border of zeros using unit strides (i.e., $i' = 3$,
-        $\tilde{i}' = 5$, $k' = k$, $s' = 1$ and $p' = 1$).}
+        1$ border of zeros using $2 \times 2$ strides (i.e., $i = 5$, $k = 3$,
+        $s = 2$ and $p = 1$). It is equivalent to convolving a $3 \times 3$
+        kernel over a $2 \times 2$ input (with $1$ zero inserted between
+        inputs) padded with a $1 \times 1$ border of zeros using unit strides
+        (i.e., $i' = 3$, $\tilde{i}' = 5$, $k' = k$, $s' = 1$ and $p' = 1$).}
 \end{figure}
 
 \begin{figure}[t]
@@ -1747,14 +1757,14 @@ for $i = 5$, $k = 3$ and (therefore) $p = 2$.
     \includegraphics[width=0.24\textwidth]{pdf/padding_strides_odd_transposed_02.pdf}
     \includegraphics[width=0.24\textwidth]{pdf/padding_strides_odd_transposed_03.pdf}
     \caption{\label{fig:padding_strides_odd_transposed} The transpose of
-        convolving a $3 \times 3$ kernel over a $6 \times 6$ input padded with a
-        $1 \times 1$ border of zeros using $2 \times 2$ strides (i.e., $i = 6$,
-        $k = 3$, $s = 2$ and $p = 1$). It is equivalent to convolving a $3
+        convolving a $3 \times 3$ kernel over a $6 \times 6$ input padded with
+        a $1 \times 1$ border of zeros using $2 \times 2$ strides (i.e., $i =
+        6$, $k = 3$, $s = 2$ and $p = 1$). It is equivalent to convolving a $3
         \times 3$ kernel over a $2 \times 2$ input (with $1$ zero inserted
         between inputs) padded with a $1 \times 1$ border of zeros (with an
         additional border of size $1$ added to the top and right edges) using
-        unit strides (i.e., $i' = 3$, $\tilde{i}' = 5$, $a = 1$, $k' = k$, $s' =
-        1$ and $p' = 1$).}
+        unit strides (i.e., $i' = 3$, $\tilde{i}' = 5$, $a = 1$, $k' = k$,
+        $s' = 1$ and $p' = 1$).}
 \end{figure}
 
 
@@ -1793,17 +1803,17 @@ $s - 1$ zeros between each input unit, and its output size is
 \subsection{Zero padding, non-unit strides, transposed}
 
 When the convolution's input size $i$ is such that $i + 2p - k$ is a multiple
-of $s$, the analysis can extended to the zero padded case by combining
+of $s$, the analysis can be extended to the zero padded case by combining
 \autoref{rel:arbitrary_padding_no_strides_transposed} and
 \autoref{rel:no_padding_strides_transposed}:
 
 \begin{relationship}\label{rel:padding_strides_transposed}
     A convolution described by $k$, $s$ and $p$ and whose
-    input size $i$ is such that $i + 2p - k$ is a multiple of $s$ has an associated
-    transposed convolution described by $\tilde{i}'$, $k' = k$, $s' = 1$ and
-    $p' = k - p - 1$, where $\tilde{i}'$ is the size of the stretched input
-    obtained by adding $s - 1$ zeros between each input unit, and its output size
-    is
+    input size $i$ is such that $i + 2p - k$ is a multiple of $s$ has an
+    associated transposed convolution described by $\tilde{i}'$, $k' = k$, $s'
+    = 1$ and $p' = k - p - 1$, where $\tilde{i}'$ is the size of the stretched
+    input obtained by adding $s - 1$ zeros between each input unit, and its
+    output size is
     \begin{equation*}
     \begin{split}
         o' = s (i' - 1) + k - 2p.
@@ -1820,11 +1830,11 @@ between the $s$ different cases that all lead to the same $i'$:
 
 \begin{relationship}\label{rel:padding_strides_transposed_odd}
     A convolution described by $k$, $s$ and $p$ has an
-    associated transposed convolution described by $a$, $\tilde{i}'$, $k' = k$, $s'
-    = 1$ and $p' = k - p - 1$, where $\tilde{i}'$ is the size of the stretched
-    input obtained by adding $s - 1$ zeros between each input unit, and $a = (i +
-    2p - k) \mod s$ represents the number of zeros added to the top and right edges
-    of the input, and its output size is
+    associated transposed convolution described by $a$, $\tilde{i}'$, $k' = k$,
+    $s' = 1$ and $p' = k - p - 1$, where $\tilde{i}'$ is the size of the
+    stretched input obtained by adding $s - 1$ zeros between each input unit,
+    and $a = (i + 2p - k) \mod s$ represents the number of zeros added to the
+    top and right edges of the input, and its output size is
     \begin{equation*}
     \begin{split}
         o' = s (i' - 1) + a + k - 2p.
@@ -1856,8 +1866,7 @@ Similarly, ANNs are not constrained to process the input data in a feedforward
 way. Recurrent Neural Networks (RNNs) implement feedback loops
 (see~\autoref{fig:RNN_loop} \footnote{This and the following RNN figures, are
     taken or modified from the awesome introduction to RNNs and LSTMs by Chris
-    Olah~\citep{olah2015rnns}}
-) that propagate some information from one step to
+    Olah~\citep{olah2015rnns}}) that propagate some information from one step to
 the next. It is customary to refer to these steps as time-steps, as RNNs are
 often considered in the context of a discretized time evolving domain, but
 nothing prevents from using RNNs with any kind of sequential data.
@@ -1917,8 +1926,8 @@ through time.  This results in a long chain of products that can easily go to
 infinity or become zero if the elements of the multiplication are greater or
 smaller than $1$ respectively. These two issues, i.e., going to infinity and
 becoming zero, are known in the literature as \emph{exploding gradient} and
-\emph{vanishing gradient} and have been studied extensively in the
-past~\citep[see e.g., ][]{Hochreiter91,Bengio-trnn93}. The first one can be
+\emph{vanishing gradient} respectively, and have been studied extensively in
+the past~\citep[see e.g., ][]{Hochreiter91,Bengio-trnn93}. The first one can be
 partially addressed by \emph{clipping the gradient} when it becomes too large,
 but the second is not easy to overcome and can make training these kind of
 models very hard if not impossible.
@@ -1981,7 +1990,7 @@ activation vector between $0$ and $1$
 
 \noindent this activation is multiplied by the previous state $C_{t-1}$ and
 results in an intermediate memory state where some of the activations can be
-weaker than $C_{t-1}$ and some others are potentially zeroed out.
+weaker than those in $C_{t-1}$ and some others are potentially zeroed out.
 
 The forget gate allows the LSTM to discard information that is not relevant
 anymore. Symmetrically, LSTMs have a mechanism to add new information to the
@@ -2003,8 +2012,8 @@ governed by the equations
 
 The input gate modulates how much of this state update will be applied to the
 old state to generate the current state. The forget gate $f_t$ and the input
-gate $i_t$, together with the previous state $C_{t-1}$ fully determine the
-state at time $t$ through
+gate $i_t$, together with the state update $\tilde C_t$ and the previous state
+$C_{t-1}$ fully determine the state at time $t$ through
 
 \begin{equation}\label{eq:LSTM_state_update}
     C_t = f_t \hadamard C_{t-1} + i_t \hadamard \tilde C_t.
@@ -2018,11 +2027,11 @@ output gate
 \begin{equation}\label{eq:LSTM_output_gate}
 \begin{split}
     o_t &= \sigma\left(W_o \cdot \left[h_{t-1}, x_t\right] + b_o \right)\\
-    h_t &= o_t \hadamard tanh \left(C_t\right).
+    h_t &= o_t \hadamard tanh \left(C_t\right),
 \end{split}
 \end{equation}
 
-\noindent the memory resulting from the transformations due to the forget and
+\noindent and the memory resulting from the transformations due to the forget and
 input gates goes through a tanh nonlinearity and is multiplied by the output
 gate to finally produce the output.
 
@@ -2071,10 +2080,10 @@ state after the input and forget gate updates
 
 \subsubsection{LSTMs with coupled forget and input gates}\label{sec:LSTM_coupled}
 
-Another variant of LSTMs replaces the input gate with $1 - f_t$
-(see~\autoref{fig:LSTM_coupled}), so that the forget gate governs both
-behaviors. This boils down to forgetting only when a new input is going to be
-written. The modified state update equation is
+Another variant of LSTMs~\citep{Greff-et-al-arxiv2015} replaces the input gate
+with $1 - f_t$ (see~\autoref{fig:LSTM_coupled}), so that the forget gate governs
+both behaviors. This boils down to forgetting only when a new
+input is going to be written. The modified state update equation is
 
 \begin{equation}\label{eq:LSTM_coupled}
     C_t = f_t \hadamard C_{t-1} + (1 - f_t) \hadamard \tilde C_t.
