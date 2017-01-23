@@ -630,18 +630,18 @@ inputs. This allows for the computation of the partial derivatives of the error
 the network. In other words, it is possible to use calculus to determine the
 amount by which each neuron of the last layer contributed to causing the error,
 and then further split the responsibility of each of them among the ones of the
-preceding layer. In this way, the error can be \emph{backpropagated} through
-the layers of the network, assigning to each weight its amount of blame. This
-information can be used by an \emph{optimization algorithm} to iteratively
-change the weights to minimize the error.
+preceding layer. In this way, the error can be \emph{propagated backwards}
+through the layers of the network, assigning to each weight its amount of
+blame. This information can be used by an \emph{optimization algorithm} to
+iteratively change the weights to minimize the error.
 
-The backpropagation algorithm has some resemblance with the learning rule of
-the Perceptron~(\autoref{eq:perceptron_lr}). The main idea in that case was
-to modify each weight of the network by a factor proportional to the error
-($E = \hat y - y$, in the Perceptron) and to the input. Even if in MLPs it is
-usually common to consider different kinds of cost functions, the same concept
-applies: the learning procedure tries to modify the weights in order to
-minimize some error
+The backpropagation algorithm~\citep[see, e.g.,][]{BP86} has some resemblance
+with the learning rule of the Perceptron~(\autoref{eq:perceptron_lr}). The main
+idea in that case was to modify each weight of the network by a factor
+proportional to the error ($E = \hat y - y$, in the Perceptron) and to the
+input. Even if in MLPs it is usually common to consider different kinds of cost
+functions, the same concept applies: the learning procedure tries to modify the
+weights in order to minimize some error
 
 \begin{equation}
     %w_{ij}^{(l)} = w_{ij}^{(l)} + \eta \frac{\partial E}{\partial w_{ij}^{(l)}}
@@ -1969,7 +1969,7 @@ partially addressed by \emph{clipping the gradient} when it becomes too large,
 but the second is not easy to overcome and can make training these kind of
 models very hard if not impossible.
 
-\subsection{Long Short Term Memory}
+\subsection{Long Short Term Memory}\label{sec:LSTM}
 \begin{figure}[t]
     \centering
     \includegraphics[width=0.7\textwidth]{pdf/LSTM.pdf}
@@ -2133,7 +2133,7 @@ input is going to be written. The modified state update equation is
 \end{figure}
 
 
-\subsection{Gated Recurrent Unit (GRU)}
+\subsection{Gated Recurrent Unit (GRU)}\label{sec:GRU}
 
 In 2014 \cite{Cho2014a} proposed a new kind of recurrent network called Gated
 Recurrent Unit (GRU) (see~\autoref{fig:GRU}) with less gates than LSTMs and a

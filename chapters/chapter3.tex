@@ -1,27 +1,27 @@
-\chapter{Recurrent Neural Networks for Object classification}\label{sec:renet}
+\chapter{Recurrent Neural Networks for Object Classification}\label{sec:renet}
 
 \emph{Classification} is a broad task that consists in predicting to which
 category an input belongs to, out of some $k$ given categories. The system is
-usually required to compute a function $f: \RR \to {0, \dots, k-1}$ that
+usually required to compute a function $f: \RR^d \to {0, \dots, k-1}$ that
 assigns each input to a class. This can be thought as a discrimination task,
 where the algorithm is expected to learn similarities and differences between
 categories in order to characterize each class.
 
 Some examples of classification are spam detection (classify a message as being
 spam or not), credit card fraud detection (identify if a transaction is legit
-or not), optical character recognition (OCR) (convert hand-written text to an
+or not), Optical Character Recognition (OCR) (convert hand-written text to an
 electronic document, by classifying each character), speech understanding
 (given an utterance from a user, detect the sentence that was pronounced),
 medical diagnosis (given the symptoms predict the illness and suggest a cure),
-stock trading (determine if a stock should be bought, help or sold, from
+stock trading (determine if a stock should be bought, held or sold, from
 current and historical data), shape detection (classify a hand-drawn drawing
-from, e.g., a touch screen, as a specific shape) and emotion recognition (given
+from, e.g., a touch screen, as a specific shape) and sentiment analysis (given
 a text, classify it as being positive, neutral or negative)
 
 \emph{Object recognition} is an instance of this task that takes an image as an
 input and is expected to return the id of the main class represented in the
 image. This is usually achieved by computing the probability distribution over
-the classes -- i.e. the confidence of the algorithm for each class to be the
+the classes -- i.e.\ the confidence of the algorithm for each class to be the
 main class in the scene -- and then picking the one with highest score.
 
 One downside of this method is that small and big mistakes are penalized the
@@ -35,14 +35,14 @@ $3$ or $5$ guesses of the network.
 
 Traditionally the computer vision community used to address this task with
 heavily hand-engineered systems that typically resorted to finding easily
-detectable elements in the image -- such as e.g. edges or corners -- and
-computing a descriptor of the surrounding patch. Many detectors~\cite{
+detectable elements in the image -- such as e.g.\ edges or corners -- and
+computing a descriptor of the surrounding patch. Many detectors~\citep{
 dufournaud2000matching,harris1988combined,mikolajczyk2001indexing,
-lowe2004distinctive,mikolajczyk2005performance} and descriptors~\cite{
+lowe2004distinctive,mikolajczyk2005performance} and descriptors~\citep{
 lowe1999object,mikolajczyk2005performance,belongie2002shape} have been proposed
-to this end, until in 2012 a deep convolutional neural network shifted the
-balance toward learned ANNs indefinitely~\citep{Krizhevsky-2012}. Since then
-CNN-based models dominated the object recognition scene.
+to this end, until in 2012 a deep convolutional neural network markedly shifted
+the balance towards learned ANNs~\citep{Krizhevsky-2012}. Since then CNN-based
+models dominated the object recognition scene.
 
 This chapter presents ReNet, one of the main contributions of this thesis.
 The ReNet model is a deep neural network architecture for object recognition,
@@ -94,21 +94,21 @@ Chorowski-et-al-arxiv2014,Graves+Jaitly-ICML2014}. RNNs have also been used
 together with CNNs in speech recognition~\citep{sainath2015}. The recent
 revival of RNNs has largely been due to advances in learning
 algorithms~\citep{Pascanu+al-ICML2013-small,Martens+Sutskever-ICML2011} and
-model architectures~\citep{Pascanu-et-al-ICLR2014,Hochreiter+Schmidhuber-1997,
-Cho2014}.
+model architectures~\citep{Pascanu-et-al-ICLR2014,Cho2014}.
 
 The architecture of ReNet is related and inspired by this earlier work, but
 relies on purely uni-dimensional RNNs coupled in a novel way, rather than on a
 multi-dimensional RNN. The basic idea behind the ReNet model is to replace each
 convolutional layer (with convolution+pooling making up a layer) in the CNN
-with four RNNs that sweep over lower-layer features in different directions:
-(1) bottom to top, (2) top to bottom, (3) left to right and (4) right to left.
-The recurrent layer ensures that each feature activation in its output is an
-activation at the specific location \emph{with respect to the whole image}, in
-contrast to the usual convolution+pooling layer which only has a local context
-window. The lowest layer of the model sweeps over the input image, with
-subsequent layers operating on extracted representations from the layer below,
-forming a hierarchical representation of the input.
+with four RNNs (i.e., two bidirectional RNNs) that sweep over lower-layer
+features in different directions: (1) bottom to top, (2) top to bottom, (3)
+left to right and (4) right to left.  The recurrent layer ensures that each
+feature activation in its output is an activation at the specific location
+\emph{with respect to the whole image}, in contrast to the usual
+convolution+pooling layer which only has a local context window. The lowest
+layer of the model sweeps over the input image, with subsequent layers
+operating on extracted representations from the layer below, forming a
+hierarchical representation of the input.
 
 \citet{Graves+Schmidhuber-2009} have demonstrated an RNN-based object
 recognition system for offline Arabic handwriting recognition. The main
@@ -161,27 +161,29 @@ $j$ is the vertical index.
 First, the image is swept vertically with two RNNs, with one RNN working in
 a bottom-up direction and the other working in a top-down direction.
 Each RNN takes as an input one (flattened) patch at a time and updates its
-hidden state, working \emph{along each column} $j$ of the split input image
-$X$.
+hidden state $C^*$ (in the usual way, depending on the RNN implementation),
+working \emph{along each column} $j$ of the split input image $X$ to produce
+two output vectors $v^F$ and $v^R$ defined as follows
 \begin{align}
-    v^F_{i,j} = f_{\text{VFWD}}(z^F_{i,j-1},p_{i,j}), &\text{ for
+    v^F_{i,j} = f_{\text{VFWD}}(C^F_{i,j-1},p_{i,j}), &\text{ for
     }j=1,\cdots, J\\
-    v^R_{i,j} = f_{\text{VREV}}(z^R_{i,j+1},p_{i,j}), &\text{ for
+    v^R_{i,j} = f_{\text{VREV}}(C^R_{i,j+1},p_{i,j}), &\text{ for
     }j=J,\cdots,1
 \end{align}
 
 Note that $f_{\text{VFWD}}$ and $f_{\text{VREV}}$ return the activation of the
-recurrent hidden state, and may be implemented either as a simple $\tanh$
+recurrent hidden unit, and may be implemented either as a simple $\tanh$
 layer, as a gated recurrent layer~\citep{Cho2014} or as a long short-term
-memory layer~\citep{Hochreiter+Schmidhuber-1997}.
+memory layer~\citep{Hochreiter+Schmidhuber-1997}, as detailed
+in~\autoref{sec:rnn}, \autoref{sec:LSTM} and \autoref{sec:GRU}).
 
 After this vertical, bidirectional sweep, the intermediate hidden states
 $v^F_{i,j}$ and $v^R_{i,j}$ are concatenated at each location $(i,j)$ to get a
-composite feature map $V= \left\{ v_{i,j} \right\}_{i=1,\ldots,I}^{
-j=1,\ldots,J}$, where $v_{i,j} \in \RR^{2d}$ and $d$ is the number of recurrent
-units.  Each $v_{i,j}$ is now the activation of a feature detector at the
-location $(i,j)$ with respect to all the patches in the $j$-th column of the
-original input ($p_{i, j}$ for all $i$).
+composite feature map $V=~\left\{v_{i,j}^F,~v_{i,j}^B\right\}_{
+i=1,\ldots,I}^{ j=1,\ldots,J}$, where $v_{i,j} \in \RR^{2d}$ and $d$ is the
+number of recurrent units.  Each $v_{i,j}$ is now the activation of a feature
+detector at the location $(i,j)$ with respect to all the patches in the $j$-th
+column of the original input ($p_{i, j}$ for all $i$).
 
 Next, the obtained composite feature map $V$ is swept horizontally with two
 different RNNs ($f_{\text{HFWD}}$ and $f_{\text{HREV}}$). In a similar manner
@@ -223,7 +225,7 @@ in~\autoref{fig:renet_network}.
 The deep ReNet is a smooth, continuous function, and the parameters (those from
 the RNNs as well as from the fully-connected layers) can be estimated by the
 stochastic gradient descent algorithm with the gradient computed by
-backpropagation algorithm~\citep[see, e.g.,][]{BP86} to maximize the
+backpropagation algorithm described in~\autoref{sec:backprop} to maximize the
 log-likelihood.
 
 \subsection{Differences between LeNet and ReNet}\label{sec:lenetrenet}
@@ -263,7 +265,7 @@ reducing the dimensionality of the feature map, resulting in lower computational
 cost.
 
 Max-pooling as used in LeNet may prove problematic when building a
-convolutional autoencoder whose decoder is an inverse\footnote{
+convolutional autoencoder whose decoder is an inverse\footnote{%
     All the forward arrows from the input to the output in the original LeNet
     are reversed.
 }
@@ -280,10 +282,10 @@ does not use any pooling.  They used convolution with a larger stride to
 compensate for the lack of dimensionality reduction by pooling at each layer.
 However, this approach still differs from the proposed ReNet in the sense that
 each feature activation at a layer is only with respect to a subset of the
-input image rather than the whole input image.
+pixels of the input image rather than the whole input image.
 
 The main disadvantage of ReNet is that it is not easily parallelizable, due to
-the sequential nature of the recurrent neural network (RNN). LeNet, on the
+the sequential nature of the recurrent neural network. LeNet, on the
 other hand, is highly parallelizable due to the independence of computing
 activations at each layer. The introduction of sequential, lateral connections,
 however, may result in more efficient parametrization, requiring a smaller
@@ -341,12 +343,12 @@ automobile, bird, cat, deer, dog, frog, horse, ship and truck. Each image is 32
 pixels wide and 32 pixels high with 3 color channels (red, green and blue.)
 Following the standard procedure, in the reported experiments the dataset
 was split into 40,000 training, 10,000 validation and 10,000 test samples.
-Furthermore, zero-phase component analysis (ZCA) was applied and the each pixel
+Furthermore, zero-phase component analysis (ZCA) was applied and each pixel
 was normalized to have zero-mean and unit-variance across the training samples,
 as suggested by \citet{KrizhevskyHinton2009}.
 
 \subsubsection{Street View House Numbers}
-The Street View House Numbers (SVHN) dataset~\citep{Netzer-wkshp-2011} consists
+The Street View House Numbers dataset~\citep{Netzer-wkshp-2011} consists
 of cropped images representing house numbers captured by Google StreetView
 vehicles as a part of the Google Maps mapping process. These images consist of
 digits 0 through 9 with values in the range of [0, 255] in each of 3
@@ -448,7 +450,7 @@ on validation error.
 Note that the results reported in~\autoref{sec:renet_results} were obtained
 without retraining on the joint training and validation sets. This is a common
 technique exploited by many works in the literature to boost the performance
-of the best model, selected after a full training on the training set early
+of the best model, selected after a full training on the training set and early
 stopping on the validation performance. There is no reason not to think that
 this would further improve the reported results, but this work was mainly
 conceived as a proof of concept rather than to stress on the absolute
