@@ -1,11 +1,11 @@
-\chapter{Recurrent Neural Networks for Semantic segmentation}\label{sec:reseg}
+\chapter{Recurrent Neural Networks for Semantic Segmentation}\label{sec:reseg}
 
-\autoref{sec:renet} introduced the ReNet model, a Recurrent Neural Network
-based model for object recognition. The ReNet model scans the image
-horizontally and vertically with $4$ RNNs at each layer and is able to capture
-the full context of the input with just one layer thanks to a sophisticated
-interaction of the inner RNNs. This allows activations to be local yet
-conditioned on global information, an ideal setting for semantic segmentation.
+\autoref{sec:renet} introduced the ReNet model, an RNN-based model for object
+recognition. The ReNet model scans the image horizontally and vertically with
+$4$ RNNs at each layer and is able to capture the full context of the input
+with just one layer thanks to a sophisticated interaction of the inner RNNs.
+This allows activations to be local yet conditioned on global information, an
+ideal setting for semantic segmentation.
 
 % Intro to semantic segmentation
 \emph{Semantic segmentation} is the task of labeling each pixel of an image
@@ -17,7 +17,7 @@ the pedestrian class, and so on.
 This is a very difficult task for many reasons: classifying pixels requires to
 acquire both a global understanding of the scene, as well as a very detailed
 and spatially precise characterization of each object; drawing segmentation
-masks is very time consuming, which makes difficult and expensive to collect
+masks is very time consuming, which makes it difficult and expensive to collect
 big datasets; labels are often subject to personal judgement, in fact different
 people tend to have different degrees of accuracy on small details and
 contours and at the same time, it is hard to define a clear separation path
@@ -46,7 +46,7 @@ depth information of some points is provided but the measurements are not
 densely placed in the input space.
 Finally, a related yet distinct setting is the one of cosegmentation, where
 multiple images of the same scene have to be segmented. Ideally one would want
-these segmentation masks to be consistent among each other. This extra
+the segmentation masks to be consistent across different images. This extra
 constraint can be used as a prior to improve those parts that are difficult to
 segment in one image but trivial in another.
 
@@ -76,10 +76,10 @@ methods that build a graph with pixels as nodes and some measure of
 dissimilarity as weight for the edges~\citep[see e.g.,~][]{
 carreira2010constrained,felzenszwalb2004efficient}; active contour models
 (ACMs) that segment the image roughly along edges and minimize an energy
-function that imposes a smooth prior on the segmentation\citep[see e.g.,~][]{
-atkins1998fully,kass1988snakes}; watershed segmentation, that takes the
-intensity values of grayscale images as a height map and imagines to drop water
-on it, filling regions with similar heights until the rise of the water
+function that imposes a smoothness prior on the segmentation~\citep[see
+e.g.,~][]{atkins1998fully,kass1988snakes}; watershed segmentation, that takes
+the intensity values of grayscale images as a height map and imagines to drop
+water on it, filling regions with similar heights until the rise of the water
 connects two basins and a watershed is found~\citep[see e.g.,~][]{
 roerdink2000watershed}. Finally, many segmentation strategies base on two very
 well known and studied algorithms in the literature, namely random decision
@@ -91,20 +91,21 @@ that segments a window of fixed size that moves across the image processing it
 in every location. The downside of this approach is that the classification is
 performed locally and the full context is usually not captured easily.
 
-The typical strategy to contrast this lack of high level consistency is to pair the
-segmentation algorithm with a Markov Random Field (MRF)~\citep[see e.g.,~][]{
-blake2011markov,MurphyBook2012,moser2012markov} or a Conditional Random
-Field (CRF)~\citep[see e.g.,~][]{russell2009associative, he2004multiscale,
-shotton2006textonboost}. These methods can be implemented in several ways, but
-usually impose a local prior on each location and consistency constraints on
-pairs or sets of positions. The underlying intuition of these methods is that
-the prediction in every location should be consistent with the one of the
-neighbouring locations. The pattern of these dependencies can vary across
-different implementations and is usually defined basing on specific domain
-knowledge. For a complete survey on segmentation, see~\cite{thoma2016survey}.
+The typical strategy to contrast this lack of high level consistency is to pair
+the segmentation algorithm with a Markov Random Field (MRF)~\citep[see
+e.g.,~][]{ blake2011markov,MurphyBook2012,moser2012markov} or a Conditional
+Random Field (CRF)~\citep[see e.g.,~][]{russell2009associative,
+he2004multiscale, shotton2006textonboost}. These methods can be implemented in
+several ways, but usually impose a local prior on each location and consistency
+constraints on pairs or sets of positions. The underlying intuition of these
+methods is that the prediction in every location should be consistent with the
+one of the neighbouring locations. The pattern of these dependencies can vary
+across different implementations and is usually defined based on specific
+domain knowledge. For a complete survey on segmentation,
+see~\cite{thoma2016survey}.
 
 This chapter introduces the second main contribution of this work. The ReSeg
-model~\cite{Visin_2016_CVPR_Workshops} builds on
+model~\citep{Visin_2016_CVPR_Workshops} builds on
 ReNet~(see~\autoref{sec:renet}) to tackle the task of semantic segmentation.
 The primary motivation behind ReSeg is to exploit the peculiar structure of
 ReNet in order to capture the underlying semantic of the input image and use it
@@ -117,8 +118,8 @@ This work extends the preliminary results of~\cite{visin2015renet} modifying
 and extending the ReNet model to the more ambitious task of object
 segmentation. The performance of the proposed model are tested on some of the
 historically most used datasets in this field, namely the Weizmann~Horse
-dataset~\cite{Borenstein04combiningtop-down}, the Oxford~Flowers~17
-dataset~\cite{Nilsback06} and the more recent and challenging Camvid
+dataset~\citep{Borenstein04combiningtop-down}, the Oxford~Flowers~17
+dataset~\citep{Nilsback06} and the more recent and challenging Camvid
 dataset~\citep{Brostow2010semantic,BrostowECCV08}. The first two are
 tackled in a foreground/background segmentation setting as a proof of concept
 for the proposed ReSeg architecture. The performance of the model is then
@@ -128,10 +129,11 @@ scenes.
 The experiments show that the proposed adaptation of the ReNet for pixel-level
 object segmentation performs successfully on the object segmentation task
 achieving state-of-the-art in all three datasets and may have further
-applications in other structured prediction problems.~\footnote{
-    Subsequent but independent work~\cite{DBLP:journals/corr/YanZJBY16} further
-    confirmed the effectiveness of ReSeg, combining a variation of it with CRFs
-    and reporting state of the art results on Pascal VOC~\cite{Everingham15}.}
+applications in other structured prediction problems.\footnote{
+    Subsequent but independent work~\citep{DBLP:journals/corr/YanZJBY16}
+    further confirmed the effectiveness of ReSeg, combining a variation of it
+    with CRFs and reporting state of the art results on Pascal
+    VOC~\citep{Everingham15}.}
 Furthermore, the ReNet and ReSeg architectures could be easily merged into a
 joint network to perform both tasks at the same time, sharing most of the
 computation. This could be interesting in application domains where object
@@ -146,13 +148,13 @@ model in the context of the state of the art at the time it was conceived,
 
 \section{Motivation}\label{sec:reseg_rationale}
 
-In recent years, Convolutional Neural Networks (CNN) have become the {\em de
-facto} standard in many computer vision tasks, such as image classification and
-object detection \cite{Krizhevsky-2012,Erhan2014}. Top performing image
-classification architectures usually involve {\em very} deep CNN trained in a
-supervised fashion on a large datasets~\cite{Lin2014,Simonyan2015,
-szegedy2014going} and have been shown to produce generic hierarchical visual
-representations that perform well on a wide variety of vision tasks.
+In recent years, CNNs have become the {\em de facto} standard in many computer
+vision tasks, such as image classification and object detection
+\citep{Krizhevsky-2012,Erhan2014}. Top performing image classification
+architectures usually involve {\em very} deep CNN trained in a supervised
+fashion on large datasets~\citep{Lin2014,Simonyan2015, szegedy2014going} and
+have been shown to produce generic hierarchical visual representations that
+perform well on a wide variety of vision tasks.
 
 Similarly, in the semantic segmentation panorama there is a tendency to convert
 the standard deep CNN classifier into Fully Convolutional Networks (FCN) (see
@@ -167,42 +169,42 @@ per pixel prediction is required.
 
 %% Upsampling
 The information recovery problem has been tackled in a large variety of ways.
-For instance, Eigen et al. proposed in~\cite{Eigen2015} a multi-scale
-architecture that extracts coarse predictions, which are then refined using
-finer scales. Farabet et al. introduced in~\cite{Farabet:2013} a multi-scale
-CNN architecture; Hariharan et al.~\cite{Hariharan2015} combine the information
-distributed over all layers to make accurate predictions. Other methods such
+For instance, \cite{Eigen2015} proposed a multi-scale architecture that
+extracts coarse predictions, which are then refined using finer scales.
+\cite{Farabet:2013} introduced a multi-scale CNN architecture;
+\cite{Hariharan2015} combine the information distributed over all layers to
+make accurate predictions. Other methods such
 as~\cite{long2014fully,badrinarayanan2015segnet} use simple bilinear
 interpolation to upsample the feature maps of increasingly abstract layers and
 \cite{Ronneberger2015} concatenate the feature maps of the downsampling layers
 with the feature maps of the upsampling layers to help recover finer
 information. Finally, more sophisticated upsampling methods, such as
-unpooling~\cite{noh2015learning,badrinarayanan2015segnet} or
-deconvolution~\cite{long2014fully} are now well established in the literature.
+unpooling~\citep{noh2015learning,badrinarayanan2015segnet} or
+deconvolution~\citep{long2014fully} are now well established in the literature.
 
 One common issue of all these methods is that they are not specifically
 designed to take into account and preserve both \emph{local} and \emph{global}
 contextual dependencies, which have shown to be useful for semantic
-segmentation tasks~\cite{Singh2013,Gatta14-deepvision}. Rather, these models
+segmentation tasks~\citep{Singh2013,Gatta14-deepvision}. Rather, these models
 often employ Conditional Random Fields (CRFs) as a post-processing step to
 locally smooth the model predictions, but how to tackle long-range contextual
 dependencies remains relatively unexplored.
 
 %% What we propose
-Recurrent Neural Networks (RNN) have been used in a variety of tasks for years
-and have been particularly successful in natural language
-processing~\citep[see, e.g.,][]{Mikolov-thesis-2012,Sutskever-et-al-NIPS2014,
-Cho2014}, handwriting recognition and generation~\citep{Graves+Schmidhuber-2009,
-Graves-et-al-NIPS2007,Graves-arxiv2013} and speech recognition~\citep{
-Chorowski-et-al-arxiv2014,Graves+Jaitly-ICML2014}. Only recently RNN and
-RNN-like models have become popular in the semantic segmentation literature to
-capture long distance pixel dependencies with the goal to improve semantic
-segmentation~\cite{Pinheiro:2014,Gatta14-deepvision,chen2015semantic,
+Recurrent neural networks have been used in a variety of tasks for years and
+have been particularly successful in natural language processing~\citep[see,
+e.g.,][]{Mikolov-thesis-2012,Sutskever-et-al-NIPS2014,Cho2014}, handwriting
+recognition and generation~\citep[see, e.g.,][]{Graves+Schmidhuber-2009,
+Graves-et-al-NIPS2007,Graves-arxiv2013} and speech recognition~\citep[see,
+e.g.,][]{Chorowski-et-al-arxiv2014,Graves+Jaitly-ICML2014}. Only recently RNN
+and RNN-like models have become popular in the semantic segmentation literature
+to capture long distance pixel dependencies with the goal to improve semantic
+segmentation~\citep{Pinheiro:2014,Gatta14-deepvision,chen2015semantic,
 byeon2015scene,stollenga2015parallel}.
 
-For instance, in~\cite{Pinheiro:2014, Gatta14-deepvision}, CNN are unrolled
-through different time steps to include semantic feedback connections.
-In~\cite{byeon2015scene}, 2-dimensional Long Short Term Memory (LSTM), which
+For instance, in~\cite{Pinheiro:2014} and \cite{Gatta14-deepvision}, CNN are
+unrolled through different time steps to include semantic feedback connections.
+In~\cite{byeon2015scene}, 2-dimensional Long Short Term Memory, which
 consist of 4 LSTM blocks scanning all directions of an image (left-bottom,
 left-top, right-top, right-bottom), are introduced to learn long range spatial
 dependencies. Following a similar direction, in~\cite{stollenga2015parallel},
@@ -215,13 +217,13 @@ that they are even more easily parallelizable, as each RNN is dependent only
 along a horizontal or vertical sequence of pixels; i.e., all rows/columns of
 pixels can be processed at the same time.
 
-The ReSeg model, that is the subject of this chapter, aims to an {\em
-efficient} application of Recurrent Neural Networks RNN to retrieve contextual
+The ReSeg model, that is the subject of this chapter, aims to be an {\em
+efficient} application of recurrent Neural networks to retrieve contextual
 information from images. The goal of this model is to extend the ReNet
 architecture~\cite{visin2015renet}, originally designed for image
 classification, to deal with the more ambitious task of semantic segmentation.
 
-As explained in~\autoref{sec:renet_model} the ReNet layers can efficiently
+As explained in~\autoref{sec:renet} the ReNet layers can efficiently
 capture contextual dependencies from images by first sweeping the image
 horizontally, and then sweeping vertically the feature maps produced by the
 horizontal processing. The output of a ReNet layer is therefore implicitly
@@ -233,8 +235,8 @@ originally proposed in ReNet, such as to address the pixel-level task of
 semantic segmentation.
 
 To decrease the training time and benefit from generic local features, the
-ReSeg model first preprocesses the input with a FCN, i.e. the intermediate
-convolutional output of VGG-16~\cite{Simonyan2015}. Multiple ReNet layers then
+ReSeg model first preprocesses the input with a FCN, i.e.\ the intermediate
+convolutional output of VGG-16~\citep{Simonyan2015}. Multiple ReNet layers then
 work on this generic feature map to extract meaningful local and global pixel
 dependencies.
 % Each ReNet layer is composed of four RNN that sweep the image
@@ -267,17 +269,18 @@ The source code and model hyperparameters are available on
 The architecture of the ReSeg model, motivated in~\autoref{%
 sec:reseg_rationale}, will be described in detail in this section.
 
-ReSeg builds on top of ReNet~\cite{visin2015renet} and extends it to address
-the task of semantic segmentation.  The model pipeline involves multiple
-stages. First, the input image is processed with the VGG-16~\cite{Simonyan2015}
-network, pre-trained on ImageNet~\cite{imagenet_cvpr09} and not further
-fine-tuned. By design, only the first layers of VGG-16 have been used to
-prevent the resolution of the intermediate feature maps to become too small.
-The result of this preprocessing is then fed into one or more \emph{ReNet
-layers} that sweep over the image horizontally and vertically. Finally, one or
-more \emph{upsampling layers} are employed to resize the last feature maps to
-the same resolution as the input and a softmax non-linearity is applied to
-predict the probability distribution over the classes for each pixel.
+ReSeg builds on top of ReNet, described in \autoref{sec:renet} and
+extends it to address the task of semantic segmentation. The model pipeline
+involves multiple stages. First, the input image is processed with the
+VGG-16~\citep{Simonyan2015} network, pre-trained on
+ImageNet~\citep{imagenet_cvpr09} without further fine-tuning. By design, only
+the first layers of VGG-16 have been used to prevent the resolution of the
+intermediate feature maps to become too small.  The result of this
+preprocessing is then fed into one or more \emph{ReNet layers} that sweep over
+the image horizontally and vertically. Finally, one or more \emph{upsampling
+layers} are employed to resize the last feature maps to the same resolution as
+the input and a softmax non-linearity is applied to predict the probability
+distribution over the classes for each pixel.
 
 The following sections analyze in detail each component of the processing
 pipeline
@@ -316,11 +319,11 @@ enforce to handle the data in a more constrainedly sequential nature.
 
 At every time step each RNN reads the next non-overlapping patch $p_{i,j}$ and,
 based on its previous state, emits a projection $o_{i,j}^{\star}$ and updates
-its state $z_{i,j}^{\star}$:
+its state $C_{i,j}^{\star}$:
 \begin{align}
-    o^{\downarrow}_{i,j} = f^{\downarrow}(z^{\downarrow}_{i-1,j},p_{i,j}),
+    o^{\downarrow}_{i,j} = f^{\downarrow}(C^{\downarrow}_{i-1,j},p_{i,j}),
         &\text{ for }i=1,\cdots, I\\
-    o^{\uparrow}_{i,j} = f^{\uparrow}(z^{\uparrow}_{i+1,j},p_{i,j}),
+    o^{\uparrow}_{i,j} = f^{\uparrow}(C^{\uparrow}_{i+1,j},p_{i,j}),
         &\text{ for }i=I,\cdots,1
 \end{align}
 It has to be stressed that the decision to read non-overlapping patches is a
@@ -344,10 +347,10 @@ vertical recurrent sublayer. This was chosen so that the second recurrent
 sublayer has the same spatial granularity as the first one, but this is not a
 constraint of the model and different architectures can be explored.
 
-With a similar but specular procedure as the one adopted for the first
-sublayer, the network reads one element of the intermediate feature map
-$o^\updownarrow_{i,j}$ at each step and emits two activations coming from two
-new RNNs that are concatenated into a unique feature map
+With a similar procedure as the one adopted for the first sublayer, but in the
+horizontal direction, the network reads one element of the intermediate feature
+map $o^\updownarrow_{i,j}$ at each step and emits two activations coming from
+two new RNNs that are concatenated into a unique feature map
 $\mathbf{O^\leftrightarrow}~=~\left\{ h^\leftrightarrow_{i,j} \right\}
 _{i=1\dots I}^{j=1\dots J}$, with $o^\leftrightarrow_{i,j} \in
 \RR^{2U}$. Each element $o^\leftrightarrow_{i,j}$ of this \emph{horizontal
