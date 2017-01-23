@@ -138,12 +138,13 @@ of~\citet{Graves+Schmidhuber-2009}.
 \begin{figure}[t]
     \centering
     \includegraphics[width=0.3\textwidth]{img/renet/renet_first_layer.pdf}
-    \caption{A ReNet layer. The blue and green dots on the input image/feature
-        map represent the steps of $f_{VFWD}$ and $f_{VREV}$ respectively. On
-        the concatenation of the resulting feature maps, $f_{HFWD}$ (yellow
-        dots) and $f_{HREV}$ (red dots) are subsequently swept. The output of
-        the feature maps are finally concatenated to form the output of the
-        ReNet layer, depicted as a blue heatmap in the figure.}
+    \caption{A ReNet layer. The green and blue dots on the input image/feature
+        map represent the steps of $f^\uparrow$ and $f^\downarrow$
+        respectively. On the concatenation of the resulting feature maps, the
+        two RNNs $f^\rightarrow$ (yellow dots) and $f^\leftarrow$ (red dots)
+        are subsequently swept. The output of the feature maps are finally
+        concatenated to form the output of the ReNet layer, depicted as a blue
+        heatmap in the figure.}
     \label{fig:renet_layer}
     \vspace{-3mm}
 \end{figure}
@@ -151,8 +152,8 @@ of~\citet{Graves+Schmidhuber-2009}.
 Let us denote by $X=\left\{x_{i,j}\right\}$ the input image or the feature map
 from the layer below, where $X \in \RR^{w \times h \times c}$ with $w$, $h$ and
 $c$ the width, height and number of channels, or the feature dimensionality,
-respectively. Given a receptive field (or patch) size of $w_p \times h_p$, we
-split the input image $X$ into a set of $I \times J$ (non-overlapping) patches
+respectively. Given a receptive field (or patch) size of $w_p \times h_p$, the
+image $X$ is split into a set of $I \times J$ (non-overlapping) patches
 $P = \left\{ p_{i,j} \right\}$, where $I = \frac{w}{w_p}$, $J = \frac{h}{h_p}$
 and $p_{i,j} \in \RR^{w_p \times h_p \times c}$ is the $(i,j)$-th patch of the
 input image. The first index $i$ is the horizontal index and the other index
@@ -163,35 +164,38 @@ a bottom-up direction and the other working in a top-down direction.
 Each RNN takes as an input one (flattened) patch at a time and updates its
 hidden state $C^*$ (in the usual way, depending on the RNN implementation),
 working \emph{along each column} $j$ of the split input image $X$ to produce
-two output vectors $v^F$ and $v^R$ defined as follows
+two output vectors $o^{\uparrow}$ and $o^{\downarrow}$ defined as follows
 \begin{align}
-    v^F_{i,j} = f_{\text{VFWD}}(C^F_{i,j-1},p_{i,j}), &\text{ for
-    }j=1,\cdots, J\\
-    v^R_{i,j} = f_{\text{VREV}}(C^R_{i,j+1},p_{i,j}), &\text{ for
-    }j=J,\cdots,1
+    o^{\uparrow}_{i,j} = f^\uparrow(C^{\uparrow}_{i,j-1},p_{i,j}),
+        &\text{ for }j=1,\cdots, J\\
+    o^{\downarrow}_{i,j} = f^\downarrow(C^{\downarrow}_{i,j+1},p_{i,j}),
+        &\text{ for }j=J,\cdots,1
 \end{align}
 
-Note that $f_{\text{VFWD}}$ and $f_{\text{VREV}}$ return the activation of the
-recurrent hidden unit, and may be implemented either as a simple $\tanh$
-layer, as a gated recurrent layer~\citep{Cho2014} or as a long short-term
-memory layer~\citep{Hochreiter+Schmidhuber-1997}, as detailed
+Note that the functions $f^\uparrow$ and $f^\downarrow$ return the
+activation of the recurrent hidden unit, and may be implemented either as a
+simple $\tanh$ layer, as a gated recurrent layer~\citep{Cho2014} or as a long
+short-term memory layer~\citep{Hochreiter+Schmidhuber-1997}, as detailed
 in~\autoref{sec:rnn}, \autoref{sec:LSTM} and \autoref{sec:GRU}).
 
 After this vertical, bidirectional sweep, the intermediate hidden states
-$v^F_{i,j}$ and $v^R_{i,j}$ are concatenated at each location $(i,j)$ to get a
-composite feature map $V=~\left\{v_{i,j}^F,~v_{i,j}^B\right\}_{
-i=1,\ldots,I}^{ j=1,\ldots,J}$, where $v_{i,j} \in \RR^{2d}$ and $d$ is the
-number of recurrent units.  Each $v_{i,j}$ is now the activation of a feature
-detector at the location $(i,j)$ with respect to all the patches in the $j$-th
-column of the original input ($p_{i, j}$ for all $i$).
+$o^{\uparrow}_{i,j}$ and $o^{\downarrow}_{i,j}$ are concatenated at each
+location $(i,j)$ to get a composite feature map
+$O^\updownarrow=~\left\{o_{i,j}^{\uparrow},~o_{i,j}^{\downarrow}\right\}_
+{i=1,\ldots,I}^{j=1,\ldots,J}$, where each element $o^\updownarrow_{i,j} \in
+\RR^{2d}$ and $d$ is the number of recurrent units. Each $o_{i,j}$ is now the
+activation of a feature detector at the location $(i,j)$ with respect to all
+the patches in the $j$-th column of the original input ($p_{i, j}$ for all
+$i$).
 
-Next, the obtained composite feature map $V$ is swept horizontally with two
-different RNNs ($f_{\text{HFWD}}$ and $f_{\text{HREV}}$). In a similar manner
-as for the vertical sweep, these RNNs work along each row of $V$ and produce an
-output feature map $H = \left\{ h_{i,j} \right\}$, where $h_{i,j} \in
-\RR^{2d}$. In this representation, each vector $h_{i,j}$ represents the
-features of the original image patch $p_{i,j}$ \emph{in the context of the
-whole image}.
+Next, the obtained composite feature map $O^\updownarrow$ is swept
+horizontally with two different RNNs ($f^{\rightarrow}$ and $f^{\leftarrow}$).
+In a similar manner as for the vertical sweep, these RNNs work along each row
+of $O^\updownarrow$ and produce an output feature map $O^\leftrightarrow =
+\left\{o^\leftrightarrow_{i,j} \right\}$, where $o^\leftrightarrow_{i,j} \in
+\RR^{2d}$. In this representation, each vector $o^\leftrightarrow_{i,j}$
+represents the features of the original image patch $p_{i,j}$
+\emph{in the context of the whole image}.
 
 This is a critical feature of this model, in fact just one layer (to be
 precise, two sub-layers) allows to capture the full context of the image,
@@ -211,7 +215,7 @@ image.
 Even if each ReNet layer captures the full input context, it is clearly still
 possible to stack multiple ReNet layers on top of each other into a deep
 network. Let us denote by $\phi$ the function from the input image (or feature
-map) $X$ of one ReNet layer to the output feature map $H$
+map) $X$ of one ReNet layer to the output feature map $O^\leftrightarrow$
 (see~\autoref{fig:renet_layer} for a graphical illustration). It is possible
 to compute a composition of functions $\Phi = \phi_1(\phi_2(\phi_3(\dots)))$ by
 stacking multiple ReNet layers, to capture increasingly complex features of the
