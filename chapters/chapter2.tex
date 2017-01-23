@@ -645,8 +645,8 @@ weights in order to minimize some error
 
 \begin{equation}
     %w_{ij}^{(l)} = w_{ij}^{(l)} + \eta \frac{\partial E}{\partial w_{ij}^{(l)}}
-    \mathbf{W}\rvert_t = \mathbf{W}\rvert_{t-1} - \eta \frac{\partial E}
-        {\partial \mathbf{W}\rvert_{t-1}},
+    \mathbf{W}\rvert_t = \mathbf{W}\rvert_{t-1} - \eta \left.\frac{\partial E}
+        {\partial \mathbf{W}}\right\rvert_{t-1},
 \end{equation}
 
 \noindent where $\eta$ is a scaling factor typically referred to as
@@ -655,7 +655,9 @@ weights in order to minimize some error
 It is easier to understand backpropagation with a practical example. Consider
 once again~\autoref{fig:MLP}: the network processes a bidimensional input
 $\mathbf{x}$ and, after three layers of affine transformations followed by
-nonlinearities, returns a unidimensional value $\mathbf{\hat y}$. The correct
+nonlinearities, returns a scalar value $\hat y$. To keep the narrative as
+general as possible a $1 \times 1$ vector $\mathbf{\hat y}$ will be used to
+denote the output to encompass the case of multiple output units. The correct
 output $\mathbf{y}$ is given and is used to compute the error, or~\emph{cost},
 with some \emph{differentiable} metric. For this example consider the mean
 squared error (MSE)
@@ -672,7 +674,7 @@ $\mathbf{\hat y(x)}$ and represents the output of the network for one input samp
 $\mathbf{x}$.
 
 It is possible to compute the fraction of the error that can be attributed to
-each neuron of the network by taking the derivative of the error with respect
+each weight of the network by taking the derivative of the error with respect
 to it
 
 \begin{align}\label{eq:backprop_step1}
@@ -694,7 +696,7 @@ to it
 
 Backpropagation allows one to compute the partial derivative
 $-\frac{\partial\mathbf{\hat y}}{\partial w_{ij}^{(l)}}$
-exploiting the chain rule of derivation. Consider e.g., one weight of the
+exploiting the chain rule of derivation. Consider, e.g., one weight of the
 second layer $w_{ij}^{(2)}$
 
 \begin{align}\label{eq:backprop_step2}
@@ -741,11 +743,10 @@ Replacing $\mathbf{\hat y}$ with the corresponding activation
 \noindent with $[a_{j}^{(1)}]_i$ a vector of the same size as $\mathbf{z}^{(2)}$
 whose $i$-th element is equal to $a_j^{(1)}$ and all the other elements are
 $0$. Each derivative $\frac{\partial \mathbf{a}^{(l)}}{\partial
-\mathbf{z}^{(l)}}$ corresponds to the $n \times n$ matrices
+\mathbf{z}^{(l)}}$ corresponds to an $n \times n$ matrix
 
 \begin{equation}\label{eq:backprop_activation_derivatives}
     \frac{\partial \mathbf{a}^{(l)}}{\partial \mathbf{z}^{(l)}} =
-    \Sigma'(\mathbf{a}^{(l)}) =
     \begin{bmatrix}
         \frac{\partial \sigma_{0}(\mathbf{z}^{(l)})}
              {\partial z^{(l)}_{0}} & \cdots &
@@ -760,8 +761,12 @@ $0$. Each derivative $\frac{\partial \mathbf{a}^{(l)}}{\partial
 \end{equation}
 
 \noindent with $n$ the cardinality of $\mathbf{z}^{(l)}$ and
-$\mathbf{a}^{(l)}$. Interestingly, when $\sigma$ is a function applied
-elementwise (e.g.\ in the case of logistic, tanh and ReLU activations),
+$\mathbf{a}^{(l)}$. Note that part of these derivatives, namely $\sigma'$, can
+be computed analytically
+%taking the derivative of the activation function of choice
+(see e.g.~\autoref{eq:logistic_derivative} and \autoref{eq:relu_derivative})
+and applied directly in the formula. Interestingly, when $\sigma$ is a function
+applied elementwise (e.g.\ in the case of logistic, tanh and ReLU activations),
 $\sigma_{i}(\mathbf{z}^{(l)})=\sigma(z_{i}^{(l)})$, i.e.
 $\sigma_{i}(\mathbf{z}^{(l)})$ only depends on the $i$-th element of $z$. When
 this is the case \autoref{eq:backprop_activation_derivatives} is a diagonal
@@ -769,7 +774,6 @@ matrix
 
 \begin{equation}\label{eq:backprop_activation_derivatives}
     \frac{\partial \mathbf{a}^{(l)}}{\partial \mathbf{z}^{(l)}} =
-    \Sigma'(\mathbf{a}^{(l)}) =
     \begin{bmatrix}
         \sigma'(z_{0}^{(l)}) & & \text{\raisebox{-0.75ex}{\Large 0}} \\
         & \ddots & \\
@@ -778,10 +782,7 @@ matrix
     \end{bmatrix},
 \end{equation}
 
-\noindent and $sigma'$ can be computed analytically taking the derivative of
-the activation function of choice (see e.g.~\autoref{eq:logistic_derivative}
-and \autoref{eq:relu_derivative}). This can be exploited to speed up
-computation.
+\noindent which can be exploited to speed up computation.
 
 % The rest of this chapter will focus on two very common kinds of ANNs
 % respectively characterized by a feedforward and feedback connectivity pattern,
