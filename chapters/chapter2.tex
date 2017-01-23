@@ -761,12 +761,11 @@ $0$. Each derivative $\frac{\partial \mathbf{a}^{(l)}}{\partial
 \end{equation}
 
 \noindent with $n$ the cardinality of $\mathbf{z}^{(l)}$ and
-$\mathbf{a}^{(l)}$. Note that part of these derivatives, namely $\sigma'$, can
-be computed analytically
-%taking the derivative of the activation function of choice
-(see e.g.~\autoref{eq:logistic_derivative} and \autoref{eq:relu_derivative})
-and applied directly in the formula. Interestingly, when $\sigma$ is a function
-applied elementwise (e.g.\ in the case of logistic, tanh and ReLU activations),
+$\mathbf{a}^{(l)}$. Note that the derivative of the nonlinear function of
+choice can be computed analytically as done in~\autoref{eq:logistic_derivative}
+and \autoref{eq:relu_derivative} and applied directly in the formula.
+Interestingly, when $\sigma$ is a function applied elementwise (e.g.\ in the
+case of logistic, tanh and ReLU activations),
 $\sigma_{i}(\mathbf{z}^{(l)})=\sigma(z_{i}^{(l)})$, i.e.
 $\sigma_{i}(\mathbf{z}^{(l)})$ only depends on the $i$-th element of $z$. When
 this is the case \autoref{eq:backprop_activation_derivatives} is a diagonal
