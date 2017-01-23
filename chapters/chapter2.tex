@@ -645,11 +645,12 @@ minimize some error
 
 \begin{equation}
     %w_{ij}^{(l)} = w_{ij}^{(l)} + \eta \frac{\partial E}{\partial w_{ij}^{(l)}}
-    \mathbf{W} = \mathbf{W} - \eta \frac{\partial E}{\partial \mathbf{W}},
+    \mathbf{W}\rvert_t = \mathbf{W}\rvert_{t-1} - \eta \frac{\partial E}
+        {\partial \mathbf{W}\rvert_{t-1}},
 \end{equation}
 
 \noindent where $\eta$ is a scaling factor typically referred to as
-\emph{learning rate}, that determines the size of the gradient descent steps.
+\emph{learning rate} that determines the size of the gradient descent steps.
 
 It is easier to understand backpropagation with a practical example. Consider
 once again~\autoref{fig:MLP}: the network processes a bidimensional input
@@ -660,7 +661,8 @@ with some \emph{differentiable} metric. For this example consider the mean
 squared error (MSE)
 
 \begin{equation}\label{eq:MSE}
-    E_{mse} = \frac{1}{M} \sum_{\mathcal{D}}\frac{1}{2}(\mathbf{y} - \mathbf{\hat y})^2,
+    E_{mse} = \frac{1}{M} \sum_{\mathcal{D}}
+        \frac{1}{2}\left\Vert\mathbf{y} - \mathbf{\hat y}\right\Vert_2,
 \end{equation}
 
 \noindent the summation is done over a dataset $\mathcal{D}$ of $M$ samples,
@@ -676,75 +678,110 @@ to it
 \begin{align}\label{eq:backprop_step1}
 \begin{split}
     \frac{\partial E_{mse}}{\partial w_{ij}^{(l)}} &=
-    \frac{\partial}{\partial w_{ij}^{(l)}}\left(
-        \frac{1}{m}\sum_{\mathcal{D}}\left[
-        \frac{1}{2}(\mathbf{y} - \mathbf{\hat y})^2\right]\right) \\
-    &= \frac{1}{m}\sum_{\mathcal{D}} \left[\frac{1}{2}
         \frac{\partial}{\partial w_{ij}^{(l)}}
-        \left(\mathbf{y} - \mathbf{\hat y}\right)^2\right] \\
-    &= \frac{1}{m}\sum_{\mathcal{D}}\left[(\mathbf{y} - \mathbf{\hat y})
-        \cdot \frac{\partial}{\partial w_{ij}^{(l)}}(-\mathbf{\hat y})\right] \\
+        \left(\frac{1}{m}\sum_{\mathcal{D}}
+        \left[\frac{1}{2}\left\Vert\mathbf{y} - \mathbf{\hat y}\right\Vert_2
+        \right]\right) \\
+    &= \frac{1}{m}\sum_{\mathcal{D}} \left[\frac{1}{2}
+        \frac{\partial}{\partial w_{ij}^{(l)}}\left[
+         \left(\mathbf{y} - \mathbf{\hat y}\right)^T
+         \left(\mathbf{y} - \mathbf{\hat y}\right)\right]\right] \\
+    &= \frac{1}{m}\sum_{\mathcal{D}}\left[(\mathbf{y} - \mathbf{\hat y})^T
+        \frac{\partial(-\mathbf{\hat y})}{\partial w_{ij}^{(l)}}
+        \right].
 \end{split}
 \end{align}
 
 Backpropagation allows one to compute the partial derivative
-$\frac{\partial}{\partial w_{ij}^{(l)}}(-\mathbf{\hat y})$
-exploiting the chain rule of derivation. Consider e.g., the weights of the
-second layer $\mathbf{W}^{(2)}$
+$-\frac{\partial\mathbf{\hat y}}{\partial w_{ij}^{(l)}}$
+exploiting the chain rule of derivation. Consider e.g., one weight of the
+second layer $w_{ij}^{(2)}$
 
 \begin{align}\label{eq:backprop_step2}
 \begin{split}
-    -\frac{\partial\mathbf{\hat y}}{\partial \mathbf{W}^{(2)}} &=
+    -\frac{\partial\mathbf{\hat y}}{\partial w_{ij}^{(2)}} &=
         -\frac{\partial \mathbf{\hat y}}{\partial \mathbf{z}^{(4)}} \cdot
-        \frac{\partial \mathbf{z}^{(4)}}{\partial \mathbf{W}^{(2)}} \\
+        \frac{\partial \mathbf{z}^{(4)}}{\partial w_{ij}^{(2)}} \\
     &= -\frac{\partial \mathbf{\hat y}} {\partial \mathbf{z}^{(4)}} \cdot
         \frac{\partial \mathbf{z}^{(4)}}{\partial \mathbf{a}^{(3)}} \cdot
-        \frac{\partial \mathbf{a}^{(3)}}{\partial \mathbf{W}^{(2)}} \\
+        \frac{\partial \mathbf{a}^{(3)}}{\partial w_{ij}^{(2)}} \\
     &= -\frac{\partial \mathbf{\hat y}} {\partial \mathbf{z}^{(4)}} \cdot
         \frac{\partial \mathbf{z}^{(4)}}{\partial \mathbf{a}^{(3)}} \cdot
         \frac{\partial \mathbf{a}^{(3)}}{\partial \mathbf{z}^{(3)}} \cdot
-        \frac{\partial \mathbf{z}^{(3)}}{\partial \mathbf{W}^{(2)}} \\
+        \frac{\partial \mathbf{z}^{(3)}}{\partial w_{ij}^{(2)}} \\
     &= -\frac{\partial \mathbf{\hat y}} {\partial \mathbf{z}^{(4)}} \cdot
         \frac{\partial \mathbf{z}^{(4)}}{\partial \mathbf{a}^{(3)}} \cdot
         \frac{\partial \mathbf{a}^{(3)}}{\partial \mathbf{z}^{(3)}} \cdot
         \frac{\partial \mathbf{z}^{(3)}}{\partial \mathbf{a}^{(2)}} \cdot
-        \frac{\partial \mathbf{a}^{(2)}}{\partial \mathbf{W}^{(2)}} \\
+        \frac{\partial \mathbf{a}^{(2)}}{\partial w_{ij}^{(2)}} \\
     &= -\frac{\partial \mathbf{\hat y}} {\partial \mathbf{z}^{(4)}} \cdot
         \frac{\partial \mathbf{z}^{(4)}}{\partial \mathbf{a}^{(3)}} \cdot
         \frac{\partial \mathbf{a}^{(3)}}{\partial \mathbf{z}^{(3)}} \cdot
         \frac{\partial \mathbf{z}^{(3)}}{\partial \mathbf{a}^{(2)}} \cdot
         \frac{\partial \mathbf{a}^{(2)}}{\partial \mathbf{z}^{(2)}} \cdot
-        \frac{\partial \mathbf{z}^{(2)}}{\partial \mathbf{W}^{(2)}}
+        \frac{\partial \mathbf{z}^{(2)}}{\partial w_{ij}^{(2)}}.
 \end{split}
 \end{align}
 
-\noindent Since $\partial\sigma(\mathbf{a})=\sigma' \hadamard
-\partial\mathbf{a}$, from \autoref{eq:MLP_affine} and
+Replacing $\mathbf{\hat y}$ with the corresponding activation
+(i.e., $\mathbf{a}^{(4)}$ in this example), from \autoref{eq:MLP_affine} and
 \autoref{eq:MLP_activation} follows
 
 \begin{equation}\label{eq:backprop_step3}
-    -\frac{\partial\mathbf{\hat y}}{\partial \mathbf{W}^{(2)}} =
-        \sigma'(\mathbf{z}^{(4)}) \hadamard \mathbf{W}^{(4)} \cdot
-        \sigma'(\mathbf{z}^{(3)}) \hadamard \mathbf{W}^{(3)} \cdot
-        \sigma'(\mathbf{z}^{(2)}) \hadamard \mathbf{a}^{(1)^T},
+    -\frac{\partial\mathbf{\hat y}}{\partial w_{ij}^{(2)}} =
+       -\frac{\partial \mathbf{a}^{(4)}} {\partial \mathbf{z}^{(4)}} \cdot
+        \mathbf{W}^{(4)} \cdot
+        \frac{\partial \mathbf{a}^{(3)}}{\partial \mathbf{z}^{(3)}} \cdot
+        \mathbf{W}^{(3)} \cdot
+        \frac{\partial \mathbf{a}^{(2)}}{\partial \mathbf{z}^{(2)}} \cdot
+        %\frac{\partial \mathbf{z}^{(2)}}{\partial w_{ij}^{(2)}},
+        [a_{j}^{(1)}]_i,
 \end{equation}
 
-\noindent where $\mathbf{a} \hadamard \mathbf{b}$ represents the elementwise
-product of two vectors $\mathbf{a}$ and $\mathbf{b}$, also known as the
-Hadamard product. By applying the rule $\mathbf{A} \cdot (\mathbf{B} \hadamard
-\mathbf{C}) = (\mathbf{A} \hadamard \mathbf{B}) \cdot \mathbf{C}$,
-\autoref{eq:backprop_step3} can be rewritten as
+\noindent with $[a_{j}^{(1)}]_i$ a vector of the same size as $\mathbf{z}^{(2)}$
+whose $i$-th element is equal to $a_j^{(1)}$ and all the other elements are
+$0$. Each derivative $\frac{\partial \mathbf{a}^{(l)}}{\partial
+\mathbf{z}^{(l)}}$ corresponds to the $n \times n$ matrices
 
-\begin{equation}\label{eq:backprop_step4}
-    -\frac{\partial\mathbf{\hat y}}{\partial \mathbf{W}^{(2)}} =
-        \sigma'(\mathbf{z}^{(4)}) \hadamard \mathbf{W}^{(4)} \cdot
-        \sigma'(\mathbf{z}^{(3)}) \hadamard \mathbf{W}^{(3)} \cdot
-        \sigma'(\mathbf{z}^{(2)}) \hadamard \mathbf{a}^{(1)}.
+\begin{equation}\label{eq:backprop_activation_derivatives}
+    \frac{\partial \mathbf{a}^{(l)}}{\partial \mathbf{z}^{(l)}} =
+    \Sigma'(\mathbf{a}^{(l)}) =
+    \begin{bmatrix}
+        \frac{\partial \sigma_{0}(\mathbf{z}^{(l)})}
+             {\partial z^{(l)}_{0}} & \cdots &
+        \frac{\partial \sigma_{0}(\mathbf{z}^{(l)})}
+             {\partial z^{(l)}_{n}} \\
+        \vdots & \ddots & \vdots \\
+        \frac{\partial \sigma_{n}(\mathbf{z}^{(l)})}
+             {\partial z^{(l)}_{0}} & \cdots &
+        \frac{\partial \sigma_{n}(\mathbf{z}^{(l)})}
+             {\partial z^{(l)}_{n}}
+    \end{bmatrix},
 \end{equation}
 
-Note that $\sigma'$ can be computed analytically and depends on the activation
-function of choice (see e.g.~\autoref{eq:logistic_derivative} and
-\autoref{eq:relu_derivative}).
+\noindent with $n$ the cardinality of $\mathbf{z}^{(l)}$ and
+$\mathbf{a}^{(l)}$. Interestingly, when $\sigma$ is a function applied
+elementwise (e.g.\ in the case of logistic, tanh and ReLU activations),
+$\sigma_{i}(\mathbf{z}^{(l)})=\sigma(z_{i}^{(l)})$, i.e.
+$\sigma_{i}(\mathbf{z}^{(l)})$ only depends on the $i$-th element of $z$. When
+this is the case \autoref{eq:backprop_activation_derivatives} is a diagonal
+matrix
+
+\begin{equation}\label{eq:backprop_activation_derivatives}
+    \frac{\partial \mathbf{a}^{(l)}}{\partial \mathbf{z}^{(l)}} =
+    \Sigma'(\mathbf{a}^{(l)}) =
+    \begin{bmatrix}
+        \sigma'(z_{0}^{(l)}) & & \text{\raisebox{-0.75ex}{\Large 0}} \\
+        & \ddots & \\
+        \text{\raisebox{0.75ex}{\Large 0}}
+        & & \sigma'(z_{n}^{(l)})
+    \end{bmatrix},
+\end{equation}
+
+\noindent and $sigma'$ can be computed analytically taking the derivative of
+the activation function of choice (see e.g.~\autoref{eq:logistic_derivative}
+and \autoref{eq:relu_derivative}). This can be exploited to speed up
+computation.
 
 % The rest of this chapter will focus on two very common kinds of ANNs
 % respectively characterized by a feedforward and feedback connectivity pattern,
