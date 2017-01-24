@@ -136,7 +136,7 @@ done by much of the past ML literature -- but rather the two should be mixed
 together in a coherent and joint architecture. The DEConvLSTM intertwines space
 with time at each step of the hierarchy~(see~\autoref{fig:deconvlstm_model}),
 taking inspiration from the convolutional LSTM (ConvLSTM) model described
-in~\cite{ShiCWYWW15}.
+in~\citep{ShiCWYWW15}.
 % and pushing that intuition further.
 As many successful models for semantic segmentation on static images, the
 DEConvLSTM couples an encoding and a decoding pathway, that respectively shrink
@@ -163,7 +163,7 @@ and then building on that to uncover the novelties of the proposed model.
 
 \subsection{Convolutional LSTM}
 
-In~\cite{ShiCWYWW15} the authors propose the ConvLSTM model that is a
+In~\citep{ShiCWYWW15} the authors propose the ConvLSTM model that is a
 modification of the well-known LSTM with peephole connections. To allow for a
 more convenient comparison, the equations of the vanilla LSTM with peephole
 connections (that were defined in~\autoref{eq:LSTM_peepholes}) are reported
@@ -195,7 +195,7 @@ W_{\star x} \cdot x_t$~\footnote{The $\star$ notation here is used as a
 placeholder to represent any letter or string. In this particular case it
 takes the place of \textit{i, f, c} and \textit{o}.}.
 
-The convolutional LSTM of~\cite{ShiCWYWW15} replaces the dot products with
+The convolutional LSTM of~\citep{ShiCWYWW15} replaces the dot products with
 convolutions, leading to the following formulation
 
 \begin{equation}
@@ -310,11 +310,11 @@ both directions at the same time, i.e., from the first element forwards and
 from the last element backwards. This allows them to integrate information
 coming from previous and following elements at each position of the sequence.
 In videos, this ensures a smoother temporal consistency in the predictions. In
-contrast with~\cite{ShiCWYWW15}, the DEConvLSTM model exploits bidirectional
+contrast with~\citep{ShiCWYWW15}, the DEConvLSTM model exploits bidirectional
 LSTMs to enforce temporal coherence in the predictions.
 
 The forward and backward passes can be combined at each time step either via
-concatenation over the feature maps axis, as initially suggested in~\cite{
+concatenation over the feature maps axis, as initially suggested in~\citep{
 Schuster1997bidirecrnn}, or by summing them elementwise. Both alternatives have
 been explored in the early exploratory experiments for the DEConvLSTM model,
 including a variant of the sum that learns the parameters of a weighted sum
@@ -331,7 +331,7 @@ performance and has therefore been selected as combination method for the
 rest of the experiments. However, as a future work, it could be interesting to
 assess whether the accuracy gain justifies the higher memory consumption.
 % Due to memory constraints, we don't follow the trend of concatenating the B-RNN
-% outputs \cite{}, but rather sum them
+% outputs \citep{}, but rather sum them
 
 
 \subsection{Skip Connections}\label{sec:deconvLSTM_skip_connections}
@@ -437,7 +437,7 @@ have been labeled as "void", when it was not possible to find a proper match
 with any of the 32 classes. The CamVid dataset consists of 367 training, 101
 validation, and 233 test images, for a total of 701 images and corresponding
 annotations The DEConvLSTM model has been trained on the same variant of the
-dataset as the one used by~\cite{badrinarayanan2015segnet}, that consists of a
+dataset as the one used by~\citep{badrinarayanan2015segnet}, that consists of a
 subset of 11 class categories and downsamples the images by a factor of 2
 resulting in a final $480 \times 360$ resolution. The dataset contains video
 sequences but has mostly been used for still image semantic segmentation in the

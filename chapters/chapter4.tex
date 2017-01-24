@@ -55,7 +55,7 @@ Historically the computer vision community tackled this problem by building
 very specialized hand-engineered algorithms that relied heavily on very
 specific domain knowledge. Many of these methods addressed the segmentation
 problem looking for highly discriminative local and global features, such as
-pixel color (possibly in multiple color spaces, see e.g.,~\cite{
+pixel color (possibly in multiple color spaces, see e.g.,~\citep{
 cheng2001color}); histogram of oriented gradients (HoG)~\citep{Dalal05,
 bourdev2010detecting,felzenszwalb2010object} -- where the input space is
 described with a discrete function that maps locations to colors and the
@@ -66,8 +66,9 @@ SURF~\citep{bay2008speeded}, Kaze~\citep{alcantarilla2012kaze}, CenSurE~\citep{
 agrawal2008censure}, BRISK~\citep{leutenegger2011brisk}; poselets~\citep{
 brox2011object,bourdev2010detecting} that annotate keypoints of the object to
 be detected; dimensionality reduction methods (see e.g., principal components
-analysis (PCA)~\cite{smith2002tutorial,shlens2014tutorial,chen2011pixel} and
-ZCA whitening~(see e.g.,~\cite{KrizhevskyHinton2009} for a good introduction)).
+analysis (PCA)~\citep{smith2002tutorial,shlens2014tutorial,chen2011pixel} and
+ZCA whitening~(see e.g.,~\citep{KrizhevskyHinton2009} for a good
+introduction)).
 
 Other classical methods for semantic segmentation include clustering
 algorithms~\citep[see e.g.,~][]{hartigan1975clustering,chen1998image}, that
@@ -102,7 +103,7 @@ methods is that the prediction in every location should be consistent with the
 one of the neighbouring locations. The pattern of these dependencies can vary
 across different implementations and is usually defined based on specific
 domain knowledge. For a complete survey on segmentation,
-see~\cite{thoma2016survey}.
+see~\citep{thoma2016survey}.
 
 This chapter introduces the second main contribution of this work. The ReSeg
 model~\citep{Visin_2016_CVPR_Workshops} builds on
@@ -114,7 +115,7 @@ connections built in the model, ReSeg is able to capture the \emph{global}
 scene depicted in the image and exploit it to perform fine, high resolution,
 semantic segmentation focusing on \emph{local} details.
 
-This work extends the preliminary results of~\cite{visin2015renet} modifying
+This work extends the preliminary results of~\citep{visin2015renet} modifying
 and extending the ReNet model to the more ambitious task of object
 segmentation. The performance of the proposed model are tested on some of the
 historically most used datasets in this field, namely the Weizmann~Horse
@@ -158,7 +159,7 @@ perform well on a wide variety of vision tasks.
 
 Similarly, in the semantic segmentation panorama there is a tendency to convert
 the standard deep CNN classifier into Fully Convolutional Networks (FCN) (see
-e.g.,~\cite{long2014fully,noh2015learning, badrinarayanan2015segnet,
+e.g.,~\citep{long2014fully,noh2015learning, badrinarayanan2015segnet,
 Ronneberger2015}) to obtain coarse image representations, which are
 subsequently upsampled to recover the lost resolution. However, these deep CNNs
 heavily reduce the input resolution through successive applications of pooling
@@ -169,12 +170,12 @@ per pixel prediction is required.
 
 %% Upsampling
 The information recovery problem has been tackled in a large variety of ways.
-For instance, \cite{Eigen2015} proposed a multi-scale architecture that
+For instance, \citep{Eigen2015} proposed a multi-scale architecture that
 extracts coarse predictions, which are then refined using finer scales.
 \cite{Farabet:2013} introduced a multi-scale CNN architecture;
 \cite{Hariharan2015} combine the information distributed over all layers to
 make accurate predictions. Other methods such
-as~\cite{long2014fully,badrinarayanan2015segnet} use simple bilinear
+as~\citep{long2014fully,badrinarayanan2015segnet} use simple bilinear
 interpolation to upsample the feature maps of increasingly abstract layers and
 \cite{Ronneberger2015} concatenate the feature maps of the downsampling layers
 with the feature maps of the upsampling layers to help recover finer
@@ -202,15 +203,15 @@ to capture long distance pixel dependencies with the goal to improve semantic
 segmentation~\citep{Pinheiro:2014,Gatta14-deepvision,chen2015semantic,
 byeon2015scene,stollenga2015parallel}.
 
-For instance, in~\cite{Pinheiro:2014} and \cite{Gatta14-deepvision}, CNN are
+For instance, in~\citep{Pinheiro:2014,Gatta14-deepvision}, CNN are
 unrolled through different time steps to include semantic feedback connections.
-In~\cite{byeon2015scene}, 2-dimensional Long Short Term Memory, which
+In~\citep{byeon2015scene}, 2-dimensional Long Short Term Memory, which
 consist of 4 LSTM blocks scanning all directions of an image (left-bottom,
 left-top, right-top, right-bottom), are introduced to learn long range spatial
-dependencies. Following a similar direction, in~\cite{stollenga2015parallel},
+dependencies. Following a similar direction, in~\citep{stollenga2015parallel},
 multi-dimensional LSTM are swept along different image directions; however, in
 this case, computations are re-arranged in a pyramidal fashion for efficiency
-reasons. Finally, in~\cite{visin2015renet}, ReNet is proposed to model pixel
+reasons. Finally, in~\citep{visin2015renet}, ReNet is proposed to model pixel
 dependencies in the context of image classification. It is worth noting that
 an important consequence of the adoption of the ReNet spatial sequences is
 that they are even more easily parallelizable, as each RNN is dependent only
@@ -220,7 +221,7 @@ pixels can be processed at the same time.
 The ReSeg model, that is the subject of this chapter, aims to be an {\em
 efficient} application of recurrent Neural networks to retrieve contextual
 information from images. The goal of this model is to extend the ReNet
-architecture~\cite{visin2015renet}, originally designed for image
+architecture~\citep{visin2015renet}, originally designed for image
 classification, to deal with the more ambitious task of semantic segmentation.
 
 As explained in~\autoref{sec:renet} the ReNet layers can efficiently
@@ -364,9 +365,9 @@ is a smooth, continuous function.
 
 The recurrent layers that are the core of this architecture, can be either
 implemented as vanilla $\tanh$ RNN layers, Gated Recurrent Unit~(GRU)
-layers~\cite{Cho2014} or LSTM~layers~\cite{Hochreiter+Schmidhuber-1997}.
+layers~\citep{Cho2014} or LSTM~layers~\citep{Hochreiter+Schmidhuber-1997}.
 Previous work has shown that the ReNet model can perform well with little
-concern for the specific recurrent unit used~\cite{visin2015renet}. The ReSeg
+concern for the specific recurrent unit used~\citep{visin2015renet}. The ReSeg
 model was tested choosing GRU units over alternative implementations, as
 they strike a good balance between memory usage and computational power, but
 nothing prevents from using different kinds of RNN layers.
@@ -388,9 +389,9 @@ it would require large kernels and stride sizes to upsample by the required
 factor. Transposed convolutions are both memory and computation efficient, and
 are the ideal method to tackle this problem.
 
-Transposed convolutions -- also known as \emph{fractionally strided
-convolutions} -- have been employed in many works in recent
-literature~\cite{Zeiler-ICCV2011,ZeilerFergus14,long2015fully,
+Transposed convolutions~(introduced in \autoref{sec:transposed_conv}) -- also
+known as \emph{fractionally strided convolutions} -- have been employed in many
+works in recent literature~\citep{Zeiler-ICCV2011,ZeilerFergus14,long2015fully,
 radford2015unsupervised,im2016generating}. This method is based on the
 observation that direct convolutions can be expressed as a dot product between
 the flattened input and a sparse matrix, whose non-zero elements are elements
@@ -404,7 +405,7 @@ implementation of this operation can be obtained exploiting the gradient
 operation of the convolution -- whose optimized implementation can be found in
 many of the most popular libraries for neural networks. For an in-depth and
 comprehensive analysis of each alternative,
-%we refer the interested reader to~\cite{dumoulin2016guide}.
+%we refer the interested reader to~\citep{dumoulin2016guide}.
 see~\autoref{sec:transposed_conv}.
 
 
@@ -423,7 +424,7 @@ dataset is briefly introduced, the settings of each experiment are then
 outlined and finally the results are presented and discussed.
 
 \subsubsection{Weizmann Horse}
-The Weizmann Horse dataset, introduced in~\cite{Borenstein04combiningtop-down}
+The Weizmann Horse dataset, introduced in~\citep{Borenstein04combiningtop-down}
 \footnote{http://www.msri.org/people/members/eranb/},
 is an image segmentation dataset consisting of 329 variable size images in both
 RGB and gray scale format, matched with an equal number of groundtruth
@@ -435,7 +436,7 @@ all smaller values to 0, and all greater values to 1. See~\autoref{%
 fig:reseg_samples_horses} for some segmentation samples.
 
 % \subsubsection{Fashionista}
-% The Fashionista dataset from ~\cite{Fashionista} contains 685 RGB images of
+% The Fashionista dataset from ~\citep{Fashionista} contains 685 RGB images of
 % fashion models wearing a variety of different clothing.
 % Each image and its corresponding mask are 400 pixels in width by 600 pixels
 % in height, with encoded values for 53 clothing items. In this work we focus
@@ -443,10 +444,10 @@ fig:reseg_samples_horses} for some segmentation samples.
 % masks from the more complex maps provided by the dataset by creating a new map
 % which preserves the background class as 0, and sets pixels which belong to all
 % other classes to 1. This appears to be the same procedure undertaken in
-% ~\cite{yang2015patchcut} to create a foreground/background task for this dataset.
+% ~\citep{yang2015patchcut} to create a foreground/background task for this dataset.
 
 \subsubsection{Oxford Flowers 17}
-The Oxford Flowers 17 class dataset from~\cite{Nilsback06}\footnote{%
+The Oxford Flowers 17 class dataset from~\citep{Nilsback06}\footnote{%
 http://www.robots.ox.ac.uk/~vgg/data/flowers/} contains 1363
 variable size RGB images, with 848 image segmentations maps associated with
 a subset of the RGB images. There are 8 unique segmentation classes defined
@@ -454,12 +455,12 @@ over all maps, including flower, sky, and grass. To build a
 foreground/background mask, the original segmentation maps have been merged
 together setting any pixel not marked as class 38 (the flower class) to 0, and
 setting all the flower class pixels to 1. This binary segmentation task for
-Oxford Flowers 17 is described in detail in~\cite{Xiaomeng14}.
+Oxford Flowers 17 is described in detail in~\citep{Xiaomeng14}.
 %A larger 102 class Oxford Flowers dataset is available from the same authors.
 See~\autoref{fig:reseg_samples_flowers} for some segmentation samples.
 
 \subsubsection{CamVid Dataset}\label{sec:reseg+camvid}
-The Cambridge-driving Labeled Video Database (CamVid)~\cite{
+The Cambridge-driving Labeled Video Database (CamVid)~\citep{
 Brostow2010semantic}~\footnote{%
 http://mi.eng.cam.ac.uk/research/projects/VideoRec/CamVid/}
 is a real-world dataset which consists of images recorded from a car with an
@@ -472,8 +473,8 @@ dataset. These do not belong to any of the 32 classes prescribed in the
 original data, and are ignored during evaluation. The CamVid dataset is split
 into 367 training, 101 validation and 233 test images for a total of 701 images
 with corresponding annotations. The results presented in this section used the
-same subset of 11 class categories as~\cite{badrinarayanan2015segnet} and in
-order to make the experimental setup fully comparable to~\cite{
+same subset of 11 class categories as~\citep{badrinarayanan2015segnet} and in
+order to make the experimental setup fully comparable to~\citep{
 badrinarayanan2015segnet}, were obtained downsampling all the images by a
 factor of 2 resulting in a final $480 \times 360$ resolution.
 See~\autoref{fig:reseg_samples_camvid} for some segmentation samples.
@@ -512,7 +513,7 @@ leads to better performance on the task at hand.
 A common choice for resizing is to resize every image to the mean width and
 height, calculated over the entire dataset of variable size images. This was
 the strategy adopted for the Weizmann Horse and Oxford Flowers dataset, while
-for the Camvid dataset the standard~\cite{badrinarayanan2015segnet}
+for the Camvid dataset the standard~\citep{badrinarayanan2015segnet}
 downsampling factor of 2 was adopted, resulting in a final $480 \times 360$
 resolution.
 
@@ -536,10 +537,10 @@ those cases.
 
             All foreground baseline & 25.4 & 79.9 \\
             All background baseline & 74.7 & 0.0 \\
-            Kernelized structural SVM \cite{bertelli2011kernelized} & 94.6 & 80.1 \\
+            Kernelized structural SVM \citep{bertelli2011kernelized} & 94.6 & 80.1 \\
             ReSeg (no VGG) & 94.9 & 79.9 \\
-            CRF learning \cite{liu2015crf} & 95.7 & 84.0 \\
-            PatchCut \cite{yang2015patchcut} & 95.8 & 84.0 \\
+            CRF learning \citep{liu2015crf} & 95.7 & 84.0 \\
+            PatchCut \citep{yang2015patchcut} & 95.8 & 84.0 \\
             \textbf{ReSeg} & 96.8 & \textbf{91.6} \\
         \end{tabular}
     }
@@ -558,8 +559,8 @@ those cases.
             All background baseline & 71.0 & 0.0 \\
             All foreground baseline & 29.0 & 29.2 \\
             % \textbf{ReSeg (no VGG)} & 86.9 & \textbf{65.8} \\
-            GrabCut \cite{rother2004grabcut} & 95.9 & 89.3 \\
-            Tri-map \cite{Xiaomeng14} & 96.7 & 91.7 \\
+            GrabCut \citep{rother2004grabcut} & 95.9 & 89.3 \\
+            Tri-map \citep{Xiaomeng14} & 96.7 & 91.7 \\
             \textbf{ReSeg} & 98 & \textbf{93.7} \\
         \end{tabular}
     }
@@ -577,20 +578,20 @@ those cases.
                 \multicolumn{1}{c}{Method} & \multicolumn{1}{c}{\rotatebox{90}{Building}} & \multicolumn{1}{c}{\rotatebox{90}{Tree}} & \multicolumn{1}{c}{\rotatebox{90}{Sky}} & \multicolumn{1}{c}{\rotatebox{90}{Car}} & \multicolumn{1}{c}{\rotatebox{90}{Sign-Symbol}} & \multicolumn{1}{c}{\rotatebox{90}{Road}} & \multicolumn{1}{c}{\rotatebox{90}{Pedestrian}} & \multicolumn{1}{c}{\rotatebox{90}{Fence}} & \multicolumn{1}{c}{\rotatebox{90}{Column-Pole}} & \multicolumn{1}{c}{\rotatebox{90}{Side-walk}} & \multicolumn{1}{c}{\rotatebox{90}{Bicyclist}} & \multicolumn{1}{c}{\rotatebox{90}{Avg class acc}} & \multicolumn{1}{c}{\rotatebox{90}{Global acc}} & \multicolumn{1}{c}{\rotatebox{90}{\textbf{Avg IoU}}}\\ \hline \hline
 
 				\multicolumn{15}{c}{\emph{Segmentation models}} \\ \hline
-                Super Parsing   \cite{tighe2013superparsing} & \textbf{87.0} & 67.1 & \textbf{96.9} & 62.7 & 30.1 & 95.9 & 14.7 & 17.9 & 1.7 & 70.0 & 19.4 & 51.2 & 83.3 & n/a \\ \hline
-				Boosting+Higher order \cite{sturgess2009combining} & 84.5 & 72.6 & \textbf{97.5} & 72.7 & 34.1 & 95.3 & 34.2 & 45.7 & 8.1 & 77.6 & 28.5 & 59.2 & 83.8 & n/a \\ \hline
-				Boosting+Detectors+CRF \cite{ladicky2010and} & 81.5 & 76.6 & 96.2 & 78.7 & 40.2 & 93.9 & 43.0 & 47.6 & 14.3 & 81.5 & 33.9 & 62.5 & 83.8 & n/a \\ \hline
+                Super Parsing   \citep{tighe2013superparsing} & \textbf{87.0} & 67.1 & \textbf{96.9} & 62.7 & 30.1 & 95.9 & 14.7 & 17.9 & 1.7 & 70.0 & 19.4 & 51.2 & 83.3 & n/a \\ \hline
+				Boosting+Higher order \citep{sturgess2009combining} & 84.5 & 72.6 & \textbf{97.5} & 72.7 & 34.1 & 95.3 & 34.2 & 45.7 & 8.1 & 77.6 & 28.5 & 59.2 & 83.8 & n/a \\ \hline
+				Boosting+Detectors+CRF \citep{ladicky2010and} & 81.5 & 76.6 & 96.2 & 78.7 & 40.2 & 93.9 & 43.0 & 47.6 & 14.3 & 81.5 & 33.9 & 62.5 & 83.8 & n/a \\ \hline
 
 				\multicolumn{15}{c}{\emph{Neural Network based segmentation models}} \\ \hline
-				SegNet-Basic (layer-wise training \cite{badrinarayanan2015segnetlayerwise}) & 75.0 & 84.6 & 91.2 & 82.7 & 36.9 & 93.3 & 55.0 & 37.5 & 44.8 & 74.1 & 16.0 & 62.9 & 84.3 & n/a \\ \hline
-                SegNet-Basic \cite{badrinarayanan2015segnet} & 80.6 & 72.0 & 93.0 & 78.5 & 21.0 & 94.0 & 62.5 & 31.4 & 36.6 & 74.0 & 42.5 & 62.3 & 82.8 & 46.3 \\ \hline
-                SegNet \cite{badrinarayanan2015segnet} & \textbf{88.0 } & \textbf{87.3} & 92.3 & 80.0 & 29.5 & \textbf{97.6} & 57.2 & \textbf{49.4} & 27.8 & 84.8 & 30.7 & 65.9 & 88.6 & 50.2 \\ \hline
+				SegNet-Basic (layer-wise training \citep{badrinarayanan2015segnetlayerwise}) & 75.0 & 84.6 & 91.2 & 82.7 & 36.9 & 93.3 & 55.0 & 37.5 & 44.8 & 74.1 & 16.0 & 62.9 & 84.3 & n/a \\ \hline
+                SegNet-Basic \citep{badrinarayanan2015segnet} & 80.6 & 72.0 & 93.0 & 78.5 & 21.0 & 94.0 & 62.5 & 31.4 & 36.6 & 74.0 & 42.5 & 62.3 & 82.8 & 46.3 \\ \hline
+                SegNet \citep{badrinarayanan2015segnet} & \textbf{88.0 } & \textbf{87.3} & 92.3 & 80.0 & 29.5 & \textbf{97.6} & 57.2 & \textbf{49.4} & 27.8 & 84.8 & 30.7 & 65.9 & 88.6 & 50.2 \\ \hline
                 \emph{ReSeg + Class Balance} & 70.6 & 84.6 & 89.6 & 81.1 & \textbf{61.0} & 95.1 & \textbf{80.4} & 35.6 & \textbf{60.6} & \textbf{86.3} & \textbf{60.0} & 73.2 & 83.5 & 53.7 \\ \hline
                 \textbf{ReSeg} & 86.8 & 84.7 & 93.0 & \textbf{87.3} & 48.6 & \textbf{98.0} & 63.3 & 20.9 & 35.6 & \textbf{87.3} & 43.5 & 68.1 & 88.7 & \textbf{58.8} \\ \hline
 
 				\multicolumn{15}{c}{\emph{Sub-model averaging}} \\ \hline
-                \emph{Bayesian SegNet-Basic} \cite{Kendall2015bayesiansegnet} & 75.1 & 68.8 & 91.4 & 77.7 & 52.0 & 92.5 & 71.5 & 44.9 & 52.9 & 79.1 & 69.6 & 70.5 & 81.6 & 55.8 \\ \hline
-                \emph{Bayesian SegNet} \cite{Kendall2015bayesiansegnet} & 80.4 & 85.5 & 90.1 & 86.4 & 67.9 & 93.8 & 73.8 & 64.5 & 50.8 & 91.7 & 54.6 & 76.3 & 86.9 & 63.1 \\ \hline
+                \emph{Bayesian SegNet-Basic} \citep{Kendall2015bayesiansegnet} & 75.1 & 68.8 & 91.4 & 77.7 & 52.0 & 92.5 & 71.5 & 44.9 & 52.9 & 79.1 & 69.6 & 70.5 & 81.6 & 55.8 \\ \hline
+                \emph{Bayesian SegNet} \citep{Kendall2015bayesiansegnet} & 80.4 & 85.5 & 90.1 & 86.4 & 67.9 & 93.8 & 73.8 & 64.5 & 50.8 & 91.7 & 54.6 & 76.3 & 86.9 & 63.1 \\ \hline
 
 			\end{tabular}
 		}
@@ -649,11 +650,11 @@ learned) tiling strategies such as nearest neighbor tiling or bilinear
 interpolation when there is enough data to learn the transformation.
 
 All the transposed convolution upsampling layers were followed by a
-ReLU~\cite{Krizhevsky2012-alexnet} non-linearity and initialized with the
+ReLU~\citep{Krizhevsky2012-alexnet} non-linearity and initialized with the
 fan-in plus fan-out initialization scheme described
-in~\cite{glorot2010understanding}. The recurrent weight matrices were instead
+in~\citep{glorot2010understanding}. The recurrent weight matrices were instead
 initialized to be orthonormal, following the procedure defined
-in~\cite{Saxe2014}. Finally, the stride of the upsampling transposed
+in~\citep{Saxe2014}. Finally, the stride of the upsampling transposed
 convolutional layers was constrained to be tied to their filter size.
 
 One peculiarity of the segmentation task is that each training image carries
@@ -670,24 +671,24 @@ or poorly segmented groundtruth masks. This had a bigger impact on the smaller
 datasets than on Camvid, where the batch size was kept fixed to the value of
 $5$, as a compromise between train speed and memory usage.
 
-All the experiments, used L2 regularization~\cite{Krogh92asimple}, also known
+All the experiments, used L2 regularization~\citep{Krogh92asimple}, also known
 as weight decay, set to $0.001$ to avoid instability at the end of training.
-Also, all the models were trained with the Adadelta~\cite{Zeiler-2012}
+Also, all the models were trained with the Adadelta~\citep{Zeiler-2012}
 optimization algorithm, for its desired property of not requiring a specific
 hyperparameter tuning. The effect of Batch Normalization in RNNs has been a
-focus of attention~\cite{Laurent2015}, but it does not seem to provide a
+focus of attention~\citep{Laurent2015}, but it does not seem to provide a
 reliable improvement in performance, so it was not adopted.
 
-The adaptive learning rate algorithm known as Adam~\cite{Kingma2014} was a
-key ingredient to stable learning, though others such as ~\cite{Zeiler-2012}
+The adaptive learning rate algorithm known as Adam~\citep{Kingma2014} was a
+key ingredient to stable learning, though others such as ~\citep{Zeiler-2012}
 were useful during model development. In addition, gradient norm rescaling was
-also utilized to help with the problems described in~\cite{bengio2013advances}.
+also utilized to help with the problems described in~\citep{bengio2013advances}.
 
 Regularization proved to be another important part of the process on the
 smaller Weizmann Horse and Oxford flowers datasets. For those two, weight
-noise, as described in~\cite{Graves2011}, with a scale 0.075 was applied to all
+noise, as described in~\citep{Graves2011}, with a scale 0.075 was applied to all
 weight matrices before each forward pass in all the experiments.
-Dropout~\cite{Srivastava14} on each forward connection with drop probability of
+Dropout~\citep{Srivastava14} on each forward connection with drop probability of
 $0.2$ on the input, and/or with drop probability of $0.5$ on the hidden
 projections was applied too.
 
@@ -759,7 +760,7 @@ the full ReSeg architecture. This model exhibits state-of-the-art performance
 in terms of IoU when compared to both standard segmentation methods and neural
 network based methods, showing an increase of $17\%$ with respect to the recent
 SegNet model. It is worth highlighting that incorporating sub-model averaging
-to SegNet model, as in \cite{Kendall2015bayesiansegnet}, boosts the original
+to SegNet model, as in \citep{Kendall2015bayesiansegnet}, boosts the original
 model performance, as expected. Therefore, introducing sub-model averaging to
 ReSeg would also presumably result in significant performance increase.
 However, this remains to be tested.
@@ -823,7 +824,7 @@ drop significantly as the network tries to maximize the score on the
 high-occurrence classes, {\em de facto} ignoring the low-occurrence ones. To
 overcome this behaviour, a class-balancing term was added to the cross-entropy
 loss to bias the prediction towards the low-occurrence classes. Specifically,
-\emph{median frequency balancing}~\cite{Eigen2015,eigen2015predicting} was
+\emph{median frequency balancing}~\citep{Eigen2015,eigen2015predicting} was
 employed, which re-weights the class predictions by the ratio between the
 median of the frequencies of the classes (computed on the training set) and the
 frequency of each class:
