@@ -170,8 +170,8 @@ per pixel prediction is required.
 
 %% Upsampling
 The information recovery problem has been tackled in a large variety of ways.
-For instance, \citep{Eigen2015} proposed a multi-scale architecture that
-extracts coarse predictions, which are then refined using finer scales.
+For instance, \citep{eigen2015predicting} proposed a multi-scale architecture
+that extracts coarse predictions, which are then refined using finer scales.
 \cite{Farabet:2013} introduced a multi-scale CNN architecture;
 \cite{Hariharan2015} combine the information distributed over all layers to
 make accurate predictions. Other methods such
@@ -468,40 +468,43 @@ internally mounted camera, capturing frames of $960 \times 720$ RGB pixels per
 frame, with a recording frame rate of 30 frames per second.  A total of ten
 minutes of video was recorded, and approximately one frame per second has been
 manually annotated with per pixel class labels, from one of 32 possible
-classes. A small number of pixels were labelled as void in the original
+classes. A small number of pixels were labeled as void in the original
 dataset. These do not belong to any of the 32 classes prescribed in the
 original data, and are ignored during evaluation. The CamVid dataset is split
 into 367 training, 101 validation and 233 test images for a total of 701 images
-with corresponding annotations. The results presented in this section used the
-same subset of 11 class categories as~\citep{badrinarayanan2015segnet} and in
-order to make the experimental setup fully comparable to~\citep{
-badrinarayanan2015segnet}, were obtained downsampling all the images by a
-factor of 2 resulting in a final $480 \times 360$ resolution.
-See~\autoref{fig:reseg_samples_camvid} for some segmentation samples.
+with corresponding annotations. The results presented in this section were
+obtained on a preprocessed version of the dataset that downscaled the images to
+a resolution of $480 \times 360$ and used a subset of the original labels that
+comprises 11 class categories. This experimental setup was chosen to be able to
+compare the results of the model to those reported
+in~\citep{badrinarayanan2015segnet}. See~\autoref{fig:reseg_samples_camvid} for
+some segmentation samples.
 
 \subsection{Data augmentation and preprocessing}\label{sec:data_preprocessing}
 
 The ReNet model adopted some data augmentation methods to enlarge the dataset
-by adding synthetic data randomly flipping and shifting the images. In ReSeg
-instead, this kinds of data augmentation were not employed.
+by adding synthetic data obtained by randomly flipping and shifting the images.
+In ReSeg instead, this kinds of data augmentation were not employed.
 
-The only data augmentation technique exploited was to randomly invert the
-colors by changing darker colors into lighter colors with probability 0.5, and
-vice-versa. This kind of data augmentation technique is only meaningful when
-working with gray-scale images and was employed for the Weizmann Horse dataset
-only to improve the segmentation performance on light coloured horses, that in
-that dataset are much less represented than darker ones. This allowed to
-significantly improve the performance on Weizmann Horse, probably due to the
-very limited number of images that caused the loss due to even a single image
-misclassification to be significant. The same technique would probably not be
-as effective on bigger and more balanced datasets.
+The only data augmentation technique exploited was to randomly change the
+colors by inverting the intensity values of the whole image with probability
+0.5. This kind of data augmentation technique is only meaningful when working
+with gray-scale images and was employed for the Weizmann Horse dataset only to
+improve the segmentation performance on light colored horses. In that dataset
+in fact the light-colored horses are much less represented than the dark ones
+and the network did not perform very well on the former without data
+augmentation. Its introduction allowed to significantly improve the performance
+on the Weizmann Horse dataset, probably because the misclassification of the
+few light-colored horses impacted severely on the total score due to the very
+limited number of images if the dataset. The same technique would probably not
+be as effective on bigger and more balanced datasets.
 
 The only other data manipulation technique adopted was to resize the
 \emph{training} images to allow for training on batches of multiple images with
 the effect of speeding up the training. The performance loss due to the
 difference in training and validation/test size was negligible, probably thanks
 to the adoption of the pretrained VGG-16 layers that can extract meaningful
-features from the typical image sizes of the adopted datasets.
+features from the typical size of the images in the adopted datasets.
 
 On the contrary, training benefitted a little from resizing the images on some
 of the datasets, probably because eliminating unnecessary and easily explained
@@ -511,11 +514,10 @@ leads to better performance on the task at hand.
 %impact on the class category.
 
 A common choice for resizing is to resize every image to the mean width and
-height, calculated over the entire dataset of variable size images. This was
-the strategy adopted for the Weizmann Horse and Oxford Flowers dataset, while
-for the Camvid dataset the standard~\citep{badrinarayanan2015segnet}
-downsampling factor of 2 was adopted, resulting in a final $480 \times 360$
-resolution.
+height, calculated over the entire dataset of variable size images. This
+strategy was adopted for the Weizmann Horse and Oxford Flowers dataset, while
+in the Camvid dataset case no resize was needed, apart from the one reported
+in~\autoref{sec:reseg+camvid}.
 
 It should be noted that all transformations that involve changes in
 dimensionality or position must also be applied in the same form to the
@@ -657,37 +659,38 @@ initialized to be orthonormal, following the procedure defined
 in~\citep{Saxe2014}. Finally, the stride of the upsampling transposed
 convolutional layers was constrained to be tied to their filter size.
 
-One peculiarity of the segmentation task is that each training image carries
+One specificity of the segmentation task is that each training image carries
 classification information for all of its pixels. Differently from the image
-classification task, small batch sizes already provide the model with a good
+classification task, small batch sizes already provide the model with a large
 amount of information with sufficient variance to learn and generalize well.
 The ReSeg model was tested with various values of batch size, going as low as
-processing a single image at the time, obtaining comparable results in terms of
+processing a single image at a time, obtaining comparable results in terms of
 performance. Many experiments were performed using a minibatch size of 1. When
 computational constraints allowed, larger batch sizes were used, e.g., 5, 10,
 20, 35, and 50. Larger batch sizes smoothed learning (as expected), and removed
 some issues related to spurious occurrences in the datasets such as misaligned
 or poorly segmented groundtruth masks. This had a bigger impact on the smaller
 datasets than on Camvid, where the batch size was kept fixed to the value of
-$5$, as a compromise between train speed and memory usage.
+$5$, as a compromise between training speed and memory usage.
 
-All the experiments, used L2 regularization~\citep{Krogh92asimple}, also known
-as weight decay, set to $0.001$ to avoid instability at the end of training.
-Also, all the models were trained with the Adadelta~\citep{Zeiler-2012}
+All the experiments, used L2 regularization~\citep{Krogh92asimple} with a
+weight decay factor of $0.001$ to avoid instability at the end of training.
+Also, all the models were trained with the Adam~\citep{kingma2014adam}
 optimization algorithm, for its desired property of not requiring a specific
-hyperparameter tuning. The effect of Batch Normalization in RNNs has been a
-focus of attention~\citep{Laurent2015}, but it does not seem to provide a
+hyperparameter tuning. The effect of batch normalization in RNNs has been a
+focus of attention~\citep{Laurent2015}, but it does not seem yet to provide a
 reliable improvement in performance, so it was not adopted.
 
 The adaptive learning rate algorithm known as Adam~\citep{Kingma2014} was a
-key ingredient to stable learning, though others such as ~\citep{Zeiler-2012}
-were useful during model development. In addition, gradient norm rescaling was
-also utilized to help with the problems described in~\citep{bengio2013advances}.
+key ingredient to stable learning, though others such as
+Adadelta~\citep{Zeiler-2012} were useful during model development. In addition,
+gradient norm rescaling was also utilized to help with the problems described
+in~\citep{bengio2013advances}.
 
 Regularization proved to be another important part of the process on the
 smaller Weizmann Horse and Oxford flowers datasets. For those two, weight
-noise, as described in~\citep{Graves2011}, with a scale 0.075 was applied to all
-weight matrices before each forward pass in all the experiments.
+noise, as described in~\citep{Graves2011}, with a scale of 0.075 was applied to
+all weight matrices before each forward pass in all the experiments.
 Dropout~\citep{Srivastava14} on each forward connection with drop probability of
 $0.2$ on the input, and/or with drop probability of $0.5$ on the hidden
 projections was applied too.
@@ -717,6 +720,15 @@ The best parameters are reported in~\autoref{tbl:camvid_params}.
 
 \subsection{Results}\label{sec:reseg_results}
 
+The metrics reported on all the datasets are the per-pixel accuracy~(\emph{%
+Global acc}), computed as the percentage of true positives with respect to the
+total number of pixels in the image, as well as the average per-class
+Intersection over Union (\emph{Avg IoU}), computed on each class as true
+positive divided by the sum of true positives, false positives and false
+negatives and then averaged. In the full semantic segmentation setting the
+per-class accuracy and the average per-class accuracy (\emph{Avg class acc})
+are also reported.
+
 \autoref{tbl:WeizmannHorses_SOTA} reports the results on the Weizmann
 Horse dataset. On this dataset, the assumption that processing the input image
 with some pre-trained convolutional layers from VGG-16 could ease the learning
@@ -724,9 +736,9 @@ was verified. Specifically, the experiments were restricted to only using the
 first $7$ convolutional layers from VGG, as the goal was to extract some
 low-level generic features only and learn the task-specific high-level features
 with the ReNet layers. The results indeed show an increase in terms of average
-Intersection over Union (\emph{IoU}) when these layers are being used,
-confirming that the ReNet layers can learn good high-level features from
-generic convolutional features detected by a pretrained VGG model.
+Intersection over Union (IoU) when these layers are being used, confirming that
+the ReNet layers can learn good high-level features from generic convolutional
+features detected by a pretrained VGG model.
 
 \begin{figure}[t]
     \centering
@@ -821,37 +833,39 @@ binary background/foreground segmentation setting, on the CamVid dataset the
 full semantic segmentation task was addressed. In this setting, when the
 dataset is highly imbalanced, the segmentation performance of some classes can
 drop significantly as the network tries to maximize the score on the
-high-occurrence classes, {\em de facto} ignoring the low-occurrence ones. To
+high-occurrence classes, {\em de facto} \/ignoring the low-occurrence ones. To
 overcome this behaviour, a class-balancing term was added to the cross-entropy
 loss to bias the prediction towards the low-occurrence classes. Specifically,
-\emph{median frequency balancing}~\citep{Eigen2015,eigen2015predicting} was
-employed, which re-weights the class predictions by the ratio between the
-median of the frequencies of the classes (computed on the training set) and the
-frequency of each class:
+\emph{median frequency balancing}~\citep{eigen2015predicting} was employed,
+which re-weights the class predictions by the ratio between the median of the
+frequencies of the classes (computed on the training set) and the frequency of
+each class:
 
-\begin{equation*}
+\begin{equation}
     \alpha(c) = median\_frequency / f(c),
-\end{equation*}
+\end{equation}
 
 \noindent where the frequency of the class $c$, $f(c)$, is computed dividing
-the number of pixels of the class $c$ divided by the total number of pixels in
-the images where $c$ is present, and $median\_frequency$ is the median of the
-frequencies of all the classes.
+the number of pixels of the class $c$ by the total number of pixels in the
+images where $c$ is present, and $median\_frequency$ is the median of the
+frequencies of all the classes. The final cross-entropy loss for one image,
+inclusive of the rebalancing term is then
 
-This increases the score of the low frequency classes (see~\autoref{%
-tbl:camvid_params}) at the price of a more noisy segmentation mask, as the
-probability of the underrepresented classes is overestimated and can lead to
-an increase in misclassified pixels in the output segmentation mask. This
-behavior is clearly visible in~\autoref{fig:camvid_class_balance}.
+\begin{equation}
+    cost = -\frac{1}{N} \sum_{i=0}^N \sum_{c=0}^C P(p_i = c) \cdot logQ(p_i= c)
+        \cdot \alpha(c),
+\end{equation}
 
-The metrics reported on all the datasets are the per-pixel accuracy~(\emph{%
-Global acc}), computed as the percentage of true positives with respect to the
-total number of pixels in the image, as well as the average per-class
-Intersection over Union (\emph{Avg IoU}), computed on each class as true
-positive divided by the sum of true positives, false positives and false
-negatives and then averaged. In the full semantic segmentation setting the
-per-class accuracy and the average per-class accuracy (\emph{Avg class acc})
-are also reported.
+\noindent with $N$ the number of pixels in the image, $C$ the number of classes
+of the dataset, $P(p_i=c)$ the ground-truth probability of the $i$-th pixel
+belonging to the class $c$ and $Q(p_i=c)$ its probability as estimated by the
+model.
+
+This class balancing technique increases the score of the low frequency classes
+(see~\autoref{tbl:camvid_params}) at the price of a more noisy segmentation
+mask, as the probability of the underrepresented classes is overestimated and
+can lead to an increase in misclassified pixels in the output segmentation
+mask. This behavior is clearly visible in~\autoref{fig:camvid_class_balance}.
 
 \begin{figure}[t]
     \centering
@@ -882,7 +896,6 @@ dependencies.
 
 The experiments prove the flexibility of ReSeg in the foreground-background
 segmentation as well as the full semantic segmentation tasks on multiple
-datasets. The model achieves state of the art in all the datasets and generates
-convincing segmentation masks, as shown in~\autoref{fig:reseg_samples_horses},
-\autoref{fig:reseg_samples_flowers}, \autoref{fig:reseg_samples_camvid} and
-\autoref{fig:camvid_class_balance}.
+datasets. The model achieves state of the art on all the datasets and generates
+convincing segmentation masks, as shown in~\Autoref{fig:reseg_samples_horses,
+fig:reseg_samples_flowers, fig:reseg_samples_camvid, fig:camvid_class_balance}.
