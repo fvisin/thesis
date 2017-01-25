@@ -1,10 +1,15 @@
 \chapter{Conclusion}\label{sec:conclusion}
 
-Machine Learning is a fascinating field of research. In the era of knowledge,
-being able to find the right information in enormous amounts of data (e.g., the
-internet) and summarize it in a form that is compact and yet retains all the
-content one is interested in, is a key factor of success or failure in many
-fields. The potential of this technology may seem endless, yet our
+Machine Learning is a thrilling field of research to work in. The industrial
+revolutions changed the way work was intended, shifting the burden of hard
+physical labour from animals and humans to machines and making habits that were
+common a few years ago, now unconceivable. Machine Learning has the same
+potential impact on society, ideally freeing people from boring, repetitive
+yet extremely important works (think for instance to house keeping, streets
+cleaning, garbage collection, video surveillance and customer service) to let
+us focus on more stimulating and self-improving tasks.
+
+The potential of this technology may seem endless, yet our
 understanding of many of its inner mechanisms is still partial and it is easy
 to underestimate the non-trivial amount of knowledge and experience required to
 be successful.  Nonetheless, the field is advancing very fast in a number of
@@ -55,7 +60,7 @@ complexity of the problem in this case is dramatically increased by the lack of
 large amounts of labeled data that make it more challenging to beat ad-hoc
 hand-engineered classical computer vision methods. Moreover, the training time
 on these datasets is considerably longer and makes experimenting with large
-model slow and in some cases unfeasible. To deal with video segmentation
+models slow and in some cases unfeasible. To deal with video segmentation
 required a very careful inspection of every component of the model and an
 accurate planning of the experiments. To address this task I proposed a model
 that merges direct convolutions, transposed convolutions and RNNs in a unique
@@ -101,10 +106,13 @@ There are many other exciting possible directions of research in this field,
 such as the introduction of temporal attention mechanisms to decouple a coarse
 high-level analysis of the frame from a fine-scale detailed computation inside
 the detected areas of interest; the study of much deeper architecture such as
-the ones currently used in image classification~\citep[see, e.g.,~][]{
-szegedy2016inception,he2015deep}; exploiting semi-supervised approaches such as
-predicting the next frame to improve the performance with unlabeled data; train
-in a multi-objective setting, e.g., trying to predict the video segmentation
-and the caption of the video at the same time; using hierarchical
-LSTMs~\citep[see, e.g.,~][]{Koutnik-et-al-ICML2014, chung2016hierarchical} to
-better capture the time dependencies between far away frames.
+the ones currently used in image classification~\citep[see, e.g.,~][]{%
+szegedy2016inception,he2015deep}; the study of optimization techniques that
+better propagate the gradient through many layers~\citep[see,
+e.g.,~][]{he2015deep,huang2016deep,gulcehre2016mollifying}; help the network to
+better model the input data distribution introducing a next frame prediction
+secondary task~\citep[see, e.g.,~][]{mahjourian2016geometry}; train in a
+multi-objective setting, e.g., trying to predict the video segmentation and the
+caption of the video at the same time; using hierarchical LSTMs~\citep[see,
+e.g.,~][]{Koutnik-et-al-ICML2014,chung2016hierarchical} to better capture the
+time dependencies between far away frames.

@@ -27,18 +27,17 @@ reduce the number of classes (to the limit case of foreground/background
 separation).
 
 Applying machine learning techniques to this class of problems is challenging
-due to the lack of large amounts of labeled data, as well as for the huge
-amount of time required to train these kind of models that calls for
-non-trivial technological solutions. For one, the time spent on operations that
-are not strictly related to training, such as loading and preprocessing the
-data, saving the weights on disk, saving samples and generating plots to
-monitor the progress of the algorithm, has to be minimized. Another recent
-trend in this field is to resort to multi-GPU training; this introduces an
-almost linear speedup (up to a certain numbers of GPUs)~\citep{
-theano2016short,ma2016theano}, but increases the complexity of the algorithm,
-is often subject to constraints (e.g., the GPUs might have to be hosted by the
-same machine or node of a cluster) and makes debugging much less pleasant in
-many cases.
+due to the lack of large amounts of labeled data, as well as the huge amount of
+time required to train these kinds of models that calls for non-trivial
+technological solutions. For one, the time spent on operations that are not
+strictly related to training, such as loading and preprocessing the data,
+saving the weights on disk, saving samples and generating plots to monitor the
+progress of the algorithm, has to be minimized. Another recent trend in this
+field is to resort to multi-GPU training; this introduces an almost linear
+speedup (up to a certain numbers of GPUs)~\citep{theano2016short,ma2016theano},
+but increases the complexity of the algorithm, is often subject to constraints
+(e.g., the GPUs might have to be hosted by the same machine or node of a
+cluster), and makes debugging much less pleasant in many cases.
 
 \autoref{sec:reseg} analyzed ReSeg~\citep{Visin_2016_CVPR_Workshops}, an
 RNN-based model for image semantic segmentation. One of the main strengths of
@@ -57,12 +56,13 @@ at each layer of the recurrent-convolutional hierarchy.
 \section{Motivation}
 
 % Intro
-In the last years, Convolutional Neural Networks (CNNs) have been successfully
-applied to address many computer vision tasks, such as image
+In the last few years, convolutional neural networks have been
+successfully applied to address many computer vision tasks, such as image
 classification~\citep{Krizhevsky2012-alexnet,Simonyan2015,
 Szegedy-et-al-arxiv2014} and object detection~\citep{Girshick-et-al-arxiv2013,
-Sermanet13overfeat} and their application has become ubiquitous in many well
-known and widely used commercial products.
+Sermanet13overfeat} and their application has become ubiquitous in many widely
+used commercial products, such as face and smile detectors in digital cameras,
+people recognition in social networks and street signals recognition in cars.
 
 Recently, pixel-wise prediction of still images has enjoyed the attention
 of the computer vision community. In contrast to image classification and
@@ -136,7 +136,7 @@ done by much of the past ML literature -- but rather the two should be mixed
 together in a coherent and joint architecture. The DEConvLSTM intertwines space
 with time at each step of the hierarchy~(see~\autoref{fig:deconvlstm_model}),
 taking inspiration from the convolutional LSTM (ConvLSTM) model described
-in~\citep{ShiCWYWW15}.
+by~\citep{ShiCWYWW15}.
 % and pushing that intuition further.
 As many successful models for semantic segmentation on static images, the
 DEConvLSTM couples an encoding and a decoding pathway, that respectively shrink
@@ -188,12 +188,13 @@ respectively at time $t$; $C_t$ is the state of the cell (or memory) of the
 recurrent unit at time $t$; $i_t$, $f_t$, $o_t$ are respectively the states of
 the input gate, the forget gate, and the output gate, i.e., the gates that
 control the behavior of the recurrent unit given the input and its state at
-each time step $t$. $\sigma$ is the logistic function, $W_{\star}$ the weights
-and $\hadamard$ the Hadamard product. Note that the compact notation
-$W_\star \cdot [h_{t-1}, x_t]$ represents $W_{\star h} \cdot h_{t-1} +
-W_{\star x} \cdot x_t$~\footnote{The $\star$ notation here is used as a
-placeholder to represent any letter or string. In this particular case it
-takes the place of \textit{i, f, c} and \textit{o}.}.
+each time step $t$. $\sigma$ is the logistic function, $W_{\star}$\footnote{%
+    The $\star$ notation here is used as a placeholder to represent any letter
+    or string. In this particular case it takes the place of \textit{i, f, c}
+    and \textit{o}.}.
+the weights and $\hadamard$ the Hadamard product. Note that the compact
+notation $W_\star \cdot [h_{t-1}, x_t]$ represents $W_{\star h} \cdot h_{t-1} +
+W_{\star x} \cdot x_t$
 
 The convolutional LSTM of~\citep{ShiCWYWW15} replaces the dot products with
 convolutions, leading to the following formulation
@@ -217,7 +218,7 @@ classical recurrent architectures, all gates and states here have \emph{spatial
 dimensions} as they are the result of the application of convolutions on the
 input of the layer.
 
-The encoding pathway of our DeconvLSTM model builds from this, with two
+The encoding pathway of our DeconvLSTM model builds on this, with two
 modifications: i) it introduces a full, multi-layered, CNN, in place of the
 convolution operator; ii) it replaces the Hadamard product with a convolution.
 This is expressed in~\autoref{eq:deconvLSTM_enc}
@@ -242,12 +243,12 @@ This is expressed in~\autoref{eq:deconvLSTM_enc}
 \end{equation}
 
 \noindent A $ReLU$ nonlinearity $\rho$ follows every convolution on the input
-$W_{\star x}^{(\star)}$ apart from the last ones $W_{\star x}^{(L)}$, since the
-usual $\sigma$ nonlinearity is already applied to the output of the layer to
-keep the typical LSTM behavior intact. The last convolutions $W_\star^{(L)}$
-are also followed by a pooling layer (not expressed in the equations) to reduce
-the dimensionality of the intermediate feature maps before the nonlinearity is
-applied.
+$W_{\star x}^{(l \in {1,\dots,L})}$ apart from the last ones $W_{\star
+x}^{(L)}$, since the usual $\sigma$ nonlinearity is already applied to the
+output of the layer to keep the typical LSTM behavior intact. The last
+convolutions $W_\star^{(L)}$ are also followed by a pooling layer (not
+expressed in the equations) to reduce the dimensionality of the intermediate
+feature maps before the nonlinearity is applied.
 
 The substitution of the Hadamard products with convolutions reduces the number
 of parameters and is consistent with the idea of retaining the spatial
@@ -314,7 +315,7 @@ contrast with~\citep{ShiCWYWW15}, the DEConvLSTM model exploits bidirectional
 LSTMs to enforce temporal coherence in the predictions.
 
 The forward and backward passes can be combined at each time step either via
-concatenation over the feature maps axis, as initially suggested in~\citep{
+concatenation over the feature maps axis, as initially suggested by~\citep{
 Schuster1997bidirecrnn}, or by summing them elementwise. Both alternatives have
 been explored in the early exploratory experiments for the DEConvLSTM model,
 including a variant of the sum that learns the parameters of a weighted sum
@@ -338,15 +339,16 @@ assess whether the accuracy gain justifies the higher memory consumption.
 One very popular component of many recent ANN-based architectures are skip
 connections~\citep[see e.g.,~][]{sermanet-cvpr-13,liu2015parsenet,
 long2015fully,Srivastava-et-al-arxiv2015,bell2015inside,he2015deep,
-hariharan2015hypercolumns}, which add a connection between earlier layers in
-the hierarchy and downstream layer~\emph{skipping} the intermediate ones. This
-has the desirable property of ensuring a gradient flow to the early layers of
-the architecture even in very deep models and has been proven to improve the
-performance of many tasks. Furthermore, skip connections are especially useful
-when high resolution spatial information is needed in the last stages. When it
-comes to images and videos semantic segmentation this is a crucial element to
-recover detailed informations on where the objects are, and this improves the
-upsampling precision of the decoding pathway.
+hariharan2015hypercolumns,honari2016recombinator}, which add a connection
+between earlier layers in the hierarchy and downstream layer~\emph{skipping}
+the intermediate ones. This has the desirable property of ensuring a gradient
+flow to the early layers of the architecture even in very deep models and has
+been proven to improve the performance of many tasks. Furthermore, skip
+connections are especially useful when high resolution spatial information is
+needed in the last stages. When it comes to images and videos semantic
+segmentation this is a crucial element to recover detailed informations on
+where the objects are, and this improves the upsampling precision of the
+decoding pathway.
 
 The DEConvLSTM model follows this well-established practice as well. The
 TransConvLSTM layers are parametrized so that they emit a feature map of the
@@ -510,8 +512,9 @@ rotating them.
 
 In the same spirit, the only preprocessing technique adopted -- apart from
 resizing the videos to allow a comparison with the state-of-the-art
-(see~\autoref{sec:deconvLSTM_datasets}) -- was to randomly crop the frames
-during training to reduce the memory usage and speed up the training.
+(see~\autoref{sec:deconvLSTM_datasets}) -- was to crop the frames randomly
+selecting an image patch of $(224, 224)$ resolution during training to reduce
+the memory usage and speed up the training.
 
 \subsection{Experimental settings}\label{sec:deconvLSTM_settings}
 % In this section, we study the effectiveness of involving the temporal
@@ -547,7 +550,7 @@ used consistently throughout the experiments.  Similarly, the number of inner
 convolutions and transposed convolutions has been set to 2 (per layer) and
 their hyperparameters -- namely the number of filters per
 sublayer~(\textbf{nf}), filters size per sublayer~(\textbf{fs}) and stride per
-sublayer~(\textbf{st}) -- have been fixed as per~\autoref{%
+sublayer~(\textbf{st}) -- have been fixed as shown in~\autoref{%
 tbl:deconvLSTM_enc_hyperparams} and \autoref{tbl:deconvLSTM_dec_hyperparams}.
 
 \begin{table}[t]
@@ -589,7 +592,7 @@ tbl:deconvLSTM_enc_hyperparams} and \autoref{tbl:deconvLSTM_dec_hyperparams}.
 Throughout the experiments a light Dropout~\citep{Srivastava14} with drop
 probability $0.2$ was used as regularization technique, as well as a
 regularization of magnitude $0.0001$ for both the neural network weights and
-the batch normalization. Optimization was carried on with
+the batch normalization. Optimization was carried out with
 RMSProp~\citep{tieleman2012lecture} with learning rate $1e^{-4}$ and gradient
 clipping of $10$. Finally, feature-wise batch normalization was applied before
 each layer with an amount of momentum that varied from dataset to dataset.
@@ -609,7 +612,7 @@ stopping on the average Intersection over Union (IoU) of the validation set.
 The main goal of these experiments was not to reach state-of-the-art
 performance, but rather to assess the sensitivity of the model to different
 hyperparameters. \autoref{tbl:deconvLSTM_camvid_overfit} reports the results of
-some of these preliminary experiments on different optimizers and various
+some of these preliminary experiments with different optimizers and various
 sequence lengths. The models suffer from some generalization issues on this
 dataset. This is not too surprising given the limited number of images in the
 CamVid dataset, as will be discussed in more detail
@@ -617,7 +620,7 @@ in~\autoref{sec:deconvLSTM_discussion}.
 
 The results of the DEConvLSTM model with sequences of length $3$, fine-tuned
 for 100 epochs on images at full resolution is compared
-in~\autoref{tbl:deconvLSTM_camvid} with the state-of-the-art on Camvid. The
+in~\autoref{tbl:deconvLSTM_camvid} with the state-of-the-art on CamVid. The
 model performs comparably to the state-of-the-art of the last year; there is a
 margin for improvement, which could be probably gained, at least in part, by
 reducing the generalization issues with stronger regularization and relying on
@@ -654,8 +657,9 @@ confidence with the model rather than to reach the state-of-the-art.
         \end{tabular}
     }
     \caption{The results of the experiments on the effects of time correlation
-        the CamVid dataset. Pixel accuracy and average Intersection over Union
-        (IoU) are reported. The model seems to fail to generalize properly.}
+        on the CamVid dataset. Pixel accuracy and average Intersection over
+        Union (Avg. IoU) are reported. The model seems to fail to generalize
+        properly.}
     \label{tbl:deconvLSTM_camvid_overfit}
 \end{table}
 
@@ -679,14 +683,14 @@ confidence with the model rather than to reach the state-of-the-art.
 
 
 %%%%%%%%% GATECH %%%%%%%%%
-The most of the training effort was spent on the Gatech dataset, a well known
+Most of the training effort was spent on the Gatech dataset, a well known
 dataset for structured prediction. The performance of the DEConvLSTM model on
 this dataset is remarkable, as reported in \autoref{tbl:deconvLSTM_gatech}. The
 model aligns with the state-of-the-art without resorting to data augmentation
 techniques, or finetuning on full resolution (i.e., without cropping the
-frames), which can be expected to further improve the result, setting a
-new state-of-the-art for this dataset. The first goal of the research carried
-on on this model has been to evaluate the effectiveness of the proposed
+frames), which can be expected to further improve the result, setting a new
+state-of-the-art for this dataset. The first goal of the research carried out
+on this model has been to evaluate the effectiveness of the proposed
 architecture in non-trivial settings where the time component has to be
 exploited to obtain convincing predictions. The results on this dataset show
 that the proposed architecture can address successfully the video segmentation
@@ -795,17 +799,17 @@ CamVid, training the same model with different lengths of the sequence.
 CamVid has been mostly used in the literature in a single image
 segmentation setting, rather than considering the frames altogether as a video.
 Indeed, on this dataset the model performed better when the sequence length was
-set to 1, i.e., when the temporal correlation was not taken into account.
-This is not too surprising, since this dataset is composed by frames captured
-at 30 fps, but only one frame out of approximately 30 is annotated and available
-for training. The experiments show that trying to exploit temporal correlation
-at 1 Hz is very non-trivial, and results in massive lack of generalization.
-Generalization performance is an important problem when training on the CamVid
-dataset, since the training set is relatively small for a big model like
-DEConvLSTM. In particular the performance gap between different lengths of the
-input sequences highlights a tendency of the network to fail at generalizing
-properly on the test set, as shown in~\autoref{tbl:deconvLSTM_camvid_overfit}.
-%TODO is this still true?? compare seq length!
+set to 1, i.e., when the temporal correlation was not taken into account. This
+is not too surprising, since this dataset is composed by frames captured at 30
+fps, but only one frame out of approximately 30 is annotated and available for
+training. The experiments show that trying to exploit temporal correlation at 1
+Hz is very non-trivial, and results in a massive drop of performance as
+emerges clearly from the results reported
+in~\autoref{tbl:deconvLSTM_camvid_overfit}. Another aspect that clearly emerges
+from the results is the performance drop between the test set and the other
+sets. Overfitting is an important problem when training on the CamVid dataset,
+due to the size of the training set that is quite small, especially for big
+models like the DEConvLSTM.
 
 On the contrary, there is evidence in the literature that exploiting the
 temporal correlation between frames improves performance on the Gatech
@@ -833,15 +837,23 @@ of the current architecture rather than on relying on hand engineered solutions
 to improve the final score.
 
 One interesting discovery, valid for all the experiments ran so far, is that
-using the per-batch statistics at test time (rather than the more common
-strategy of re-using the running statistics collected during training)
-significantly improved the results on all the three datasets. Another crucial
-factor to achieve a good optimization is to select the right amount of momentum
-in the computation of the batch normalization statistics. We argue that the
-reason for both behaviors lies in the high variance of the input data. The
-datasets are in fact composed by sequences of frames coming from different
-videos that can vary consistently in terms of, e.g., brightness, scale and
-noise. Relying too heavily on past statistics in this setting can be harmful.
+using the per-batch statistics for batch normalization at test time (rather
+than the more common strategy of re-using the running statistics collected
+during training) significantly improved the results on all the three datasets.
+In this setting the statistics to perform the feature-wise normalization of the
+activations of the network are computed on the test minibatch under exam,
+as opposed to using the statistics collected on the whole training set. This
+seems to suggest a difference in the distributions of the data in the training
+and the test set or, more likely, a higher-than-usual variance of the images
+of the dataset. Bigger dataset would likely not suffer from this issues.
+
+Another crucial factor to achieve a good optimization is to select the right
+amount of momentum in the computation of the batch normalization statistics. We
+argue that the reason for both behaviors lies in the high variance of the input
+data. The datasets are in fact composed by sequences of frames coming from
+different videos that can vary consistently in terms of, e.g., brightness,
+scale and noise. Relying too heavily on past statistics in this setting can be
+harmful.
 
 Video semantic segmentation is a hard task to tackle. CNNs are known to be
 data hungry, as proved by the great performance leap that followed the
@@ -849,7 +861,7 @@ introduction of large datasets for object classification~\citep{ILSVRCarxiv14}.
 The next milestone for computer vision research is reaching a good
 understanding of videos in structured prediction related tasks. Good datasets
 with large amounts of densely annotated video data are still missing, even if
-the community is beginning to make an effort to fill in the gap~\citep[
+the community is beginning to make an effort to fill in the gap~\citep[%
 see~e.g.,~][]{Perazzi2016,lin2014microsoft}. More work is needed to speed up
 the models, study new loss functions that allow to optimize more closely
 non-derivable metrics such as IoU and reuse computation exploiting similarity
