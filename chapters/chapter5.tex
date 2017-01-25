@@ -171,45 +171,57 @@ here
 
 \begin{equation*}\tag{\ref{eq:LSTM_peepholes} revisited}
 \begin{split}
-    i_t &= \sigma\left(W_i \cdot \left[h_{t-1}, x_t\right] +
-        W_{ic} \hadamard C_{t-1} + b_i \right),\\
-    f_t &= \sigma\left(W_f \cdot \left[h_{t-1}, x_t\right] +
-        W_{fc} \hadamard C_{t-1} + b_f \right),\\
-    \tilde C_t &= tanh \left(W_c \cdot \left[h_{t-1}, x_t\right] + b_c \right),\\
-    C_t &= f_t \hadamard C_{t-1} + i_t \hadamard \tilde C_t,\\
-    o_t &= \sigma\left(W_o \cdot \left[h_{t-1}, x_t\right] +
-        W_{oc} \hadamard C_{t-1} + b_o \right),\\
-    h_t &= o_t \hadamard tanh \left(C_t\right),
+    \mathbf{i}_t &= \sigma\left(\mathbf{W}_i \cdot \left[\mathbf{h}_{t-1},
+        \mathbf{x}_t\right] + \mathbf{W}_{ic} \hadamard \mathbf{c}_{t-1} +
+        \mathbf{b}_i \right),\\
+    \mathbf{f}_t &= \sigma\left(\mathbf{W}_f \cdot \left[\mathbf{h}_{t-1},
+        \mathbf{x}_t\right] + \mathbf{W}_{fc} \hadamard \mathbf{c}_{t-1} +
+        \mathbf{b}_f \right),\\
+    \mathbf{\tilde c}_t &= tanh \left(\mathbf{W}_c \cdot
+        \left[\mathbf{h}_{t-1}, \mathbf{x}_t\right] + \mathbf{b}_c \right),\\
+    \mathbf{c}_t &= \mathbf{f}_t \hadamard \mathbf{c}_{t-1} + \mathbf{i}_t
+        \hadamard \mathbf{\tilde c}_t,\\
+    \mathbf{o}_t &= \sigma\left(\mathbf{W}_o \cdot \left[\mathbf{h}_{t-1},
+        \mathbf{x}_t\right] + \mathbf{W}_{oc} \hadamard \mathbf{c}_{t-1} +
+        \mathbf{b}_o \right),\\
+    \mathbf{h}_t &= \mathbf{o}_t \hadamard tanh \left(\mathbf{c}_t\right),
 \end{split}
 \end{equation*}
 
-\noindent where $x_t$ and $h_t$ are the input and output feature maps
-respectively at time $t$; $C_t$ is the state of the cell (or memory) of the
-recurrent unit at time $t$; $i_t$, $f_t$, $o_t$ are respectively the states of
-the input gate, the forget gate, and the output gate, i.e., the gates that
-control the behavior of the recurrent unit given the input and its state at
-each time step $t$. $\sigma$ is the logistic function, $W_{\star}$\footnote{%
+\noindent where $\mathbf{x}_t$ and $\mathbf{h}_t$ are the input and output
+feature maps respectively at time $t$; $\mathbf{c}_t$ is the state of the cell
+(or memory) of the recurrent unit at time $t$; $\mathbf{i}_t$, $\mathbf{f}_t$,
+$\mathbf{o}_t$ are respectively the states of the input gate, the forget gate,
+and the output gate, i.e., the gates that control the behavior of the recurrent
+unit given the input and its state at each time step $t$. $\sigma$ is the
+logistic function, $\mathbf{W}_{\star}$\footnote{
     The $\star$ notation here is used as a placeholder to represent any letter
     or string. In this particular case it takes the place of \textit{i, f, c}
     and \textit{o}.}.
 the weights and $\hadamard$ the Hadamard product. Note that the compact
-notation $W_\star \cdot [h_{t-1}, x_t]$ represents $W_{\star h} \cdot h_{t-1} +
-W_{\star x} \cdot x_t$
+notation $\mathbf{W}_\star \cdot [\mathbf{h}_{t-1}, \mathbf{x}_t]$ represents
+$\mathbf{W}_{\star h} \cdot \mathbf{h}_{t-1} + \mathbf{W}_{\star x} \cdot
+\mathbf{x}_t$
 
 The convolutional LSTM of~\citep{ShiCWYWW15} replaces the dot products with
 convolutions, leading to the following formulation
 
 \begin{equation}
 \begin{split}
-    i_t &= \sigma\left(W_i * \left[h_{t-1}, x_t\right] +
-        W_{ic} \hadamard C_{t-1} + b_i \right),\\
-    f_t &= \sigma\left(W_f * \left[h_{t-1}, x_t\right] +
-        W_{fc} \hadamard C_{t-1} + b_f \right),\\
-    \tilde C_t &= tanh \left(W_c * \left[h_{t-1}, x_t\right] + b_c \right),\\
-    C_t &= f_t \hadamard C_{t-1} + i_t \hadamard \tilde C_t,\\
-    o_t &= \sigma\left(W_o * \left[h_{t-1}, x_t\right] +
-        W_{oc} \hadamard C_{t-1} + b_o \right),\\
-    h_t &= o_t \hadamard tanh \left(C_t\right),
+    \mathbf{i}_t &= \sigma\left(\mathbf{W}_i * \left[\mathbf{h}_{t-1},
+        \mathbf{x}_t\right] + \mathbf{W}_{ic} \hadamard \mathbf{c}_{t-1} +
+        \mathbf{b}_i \right),\\
+    \mathbf{f}_t &= \sigma\left(\mathbf{W}_f * \left[\mathbf{h}_{t-1},
+        \mathbf{x}_t\right] + \mathbf{W}_{fc} \hadamard \mathbf{c}_{t-1} +
+        \mathbf{b}_f \right),\\
+    \mathbf{\tilde c}_t &= tanh \left(\mathbf{W}_c * \left[\mathbf{h}_{t-1},
+        \mathbf{x}_t\right] + \mathbf{b}_c \right),\\
+    \mathbf{c}_t &= \mathbf{f}_t \hadamard \mathbf{c}_{t-1} + \mathbf{i}_t
+        \hadamard \mathbf{\tilde c}_t,\\
+    \mathbf{o}_t &= \sigma\left(\mathbf{W}_o * \left[\mathbf{h}_{t-1},
+        \mathbf{x}_t\right] + \mathbf{W}_{oc} \hadamard \mathbf{c}_{t-1} +
+        \mathbf{b}_o \right),\\
+    \mathbf{h}_t &= \mathbf{o}_t \hadamard tanh \left(\mathbf{c}_t\right),
 \end{split}
 \end{equation}
 
@@ -226,29 +238,34 @@ This is expressed in~\autoref{eq:deconvLSTM_enc}
 
 \begin{equation}\label{eq:deconvLSTM_enc}
 \begin{split}
-    i_t &= \sigma\left(W_{ix}^{(L)} * \dots * \rho W_{ix}^{(1)} *
-        \rho W_{ix}^{(0)} * x_t + W_i * \left[h_{t-1}, C_{t-1}\right] +
-        b_i \right),\\
-    f_t &= \sigma\left(W_{fx}^{(L)} * \dots * \rho W_{fx}^{(1)} *
-        \rho W_{fx}^{(0)} * x_t + W_f * \left[h_{t-1}, C_{t-1}\right] +
-        b_f \right),\\
-    \tilde C_t &= tanh \left(W_{cx}^{(L)} * \dots * \rho W_{cx}^{(1)} *
-        \rho W_{cx}^{(0)} * x_t + W_c * h_{t-1} + b_c \right),\\
-    C_t &= f_t \hadamard C_{t-1} + i_t \hadamard \tilde C_t,\\
-    o_t &= \sigma\left(W_{ox}^{(L)} * \dots * \rho W_{ox}^{(1)} *
-        \rho W_{ox}^{(0)} * x_t + W_o * \left[h_{t-1}, C_{t-1}\right] +
-        b_o \right),\\
-    h_t &= o_t \hadamard tanh \left(C_t\right).
+    \mathbf{i}_t &= \sigma\left(\mathbf{W}_{ix}^{(L)} * \dots * \rho
+        \mathbf{W}_{ix}^{(1)} * \rho \mathbf{W}_{ix}^{(0)} * \mathbf{x}_t +
+        \mathbf{W}_i * \left[\mathbf{h}_{t-1}, \mathbf{c}_{t-1}\right] +
+        \mathbf{b}_i \right),\\
+    \mathbf{f}_t &= \sigma\left(\mathbf{W}_{fx}^{(L)} * \dots * \rho
+        \mathbf{W}_{fx}^{(1)} * \rho \mathbf{W}_{fx}^{(0)} * \mathbf{x}_t +
+        \mathbf{W}_f * \left[\mathbf{h}_{t-1}, \mathbf{c}_{t-1}\right] +
+        \mathbf{b}_f \right),\\
+    \mathbf{\tilde c}_t &= tanh \left(\mathbf{W}_{cx}^{(L)} * \dots * \rho
+        \mathbf{W}_{cx}^{(1)} * \rho \mathbf{W}_{cx}^{(0)} * \mathbf{x}_t +
+        \mathbf{W}_c * \mathbf{h}_{t-1} + \mathbf{b}_c \right),\\
+    \mathbf{c}_t &= \mathbf{f}_t \hadamard \mathbf{c}_{t-1} + \mathbf{i}_t
+        \hadamard \mathbf{\tilde c}_t,\\
+    \mathbf{o}_t &= \sigma\left(\mathbf{W}_{ox}^{(L)} * \dots * \rho
+        \mathbf{W}_{ox}^{(1)} * \rho \mathbf{W}_{ox}^{(0)} * \mathbf{x}_t +
+        \mathbf{W}_o * \left[\mathbf{h}_{t-1}, \mathbf{c}_{t-1}\right] +
+        \mathbf{b}_o \right),\\
+    \mathbf{h}_t &= \mathbf{o}_t \hadamard tanh \left(\mathbf{c}_t\right).
 \end{split}
 \end{equation}
 
 \noindent A $ReLU$ nonlinearity $\rho$ follows every convolution on the input
-$W_{\star x}^{(l \in {1,\dots,L})}$ apart from the last ones $W_{\star
-x}^{(L)}$, since the usual $\sigma$ nonlinearity is already applied to the
-output of the layer to keep the typical LSTM behavior intact. The last
-convolutions $W_\star^{(L)}$ are also followed by a pooling layer (not
-expressed in the equations) to reduce the dimensionality of the intermediate
-feature maps before the nonlinearity is applied.
+$\mathbf{W}_{\star x}^{(l \in {1,\dots,L})}$ apart from the last ones
+$\mathbf{W}_{\star x}^{(L)}$, since the usual $\sigma$ nonlinearity is already
+applied to the output of the layer to keep the typical LSTM behavior intact.
+The last convolutions $\mathbf{W}_\star^{(L)}$ are also followed by a pooling
+layer (not expressed in the equations) to reduce the dimensionality of the
+intermediate feature maps before the nonlinearity is applied.
 
 The substitution of the Hadamard products with convolutions reduces the number
 of parameters and is consistent with the idea of retaining the spatial
@@ -275,20 +292,28 @@ function of an LSTM with peephole connections
 
 \begin{equation}\label{eq:deconvLSTM_dec}
 \begin{split}
-    i_t &= \sigma\left(W_{ix}^{(L)} \circledast \dots \circledast
-        \rho W_{ix}^{(1)} \circledast \rho W_{ix}^{(0)} \circledast x_t +
-        W_i * \left[h_{t-1}, C_{t-1}\right] + b_i \right),\\
-    f_t &= \sigma\left(W_{fx}^{(L)} \circledast \dots \circledast
-        \rho W_{fx}^{(1)} \circledast \rho W_{fx}^{(0)} \circledast x_t +
-        W_f * \left[h_{t-1}, C_{t-1}\right] + b_f \right),\\
-    \tilde C_t &= tanh \left(W_{cx}^{(L)} \circledast \dots \circledast
-        \rho W_{cx}^{(1)} \circledast \rho W_{cx}^{(0)} \circledast x_t +
-        W_c * h_{t-1} + b_c \right),\\
-    C_t &= f_t \hadamard C_{t-1} + i_t \hadamard \tilde C_t,\\
-    o_t &= \sigma\left(W_{ox}^{(L)} \circledast \dots \circledast
-        \rho W_{ox}^{(1)} \circledast \rho W_{ox}^{(0)} \circledast x_t +
-        W_o * \left[h_{t-1}, C_{t-1}\right] + b_o \right),\\
-    h_t &= o_t \hadamard tanh \left(C_t\right).
+    \mathbf{i}_t &= \sigma\left(\mathbf{W}_{ix}^{(L)} \circledast \dots
+        \circledast \rho \mathbf{W}_{ix}^{(1)} \circledast \rho
+        \mathbf{W}_{ix}^{(0)} \circledast \mathbf{x}_t + \mathbf{W}_i *
+        \left[\mathbf{h}_{t-1}, \mathbf{c}_{t-1}\right] + \mathbf{b}_i
+        \right),\\
+    \mathbf{f}_t &= \sigma\left(\mathbf{W}_{fx}^{(L)} \circledast \dots
+        \circledast \rho \mathbf{W}_{fx}^{(1)} \circledast \rho
+        \mathbf{W}_{fx}^{(0)} \circledast \mathbf{x}_t + \mathbf{W}_f *
+        \left[\mathbf{h}_{t-1}, \mathbf{c}_{t-1}\right] + \mathbf{b}_f
+        \right),\\
+    \mathbf{\tilde c}_t &= tanh \left(\mathbf{W}_{cx}^{(L)} \circledast \dots
+        \circledast \rho \mathbf{W}_{cx}^{(1)} \circledast \rho
+        \mathbf{W}_{cx}^{(0)} \circledast \mathbf{x}_t + \mathbf{W}_c *
+        \mathbf{h}_{t-1} + \mathbf{b}_c \right),\\
+    \mathbf{c}_t &= \mathbf{f}_t \hadamard \mathbf{c}_{t-1} + \mathbf{i}_t
+        \hadamard \mathbf{\tilde c}_t,\\
+    \mathbf{o}_t &= \sigma\left(\mathbf{W}_{ox}^{(L)} \circledast \dots
+        \circledast \rho \mathbf{W}_{ox}^{(1)} \circledast \rho
+        \mathbf{W}_{ox}^{(0)} \circledast \mathbf{x}_t + \mathbf{W}_o *
+        \left[\mathbf{h}_{t-1}, \mathbf{c}_{t-1}\right] + \mathbf{b}_o
+        \right),\\
+    \mathbf{h}_t &= \mathbf{o}_t \hadamard tanh \left(\mathbf{c}_t\right).
 \end{split}
 \end{equation}
 
@@ -323,7 +348,8 @@ rather than performing an arithmetic mean
 
 \begin{equation}
     RNN_t^{\leftrightarrow} = \alpha_t RNN_t^{\leftarrow} +
-        (1 - \alpha_t) RNN_t^{\rightarrow}, \quad\text{for $t$ in sequence}
+        (1 - \alpha_t) RNN_t^{\rightarrow}, \quad\text{for $\forall t$ in
+        sequence},
 \end{equation}
 
 \noindent and an alternative variant with the same parameter $\alpha$ shared

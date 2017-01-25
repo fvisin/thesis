@@ -67,8 +67,8 @@ exhibit the desired behavior~\citep{Rosenblatt57}.
 \end{figure}
 
 The activation rule of the perceptron is very simple and is at the base of many
-modern neural networks. Given an $n$-dimensional input $\mathbf{x = (x_1,
-\dots, x_n)}$, the weighted sum of each dimension of the input $x_i$ and its
+modern neural networks. Given an $n$-dimensional input $\mathbf{x} = (x_1,
+\dots, x_n)$, the weighted sum of each dimension of the input $x_i$ and its
 associated weight $w_i$ is computed as
 
 \begin{equation*}
@@ -78,13 +78,13 @@ associated weight $w_i$ is computed as
 \noindent where the weight $w_i$ is often referred to as \emph{preactivation}
 and to simplify the notation the bias term $b$ will often be replaced by an
 equivalent input term $x_0=1$ weighted by $w_0=b$. Note that this is simply the
-dot product of the weight vector $\mathbf{w = (w_1, \dots, w_n)}$ and the input
+dot product of the weight vector $\mathbf{w} = (w_1, \dots, w_n)$ and the input
 vector $\mathbf{x}$. The result of this first affine transformation is then
 passed through a step function of the form
 \begin{equation*}
     y =
         \begin{cases}
-            1,          & \text{if } z \geq 0 \\
+            1,          & \text{if } z \geq 0 ,\\
             0,         & \text{otherwise},
         \end{cases}
 \end{equation*}
@@ -423,16 +423,16 @@ fast to compute its derivative, once solved analytically:
 \begin{align}\label{eq:logistic_derivative}
 \begin{split}% to show one label only
     \frac{\partial}{\partial \mathbf{z}}logistic(\mathbf{z}) &=
-        \frac{\exp(\mathbf{-z})}{\left(1+\exp(-\mathbf{z})\right)^2} \\
+        \frac{\exp(\mathbf{-z})}{\left(1+\exp(-\mathbf{z})\right)^2} ,\\
     &= \frac{1}{1+\exp(-\mathbf{z})} \cdot
-        \frac{\exp(-\mathbf{z})}{1+\exp(-\mathbf{z})} \\
+        \frac{\exp(-\mathbf{z})}{1+\exp(-\mathbf{z})} ,\\
     &= logistic(\mathbf{z}) \cdot
-        \frac{\exp(-\mathbf{z})}{1+\exp(-\mathbf{z})} \\
+        \frac{\exp(-\mathbf{z})}{1+\exp(-\mathbf{z})} ,\\
     &= logistic(\mathbf{z}) \cdot
-        \frac{1+\exp(-\mathbf{z})-1}{1+\exp(-\mathbf{z})} \\
+        \frac{1+\exp(-\mathbf{z})-1}{1+\exp(-\mathbf{z})} ,\\
     &= logistic(\mathbf{z}) \cdot
-        \left(1-\frac{1}{1+\exp(-\mathbf{z})}\right) \\
-    &= logistic(\mathbf{z}) \cdot (1-logistic(\mathbf{z}))
+        \left(1-\frac{1}{1+\exp(-\mathbf{z})}\right) ,\\
+    &= logistic(\mathbf{z}) \cdot (1-logistic(\mathbf{z})).
 \end{split}
 \end{align}
 
@@ -500,8 +500,8 @@ drawbacks:
         \begin{equation}\label{eq:relu_derivative}
             \nabla (relu(\mathbf{z}^{(l)})) =
                 \begin{cases}
-                    \mathbf{a}^{(l-1)},  & \text{if } \mathbf{z}^{(l)} > 0 \\
-                    0,          & \text{if } \mathbf{z}^{(l)} < 0 \\
+                    \mathbf{a}^{(l-1)},  & \text{if } \mathbf{z}^{(l)} > 0 ,\\
+                    0,          & \text{if } \mathbf{z}^{(l)} < 0 ,\\
                     undefined,  & \text{if } \mathbf{z}^{(l)} = 0.
                 \end{cases}
         \end{equation}
@@ -683,11 +683,11 @@ to it
         \frac{\partial}{\partial w_{ij}^{(l)}}
         \left(\frac{1}{m}\sum_{\mathcal{D}}
         \left[\frac{1}{2}\left\Vert\mathbf{y} - \mathbf{\hat y}\right\Vert_2
-        \right]\right) \\
+        \right]\right) ,\\
     &= \frac{1}{m}\sum_{\mathcal{D}} \left[\frac{1}{2}
         \frac{\partial}{\partial w_{ij}^{(l)}}\left[
          \left(\mathbf{y} - \mathbf{\hat y}\right)^T
-         \left(\mathbf{y} - \mathbf{\hat y}\right)\right]\right] \\
+         \left(\mathbf{y} - \mathbf{\hat y}\right)\right]\right] ,\\
     &= \frac{1}{m}\sum_{\mathcal{D}}\left[(\mathbf{y} - \mathbf{\hat y})^T
         \frac{\partial(-\mathbf{\hat y})}{\partial w_{ij}^{(l)}}
         \right].
@@ -703,19 +703,19 @@ second layer $w_{ij}^{(2)}$
 \begin{split}
     -\frac{\partial\mathbf{\hat y}}{\partial w_{ij}^{(2)}} &=
         -\frac{\partial \mathbf{\hat y}}{\partial \mathbf{z}^{(4)}} \cdot
-        \frac{\partial \mathbf{z}^{(4)}}{\partial w_{ij}^{(2)}} \\
+        \frac{\partial \mathbf{z}^{(4)}}{\partial w_{ij}^{(2)}} ,\\
     &= -\frac{\partial \mathbf{\hat y}} {\partial \mathbf{z}^{(4)}} \cdot
         \frac{\partial \mathbf{z}^{(4)}}{\partial \mathbf{a}^{(3)}} \cdot
-        \frac{\partial \mathbf{a}^{(3)}}{\partial w_{ij}^{(2)}} \\
+        \frac{\partial \mathbf{a}^{(3)}}{\partial w_{ij}^{(2)}} ,\\
     &= -\frac{\partial \mathbf{\hat y}} {\partial \mathbf{z}^{(4)}} \cdot
         \frac{\partial \mathbf{z}^{(4)}}{\partial \mathbf{a}^{(3)}} \cdot
         \frac{\partial \mathbf{a}^{(3)}}{\partial \mathbf{z}^{(3)}} \cdot
-        \frac{\partial \mathbf{z}^{(3)}}{\partial w_{ij}^{(2)}} \\
+        \frac{\partial \mathbf{z}^{(3)}}{\partial w_{ij}^{(2)}} ,\\
     &= -\frac{\partial \mathbf{\hat y}} {\partial \mathbf{z}^{(4)}} \cdot
         \frac{\partial \mathbf{z}^{(4)}}{\partial \mathbf{a}^{(3)}} \cdot
         \frac{\partial \mathbf{a}^{(3)}}{\partial \mathbf{z}^{(3)}} \cdot
         \frac{\partial \mathbf{z}^{(3)}}{\partial \mathbf{a}^{(2)}} \cdot
-        \frac{\partial \mathbf{a}^{(2)}}{\partial w_{ij}^{(2)}} \\
+        \frac{\partial \mathbf{a}^{(2)}}{\partial w_{ij}^{(2)}} ,\\
     &= -\frac{\partial \mathbf{\hat y}} {\partial \mathbf{z}^{(4)}} \cdot
         \frac{\partial \mathbf{z}^{(4)}}{\partial \mathbf{a}^{(3)}} \cdot
         \frac{\partial \mathbf{a}^{(3)}}{\partial \mathbf{z}^{(3)}} \cdot
@@ -751,8 +751,8 @@ $0$. Each derivative $\frac{\partial \mathbf{a}^{(l)}}{\partial
         \frac{\partial \sigma_{0}(\mathbf{z}^{(l)})}
              {\partial z^{(l)}_{0}} & \cdots &
         \frac{\partial \sigma_{0}(\mathbf{z}^{(l)})}
-             {\partial z^{(l)}_{n}} \\
-        \vdots & \ddots & \vdots \\
+             {\partial z^{(l)}_{n}} ,\\
+        \vdots & \ddots & \vdots ,\\
         \frac{\partial \sigma_{n}(\mathbf{z}^{(l)})}
              {\partial z^{(l)}_{0}} & \cdots &
         \frac{\partial \sigma_{n}(\mathbf{z}^{(l)})}
@@ -774,8 +774,8 @@ matrix
 \begin{equation}
     \frac{\partial \mathbf{a}^{(l)}}{\partial \mathbf{z}^{(l)}} =
     \begin{bmatrix}
-        \sigma'(z_{0}^{(l)}) & & \text{\raisebox{-0.75ex}{\Large 0}} \\
-        & \ddots & \\
+        \sigma'(z_{0}^{(l)}) & & \text{\raisebox{-0.75ex}{\Large 0}} ,\\
+        & \ddots & ,\\
         \text{\raisebox{0.75ex}{\Large 0}}
         & & \sigma'(z_{n}^{(l)})
     \end{bmatrix},
@@ -1303,8 +1303,8 @@ For any $i$ and for $k$ odd ($k = 2n + 1, \quad n \in \mathbb{N}$), $s = 1$ and
 $p = \lfloor k / 2 \rfloor = n$,
 \begin{equation*}
 \begin{split}
-    o &= i + 2 \lfloor k / 2 \rfloor - (k - 1) \\
-      &= i + 2n - 2n \\
+    o &= i + 2 \lfloor k / 2 \rfloor - (k - 1) ,\\
+      &= i + 2n - 2n ,\\
       &= i.
 \end{split}
 \end{equation*}
@@ -1324,7 +1324,7 @@ achieved with proper zero padding:
 For any $i$ and $k$, and for $p = k - 1$ and $s = 1$,
 \begin{equation*}
 \begin{split}
-    o &= i + 2(k - 1) - (k - 1) \\
+    o &= i + 2(k - 1) - (k - 1) ,\\
       &= i + (k - 1).
 \end{split}
 \end{equation*}
@@ -1712,8 +1712,8 @@ A convolution described by $k = 2n + 1, \quad n \in \mathbb{N}$, $s = 1$ and $p
 by $k' = k$, $s' = s$ and $p' = p$ and its output size is
 \begin{equation*}
 \begin{split}
-    o' &= i' + (k - 1) - 2p \\
-       &= i' + 2n - 2n \\
+    o' &= i' + (k - 1) - 2p ,\\
+       &= i' + 2n - 2n ,\\
        &= i'.
 \end{split}
 \end{equation*}
@@ -1734,7 +1734,7 @@ associated transposed convolution described by $k' = k$, $s' = s$ and $p' = 0$
 and its output size is
 \begin{equation*}
 \begin{split}
-    o' &= i' + (k - 1) - 2p \\
+    o' &= i' + (k - 1) - 2p ,\\
        &= i' - (k - 1).
 \end{split}
 \end{equation*}
@@ -1990,10 +1990,11 @@ information they want to carry over to future steps.
 \end{figure}
 
 \autoref{fig:LSTM_state} highlights the internal memory path. It can be seen
-how the internal memory of the previous time step $C_{t-1}$ is carried over to
-the current time step, where it is updated through a multiplicative and an
-additive interaction and concurs to determine the current state of the memory
-$C_t$. This is then, once again, propagated to the next time step.
+how the internal memory of the previous time step $\mathbf{c}_{t-1}$ is carried
+over to the current time step, where it is updated through a multiplicative and
+an additive interaction and concurs to determine the current state of the
+memory $\mathbf{c}_t$. This is then, once again, propagated to the next time
+step.
 % The internal memory is updated at each time step
 % with the rest of the architecture.
 
@@ -2018,53 +2019,60 @@ determine the behavior of the model. The \emph{forget~gate}~(\autoref{%
 fig:LSTM_forget_gate}) determines how much of the previous step's memory to
 forget or, equivalently, how much of the previous state to retain.  This is
 modeled through a sigmoid layer (depicted as $\sigma$) that takes the current
-input $x_t$ and the output of the previous step $h_{t-1}$ and produces an
-activation vector between $0$ and $1$
+input $\mathbf{x}_t$ and the output of the previous step $\mathbf{h}_{t-1}$ and
+produces an activation vector between $0$ and $1$
 
 \begin{equation}\label{eq:LSTM_forget_gate}
-    f_t = \sigma\left(W_f \cdot \left[h_{t-1}, x_t\right] + b_f \right),
+    \mathbf{f}_t = \sigma\left(\mathbf{W}_f \cdot \left[\mathbf{h}_{t-1},
+        \mathbf{x}_t\right] + \mathbf{b}_f \right),
 \end{equation}
 
-\noindent this activation is multiplied by the previous state $C_{t-1}$ and
-results in an intermediate memory state where some of the activations can be
-weaker than those in $C_{t-1}$ and some others are potentially zeroed out.
+\noindent this activation is multiplied by the previous state
+$\mathbf{c}_{t-1}$ and results in an intermediate memory state where some of
+the activations can be weaker than those in $\mathbf{c}_{t-1}$ and some others
+are potentially zeroed out.
 
 The forget gate allows the LSTM to discard information that is not relevant
 anymore. Symmetrically, LSTMs have a mechanism to add new information to the
-memory. This behavior is controlled by an \emph{input~gate}~(\autoref{%
-fig:LSTM_input_gate}) that modulates the amount of the current input that is
-going to be stored in the memory. This operation is split over two computation
-paths: similarly to the forget gate, the input gate takes the current input
-$x_t$ and the output of the previous step $h_{t-1}$ and exploits a sigmoid
-layer to produce an activation vector between $0$ and $1$. Simultaneously, a
-tanh layer generates a state update $\tilde C_t$ between $-1$ and $1$. This is
-governed by the equations
+memory. This behavior is controlled by an \emph{input gate} (see
+\autoref{fig:LSTM_input_gate}) that modulates the amount of the current input
+that is going to be stored in the memory. This operation is split over two
+computation paths: similarly to the forget gate, the input gate takes the
+current input $\mathbf{x}_t$ and the output of the previous step
+$\mathbf{h}_{t-1}$ and exploits a sigmoid layer to produce an activation vector
+between $0$ and $1$.  Simultaneously, a tanh layer generates a state update
+$\mathbf{\tilde c}_t$ between $-1$ and $1$. This is governed by the equations
 
 \begin{equation}\label{eq:LSTM_input_gate}
 \begin{split}
-    i_t &= \sigma\left(W_i \cdot \left[h_{t-1}, x_t\right] + b_i \right)\\
-    \tilde C_t &= tanh \left(W_c \cdot \left[h_{t-1}, x_t\right] + b_c \right).
+    \mathbf{i}_t &= \sigma\left(\mathbf{W}_i \cdot \left[\mathbf{h}_{t-1},
+        \mathbf{x}_t\right] + \mathbf{b}_i \right),\\
+    \mathbf{\tilde c}_t &= tanh \left(\mathbf{W}_c \cdot
+        \left[\mathbf{h}_{t-1}, \mathbf{x}_t\right] + \mathbf{b}_c \right).
 \end{split}
 \end{equation}
 
 The input gate modulates how much of this state update will be applied to the
-old state to generate the current state. The forget gate $f_t$ and the input
-gate $i_t$, together with the state update $\tilde C_t$ and the previous state
-$C_{t-1}$ fully determine the state at time $t$ through
+old state to generate the current state. The forget gate $\mathbf{f}_t$ and the
+input gate $\mathbf{i}_t$, together with the state update $\mathbf{\tilde c}_t$
+and the previous state $\mathbf{c}_{t-1}$ fully determine the state at time $t$
+through
 
 \begin{equation}\label{eq:LSTM_state_update}
-    C_t = f_t \hadamard C_{t-1} + i_t \hadamard \tilde C_t.
+    \mathbf{c}_t = \mathbf{f}_t \hadamard \mathbf{c}_{t-1} +
+        \mathbf{i}_t \hadamard \mathbf{c}_t.
 \end{equation}
 
 The last gate of LSTMs is the \emph{output~gate}~(\autoref{%
-fig:LSTM_output_gate}) $o_t$ that, as the name reveals, manipulates the output
-of the LSTM at time $t$. The usual sigmoid layer determines the state of the
-output gate
+fig:LSTM_output_gate}) $\mathbf{o}_t$ that, as the name reveals, manipulates
+the output of the LSTM at time $t$. The usual sigmoid layer determines the
+state of the output gate
 
 \begin{equation}\label{eq:LSTM_output_gate}
 \begin{split}
-    o_t &= \sigma\left(W_o \cdot \left[h_{t-1}, x_t\right] + b_o \right)\\
-    h_t &= o_t \hadamard tanh \left(C_t\right),
+    \mathbf{o}_t &= \sigma\left(\mathbf{W}_o \cdot \left[\mathbf{h}_{t-1},
+        \mathbf{x}_t\right] + \mathbf{b}_o \right),\\
+    \mathbf{h}_t &= \mathbf{o}_t \hadamard tanh \left(\mathbf{c}_t\right),
 \end{split}
 \end{equation}
 
@@ -2076,12 +2084,17 @@ Putting it all together, the equations that govern the behavior of an LSTM are
 
 \begin{equation}\label{eq:LSTM}
 \begin{split}
-    i_t &= \sigma\left(W_i \cdot \left[h_{t-1}, x_t\right] + b_i \right)\\
-    f_t &= \sigma\left(W_f \cdot \left[h_{t-1}, x_t\right] + b_f \right)\\
-    \tilde C_t &= tanh \left(W_c \cdot \left[h_{t-1}, x_t\right] + b_c \right)\\
-    C_t &= f_t \hadamard C_{t-1} + i_t \hadamard \tilde C_t\\
-    o_t &= \sigma\left(W_o \cdot \left[h_{t-1}, x_t\right] + b_o \right)\\
-    h_t &= o_t \hadamard tanh \left(C_t\right).
+    \mathbf{i}_t &= \sigma\left(\mathbf{W}_i \cdot \left[\mathbf{h}_{t-1},
+        \mathbf{x}_t\right] + \mathbf{b}_i \right),\\
+    \mathbf{f}_t &= \sigma\left(\mathbf{W}_f \cdot \left[\mathbf{h}_{t-1},
+        \mathbf{x}_t\right] + \mathbf{b}_f \right),\\
+    \mathbf{\tilde c}_t &= tanh \left(\mathbf{W}_c \cdot
+        \left[\mathbf{h}_{t-1}, \mathbf{x}_t\right] + \mathbf{b}_c \right),\\
+    \mathbf{c}_t &= \mathbf{f}_t \hadamard \mathbf{c}_{t-1} + \mathbf{i}_t
+        \hadamard \mathbf{\tilde c}_t,\\
+    \mathbf{o}_t &= \sigma\left(\mathbf{W}_o \cdot \left[\mathbf{h}_{t-1},
+        \mathbf{x}_t\right] + \mathbf{b}_o \right),\\
+    \mathbf{h}_t &= \mathbf{o}_t \hadamard tanh \left(\mathbf{c}_t\right).
 \end{split}
 \end{equation}
 
@@ -2090,8 +2103,8 @@ Putting it all together, the equations that govern the behavior of an LSTM are
 
 \cite{gers2000recurrent} suggests one variant of LSTMs where the gates also
 have information about the state of the LSTM. Note that, as illustrated
-in~\autoref{fig:LSTM_peepholes}, the output gate peeps into $C_t$, i.e., the
-state after the input and forget gate updates
+in~\autoref{fig:LSTM_peepholes}, the output gate peeps into $\mathbf{c}_t$,
+i.e., the state after the input and forget gate updates
 
 \begin{figure}[t]
     \centering
@@ -2101,16 +2114,20 @@ state after the input and forget gate updates
 
 \begin{equation}\label{eq:LSTM_peepholes}
 \begin{split}
-    i_t &= \sigma\left(W_i \cdot \left[h_{t-1}, x_t\right] +
-        W_{ic} \circ C_{t-1} + b_i \right)\\
-    f_t &= \sigma\left(W_f \cdot \left[h_{t-1}, x_t\right] +
-        W_{fc} \circ C_{t-1} + b_f \right)\\
-    \tilde C_t &= tanh \left(W_c \cdot \left[h_{t-1}, x_t\right] +
-        b_c \right)\\
-    C_t &= f_t \hadamard C_{t-1} + i_t \hadamard \tilde C_t\\
-    o_t &= \sigma\left(W_o \cdot \left[h_{t-1}, x_t\right] +
-        W_{oc} \hadamard C_{t-1} + b_o \right)\\
-    h_t &= o_t \hadamard tanh \left(C_t\right).
+    \mathbf{i}_t &= \sigma\left(\mathbf{W}_i \cdot \left[\mathbf{h}_{t-1},
+        \mathbf{x}_t\right] + \mathbf{W}_{ic} \circ \mathbf{c}_{t-1} +
+        \mathbf{b}_i \right),\\
+    \mathbf{f}_t &= \sigma\left(\mathbf{W}_f \cdot \left[\mathbf{h}_{t-1},
+        \mathbf{x}_t\right] + \mathbf{W}_{fc} \circ \mathbf{c}_{t-1} +
+        \mathbf{b}_f \right),\\
+    \mathbf{\tilde c}_t &= tanh \left(\mathbf{W}_c \cdot
+        \left[\mathbf{h}_{t-1}, \mathbf{x}_t\right] + \mathbf{b}_c \right),\\
+    \mathbf{c}_t &= \mathbf{f}_t \hadamard \mathbf{c}_{t-1} + \mathbf{i}_t
+        \hadamard \mathbf{\tilde c}_t,\\
+    \mathbf{o}_t &= \sigma\left(\mathbf{W}_o \cdot \left[\mathbf{h}_{t-1},
+        \mathbf{x}_t\right] + \mathbf{W}_{oc} \hadamard \mathbf{c}_{t-1} +
+        \mathbf{b}_o \right),\\
+    \mathbf{h}_t &= \mathbf{o}_t \hadamard tanh \left(\mathbf{c}_t\right).
 \end{split}
 \end{equation}
 
@@ -2118,12 +2135,13 @@ state after the input and forget gate updates
 \subsubsection{LSTMs with coupled forget and input gates}\label{sec:LSTM_coupled}
 
 Another variant of LSTMs~\citep{Greff-et-al-arxiv2015} replaces the input gate
-with $1 - f_t$ (see~\autoref{fig:LSTM_coupled}), so that the forget gate governs
-both behaviors. This boils down to forgetting only when a new
+with $1 - \mathbf{f}_t$ (see~\autoref{fig:LSTM_coupled}), so that the forget
+gate governs both behaviors. This boils down to forgetting only when a new
 input is going to be written. The modified state update equation is
 
 \begin{equation}\label{eq:LSTM_coupled}
-    C_t = f_t \hadamard C_{t-1} + (1 - f_t) \hadamard \tilde C_t.
+    \mathbf{c}_t = \mathbf{f}_t \hadamard \mathbf{c}_{t-1} + (1 - \mathbf{f}_t)
+        \hadamard \mathbf{\tilde c}_t.
 \end{equation}
 
 \begin{figure}[t]
@@ -2138,17 +2156,21 @@ input is going to be written. The modified state update equation is
 In 2014 \cite{Cho2014a} proposed a new kind of recurrent network called Gated
 Recurrent Unit (GRU) (see~\autoref{fig:GRU}) with less gates than LSTMs and a
 different internal structure. Along the lines of \autoref{sec:LSTM_coupled}, in
-GRUs the forget and input gates are coupled into an~\emph{update gate} $z_t$.
-The memory and output are also merged into a single state and the internal
-structure is modified to cope with these changes
+GRUs the forget and input gates are coupled into an~\emph{update gate}
+$\mathbf{z}_t$.  The memory and output are also merged into a single state and
+the internal structure is modified to cope with these changes
 
 \begin{equation}\label{eq:GRU}
 \begin{split}
-    z_t &= \sigma \left( W_z \cdot \left[h_{t-1}, x_t\right]\right) \\
-    r_t &= \sigma \left( W_r \cdot \left[h_{t-1}, x_t\right]\right) \\
-    \tilde h_t &= tanh \left(W_o \cdot \left[r_t \hadamard h_{t-1}, x_t\right]
-        \right) \\
-    h_t &= (1-z_t) \hadamard h_{t-1} + (z_t) \hadamard \tilde h_t.
+    \mathbf{z}_t &= \sigma \left( \mathbf{W}_z \cdot \left[\mathbf{h}_{t-1},
+        \mathbf{x}_t\right]\right), \\
+    \mathbf{r}_t &= \sigma \left( \mathbf{W}_r \cdot \left[\mathbf{h}_{t-1},
+        \mathbf{x}_t\right]\right), \\
+    \mathbf{\tilde h}_t &= tanh \left(\mathbf{W}_o \cdot \left[\mathbf{r}_t
+        \hadamard \mathbf{h}_{t-1}, \mathbf{x}_t\right]
+        \right), \\
+    \mathbf{h}_t &= (1-\mathbf{z}_t) \hadamard \mathbf{h}_{t-1} +
+        (\mathbf{z}_t) \hadamard \mathbf{\tilde h}_t.
 \end{split}
 \end{equation}
 

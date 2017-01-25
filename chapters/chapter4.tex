@@ -281,10 +281,8 @@ preprocessing is then fed into one or more \emph{ReNet layers} that sweep over
 the image horizontally and vertically. Finally, one or more \emph{upsampling
 layers} are employed to resize the last feature maps to the same resolution as
 the input and a softmax non-linearity is applied to predict the probability
-distribution over the classes for each pixel.
-
-The following sections analyze in detail each component of the processing
-pipeline
+distribution over the classes for each pixel. The following sections analyze in
+detail each component of the processing pipeline.
 
 \subsection{ReNet layer}
 
@@ -293,14 +291,15 @@ together in such a way to capture the local and global spatial structure of the
 input data. Specifically, the model takes as an input an image (or the feature
 map of the previous layer) $\mathbf{X}$ of elements $x \in \RR^{H \times W
 \times C}$, where $H$, $W$ and $C$ are respectively the height, width and
-number of channels (or features) and splits it into $I \times J$ patches
-$p_{i,j} \in \RR^{H_p \times W_p \times C}$. It then sweeps along each of its
-columns $p_{i,\cdot}$ vertically a first time with two RNNs $f^{\downarrow}$
-and $f^{\uparrow}$, with $U$ recurrent units each, that move top-down and
-bottom-up respectively. Note that the processing of each column is independent
-and can be done in parallel. This is a very important performance difference of
-the ReSeg model with respect to other architectures in the literature that
-enforce to handle the data in a more constrainedly sequential nature.
+number of channels (or features) and splits it into $I \times J$ flattened
+patches $\mathbf{p}_{i,j} \in \RR^{H_p \times W_p \times C}$. It then sweeps
+along each of its columns $\mathbf{p}_{i,\cdot}$ vertically a first time with
+two RNNs $f^{\downarrow}$ and $f^{\uparrow}$, with $U$ recurrent units each,
+that move top-down and bottom-up respectively. Note that the processing of each
+column is independent and can be done in parallel. This is a very important
+performance difference of the ReSeg model with respect to other architectures
+in the literature that enforce to handle the data in a more constrainedly
+sequential nature.
 
 \begin{figure}[t]
     \advance\leftskip-0.2\textwidth
@@ -318,27 +317,28 @@ enforce to handle the data in a more constrainedly sequential nature.
     \label{fig:ReSeg}
 \end{figure}
 
-At every time step each RNN reads the next non-overlapping patch $p_{i,j}$ and,
-based on its previous state, emits a projection $o_{i,j}^{\star}$ and updates
-its state $C_{i,j}^{\star}$:
+At every time step each RNN reads the next non-overlapping patch
+$\mathbf{p}_{i,j}$ and, based on its previous state, emits a projection
+$\mathbf{o}_{i,j}^{\star}$ and updates its state $\mathbf{c}_{i,j}^{\star}$:
 \begin{align}
-    o^{\downarrow}_{i,j} = f^{\downarrow}(C^{\downarrow}_{i-1,j},p_{i,j}),
-        &\text{ for }i=1,\cdots, I\\
-    o^{\uparrow}_{i,j} = f^{\uparrow}(C^{\uparrow}_{i+1,j},p_{i,j}),
-        &\text{ for }i=I,\cdots,1
+    \mathbf{o}^{\downarrow}_{i,j} =
+        f^{\downarrow}(\mathbf{c}^{\downarrow}_{i-1,j},\mathbf{p}_{i,j}),
+        &\text{ for }i=1,\cdots, I,\\
+    \mathbf{o}^{\uparrow}_{i,j} = f^{\uparrow}(\mathbf{c}^{\uparrow}_{i+1,j},
+        \mathbf{p}_{i,j}), &\text{ for }i=I,\cdots,1.
 \end{align}
 It has to be stressed that the decision to read non-overlapping patches is a
 modeling choice to increase the image scan speed and lower the memory usage,
 but is not a limitation of the architecture.
 
-Once the first two vertical RNNs have processed the whole input $X$, their
-projections $o^{\downarrow}_{i,j}$ and $o^{\uparrow}_{i,j}$ are concatenated to
-obtain a composite feature map $\mathbf{O^{\updownarrow}}$ whose elements
-$o^{\updownarrow}_{i,j} \in \RR^{2U}$ can be seen as the activation of a
-feature detector at the location $(i,j)$ with respect to all the patches in the
-$j$-th column of the input. For simplicity, in the rest of this manuscript
-this part of the model will be referred to as \emph{vertical recurrent
-sublayer}.
+Once the first two vertical RNNs have processed the whole input $\mathbf{X}$,
+their projections $\mathbf{o}^{\downarrow}_{i,j}$ and
+$\mathbf{o}^{\uparrow}_{i,j}$ are concatenated to obtain a composite feature
+map $\mathbf{O^{\updownarrow}}$ whose elements $\mathbf{o}^{\updownarrow}_{i,j}
+\in \RR^{2U}$ can be seen as the activation of a feature detector at the
+location $(i,j)$ with respect to all the patches in the $j$-th column of the
+input. For simplicity, in the rest of this manuscript this part of the model
+will be referred to as \emph{vertical recurrent sublayer}.
 
 After obtaining the concatenated feature map $\mathbf{O^{\updownarrow}}$, the
 model sweeps over each of its rows with a pair of new RNNs $f^{\rightarrow}$
@@ -350,13 +350,14 @@ constraint of the model and different architectures can be explored.
 
 With a similar procedure as the one adopted for the first sublayer, but in the
 horizontal direction, the network reads one element of the intermediate feature
-map $o^\updownarrow_{i,j}$ at each step and emits two activations coming from
-two new RNNs that are concatenated into a unique feature map
-$\mathbf{O^\leftrightarrow}~=~\left\{ h^\leftrightarrow_{i,j} \right\}
-_{i=1\dots I}^{j=1\dots J}$, with $o^\leftrightarrow_{i,j} \in
-\RR^{2U}$. Each element $o^\leftrightarrow_{i,j}$ of this \emph{horizontal
-recurrent sublayer} represents the features of one of the input image patches
-$p_{i,j}$ \emph{with contextual information from the whole image}.
+map $\mathbf{o}^\updownarrow_{i,j}$ at each step and emits two activations
+coming from two new RNNs that are concatenated into a unique feature map
+$\mathbf{O^\leftrightarrow}~=~\left\{ \mathbf{o}^\leftrightarrow_{i,j} \right\}
+_{i=1\dots I}^{j=1\dots J}$, with $\mathbf{o}^\leftrightarrow_{i,j} \in
+\RR^{2U}$. Each element $\mathbf{o}^\leftrightarrow_{i,j}$ of this
+\emph{horizontal recurrent sublayer} represents the features of one of the
+input image patches $\mathbf{p}_{i,j}$ \emph{with contextual information from
+the whole image}.
 
 It is trivial to note that it is possible to concatenate many recurrent layers
 $\mathbf{O^{(1 \cdots L)}}$ one after the other and train them with any

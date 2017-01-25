@@ -2,7 +2,7 @@
 
 \emph{Classification} is a broad task that consists in predicting to which
 category an input belongs to, out of some $k$ given categories. The system is
-usually required to compute a function $f: \RR^d \to {0, \dots, k-1}$ that
+usually required to compute a function $f: \RR^d \to {0, \dots, (k-1)}$ that
 assigns each input to a class. This can be thought as a discrimination task,
 where the algorithm is expected to learn similarities and differences between
 categories in order to characterize each class.
@@ -149,27 +149,27 @@ of~\citet{Graves+Schmidhuber-2009}.
     \vspace{-3mm}
 \end{figure}
 
-Let us denote by $X=\left\{x_{i,j}\right\}$ the input image or the feature map
-from the layer below, where $X \in \RR^{w \times h \times c}$ with $w$, $h$ and
-$c$ the width, height and number of channels, or the feature dimensionality,
-respectively. Given a receptive field (or patch) size of $w_p \times h_p$, the
-image $X$ is split into a set of $I \times J$ (non-overlapping) patches
-$P = \left\{ p_{i,j} \right\}$, where $I = \frac{w}{w_p}$, $J = \frac{h}{h_p}$
-and $p_{i,j} \in \RR^{w_p \times h_p \times c}$ is the $(i,j)$-th patch of the
-input image. The first index $i$ is the horizontal index and the other index
-$j$ is the vertical index.
+Let us denote by $\mathbf{X}=\left\{x_{i,j}\right\}$ the input image or the
+feature map from the layer below, where $\mathbf{X} \in \RR^{w \times h \times
+c}$ with $w$, $h$ and $c$ the width, height and number of channels, or the
+feature dimensionality, respectively. Given a receptive field (or patch) size
+of $w_p \times h_p$, the image $\mathbf{X}$ is split into a set of $I \times J$
+(non-overlapping) patches $P = \left\{ \mathbf{p}_{i,j} \right\}$, where $I =
+\frac{w}{w_p}$, $J = \frac{h}{h_p}$ and $\mathbf{p}_{i,j} \in \RR^{w_p \times
+h_p \times c}$ is the $(i,j)$-th patch of the input image. The first index $i$
+is the horizontal index and the other index $j$ is the vertical index.
 
-First, the image is swept vertically with two RNNs, with one RNN working in
-a bottom-up direction and the other working in a top-down direction.
-Each RNN takes as an input one (flattened) patch at a time and updates its
-hidden state $C^*$ (in the usual way, depending on the RNN implementation),
-working \emph{along each column} $j$ of the split input image $X$ to produce
+First, the image is swept vertically with two RNNs, with one RNN working in a
+bottom-up direction and the other working in a top-down direction.  Each RNN
+takes as an input one (flattened) patch at a time and updates its hidden state
+$c^*$ (in the usual way, depending on the RNN implementation), working
+\emph{along each column} $j$ of the split input image $\mathbf{X}$ to produce
 two output vectors $o^{\uparrow}$ and $o^{\downarrow}$ defined as follows
 \begin{align}
-    o^{\uparrow}_{i,j} = f^\uparrow(C^{\uparrow}_{i,j-1},p_{i,j}),
-        &\text{ for }j=1,\cdots, J\\
-    o^{\downarrow}_{i,j} = f^\downarrow(C^{\downarrow}_{i,j+1},p_{i,j}),
-        &\text{ for }j=J,\cdots,1
+    \mathbf{o}^{\uparrow}_{i,j} = f^\uparrow(\mathbf{c}^{\uparrow}_{
+        i,j-1},\mathbf{p}_{i,j}), &\text{ for }j=1,\cdots, J,\\
+    \mathbf{o}^{\downarrow}_{i,j} = f^\downarrow(\mathbf{c}^{\downarrow}_{
+        i,j+1},\mathbf{p}_{i,j}), &\text{ for }j=J,\cdots,1.
 \end{align}
 
 Note that the functions $f^\uparrow$ and $f^\downarrow$ return the
@@ -179,23 +179,24 @@ short-term memory layer~\citep{Hochreiter+Schmidhuber-1997}, as detailed
 in~\autoref{sec:rnn}, \autoref{sec:LSTM} and \autoref{sec:GRU}).
 
 After this vertical, bidirectional sweep, the intermediate hidden states
-$o^{\uparrow}_{i,j}$ and $o^{\downarrow}_{i,j}$ are concatenated at each
-location $(i,j)$ to get a composite feature map
-$O^\updownarrow=~\left\{o_{i,j}^{\uparrow},~o_{i,j}^{\downarrow}\right\}_
-{i=1,\ldots,I}^{j=1,\ldots,J}$, where each element $o^\updownarrow_{i,j} \in
-\RR^{2d}$ and $d$ is the number of recurrent units. Each $o_{i,j}$ is now the
-activation of a feature detector at the location $(i,j)$ with respect to all
-the patches in the $j$-th column of the original input ($p_{i, j}$ for all
-$i$).
+$\mathbf{o}^{\uparrow}_{i,j}$ and $\mathbf{o}^{\downarrow}_{i,j}$ are
+concatenated at each location $(i,j)$ to get a composite feature map
+$\mathbf{O}^\updownarrow=~\left\{\mathbf{o}_{i,j}^{\uparrow},~\mathbf{o}_{i,j}^
+{\downarrow}\right\}_{i=1,\ldots,I}^{j=1,\ldots,J}$, where each element
+$\mathbf{o}^\updownarrow_{i,j} \in \RR^{2d}$ and $d$ is the number of recurrent
+units. Each $\mathbf{o}_{i,j}$ is now the activation of a feature detector at
+the location $(i,j)$ with respect to all the patches in the $j$-th column of
+the original input ($\mathbf{p}_{i, j}$ for all $i$).
 
-Next, the obtained composite feature map $O^\updownarrow$ is swept
+Next, the obtained composite feature map $\mathbf{O}^\updownarrow$ is swept
 horizontally with two different RNNs ($f^{\rightarrow}$ and $f^{\leftarrow}$).
 In a similar manner as for the vertical sweep, these RNNs work along each row
-of $O^\updownarrow$ and produce an output feature map $O^\leftrightarrow =
-\left\{o^\leftrightarrow_{i,j} \right\}$, where $o^\leftrightarrow_{i,j} \in
-\RR^{2d}$. In this representation, each vector $o^\leftrightarrow_{i,j}$
-represents the features of the original image patch $p_{i,j}$
-\emph{in the context of the whole image}.
+of $\mathbf{O}^\updownarrow$ and produce an output feature map
+$\mathbf{O}^\leftrightarrow = \left\{\mathbf{o}^\leftrightarrow_{i,j}
+\right\}$, where $\mathbf{o}^\leftrightarrow_{i,j} \in \RR^{2d}$. In this
+representation, each vector $\mathbf{o}^\leftrightarrow_{i,j}$ represents the
+features of the original image patch $\mathbf{p}_{i,j}$ \emph{in the context of
+the whole image}.
 
 This is a critical feature of this model, in fact just one layer (to be
 precise, two sub-layers) allows to capture the full context of the image,
@@ -215,16 +216,16 @@ image.
 Even if each ReNet layer captures the full input context, it is clearly still
 possible to stack multiple ReNet layers on top of each other into a deep
 network. Let us denote by $\phi$ the function from the input image (or feature
-map) $X$ of one ReNet layer to the output feature map $O^\leftrightarrow$
-(see~\autoref{fig:renet_layer} for a graphical illustration). It is possible
-to compute a composition of functions $\Phi = \phi_1(\phi_2(\phi_3(\dots)))$ by
-stacking multiple ReNet layers, to capture increasingly complex features of the
-input image.  After any number of recurrent layers are applied to an input
-image, the activation at the last recurrent layer may be flattened and fed into
-a differentiable classifier to solve an object recognition task. The
-experiments on this model, presented in~\autoref{sec:renet_experiments}, used
-several fully-connected layers followed by a softmax classifier, as shown
-in~\autoref{fig:renet_network}.
+map) $\mathbf{X}$ of one ReNet layer to the output feature map
+$\mathbf{O}^\leftrightarrow$ (see~\autoref{fig:renet_layer} for a graphical
+illustration). It is possible to compute a composition of functions $\Phi =
+\phi_1(\phi_2(\phi_3(\dots)))$ by stacking multiple ReNet layers, to capture
+increasingly complex features of the input image.  After any number of
+recurrent layers are applied to an input image, the activation at the last
+recurrent layer may be flattened and fed into a differentiable classifier to
+solve an object recognition task. The experiments on this model, presented
+in~\autoref{sec:renet_experiments}, used several fully-connected layers
+followed by a softmax classifier, as shown in~\autoref{fig:renet_network}.
 
 The deep ReNet is a smooth, continuous function, and the parameters (those from
 the RNNs as well as from the fully-connected layers) can be estimated by the
