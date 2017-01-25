@@ -2184,3 +2184,51 @@ settings (see~\citep{Chung-et-al-NIPSDL2014-small}).
     \includegraphics[width=0.5\textwidth]{pdf/GRU.pdf}
     \caption{Gated Recurrent Units (GRUs).\label{fig:GRU}}
 \end{figure}
+
+\section{Metrics}
+Metrics allow to evaluate the effectiveness of a model on a given task and to
+compare its performance against the competing models. This section will
+introduce the most common metrics typically used to measure the performance of
+an algorithm in computer vision related tasks.
+
+In classification tasks, where the algorithm is required to label the input as
+belonging to a class among a set of classes, one of the most used performance
+measure is \emph{accuracy}. This metric corresponds to the ratio of correctly
+classified inputs to the total number of inputs. More formally, accuracy can be
+defined as
+
+\begin{equation}\label{eq:accuracy}
+    acc = \frac{TP + TN}{TP + TN + FP + FN},
+\end{equation}
+
+\noindent where \emph{TP} corresponds to the \emph{true positives}, i.e., the
+number of positive samples that were classified correctly as such; \emph{TN}
+corresponds to the \emph{true negatives}, i.e., the number of false samples
+that were correctly classified as such; \emph{FP} corresponds to the
+\emph{false positive}, i.e., the number of negative samples incorrectly
+classified as positive; and finally \emph{FN} corresponds to the \emph{false
+negatives}, i.e., the number of positive samples incorrectly classified as
+positive.
+
+One shortcoming of accuracy is that it can be over-optimistic and poorly
+reflect the real performance on the task. Consider for example a challenge
+where the goal is to distinguish between foreground and background, or
+equivalently to detect the core part of a visual scene. If the images are such
+that the foreground is typically much smaller than the background, a trivial
+way to obtain fairly high accuracy is to always classify the whole image as
+background. This fixed heuristic that ignores the input image altogether can
+achieve $70\%$ or even $80\%$ accuracy on some datasets.
+
+In detection or segmentation tasks, i.e., where the goal is to locate an object
+of interest in an image by either inscribing it into a bounding box or by
+selecting each pixel that belongs to the object, a more accurate metric is
+\emph{Intersection over Union (IoU)}. This metric penalizes wrong
+classifications and is computed as the ratio of the intersection to the union
+of the area classified as positive by the algorithm and the one that is
+actually positive according to the ground truth. This is equivalent to
+
+\begin{equation}\label{eq:iou}
+    IoU = \frac{TP}{TP + FN + FP},
+\end{equation}
+
+\noindent and is also known as \emph{Jaccard index} in the literature.
