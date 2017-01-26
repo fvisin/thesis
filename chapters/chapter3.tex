@@ -572,7 +572,7 @@ the state of the art for a long time, such as object recognition. Many aspects
 of RNN-based models applied to this context remain to be studied in more depth,
 some of which will be outlined in the rest of this section.
 
-\subsubsection{Choice of Recurrent Units}
+\subsubsection{Choice of recurrent units}
 Note that the proposed architecture is independent of the chosen recurrent
 units. The preliminary experiments on this model showed that gated recurrent
 units, either the GRU or the LSTM, outperform a usual sigmoidal unit (affine
@@ -580,7 +580,19 @@ transformation followed by an element-wise sigmoid function.) This indirectly
 confirms that the model utilizes long-term dependencies across an input image,
 and the gated recurrent units help capture these dependencies.
 
-\subsubsection{Analysis of the Trained ReNet}
+\subsubsection{Choice of the topology}
+A similar but less effective architecture would have been to flatten the matrix
+of patches into a vector and process them with a singular bidirectional RNN
+from the top-left patch to the bottom-right one. This alternative presents two
+shortcomings: first, the network would have had to learn the dependency between
+vertically adjacent pixels implicitly -- a much harder task than capturing the
+dependency between pixels explicitly close in the input provided to the layer;
+second, after a successful training, the network would have implicitly learned
+the size of its input (i.e., that every $J$ patches are correlated), thus
+constraining the trained model to work at inference time on images of the exact
+same resolution.
+
+\subsubsection{Analysis of the trained ReNet}
 The ReNet model has been only evaluated in a quantitative fashion. However, the
 accuracies on the test sets do not reveal what kind of image structures the
 ReNet has captured in order to perform object recognition. Due to the large
