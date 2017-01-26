@@ -366,7 +366,12 @@ zero-mean and unit-variance across the training samples.
 \subsection{Data Augmentation}
 
 It has been long known that augmenting training data often leads to better
-generalization~\citep[see, e.g.,][]{Krizhevsky-2012}. The results reported
+generalization~\citep[see, e.g.,][]{Krizhevsky-2012}. Many of the reported
+SOTA results were obtained using a mix of these techniques, for example
+\citep{Goodfellow2013} reports a $1.52\%$ improvement on CIFAR10 by adding
+translation and reflections; \citep{DBLP:conf/icdar/SimardSP03} uses elastic
+distortion on MNIST; \citep{DBLP:conf/icml/WanZZLF13} applies cropping,
+flipping, scaling, rotating on SVHN and CIFAR10. The results reported
 in~\autoref{sec:renet_results} were all obtained employing two primary data
 augmentations: {\it flipping} and {\it shifting}.
 
@@ -388,8 +393,11 @@ was done without pre-padding the borders of the image, but rather preserving
 the original size by dropping the pixels which are shifted out of the input
 and shifting in zeros on the opposite side.
 
-The choice of whether to apply these augmentation procedures on each dataset
-was chosen on a per-case basis in order to maximize validation performance.
+Exploiting data augmentation techniques with the ReNet model led to a $16\%$
+improvement in test performance on MNIST and to less pronounced gains on the
+other datasets. The choice of whether to apply these augmentation procedures on
+each dataset was chosen on a per-case basis in order to maximize validation
+performance.
 
 \begin{figure}[t]
     \centering
