@@ -292,14 +292,14 @@ input data. Specifically, the model takes as an input an image (or the feature
 map of the previous layer) $\mathbf{X}$ of elements $x \in \RR^{H \times W
 \times C}$, where $H$, $W$ and $C$ are respectively the height, width and
 number of channels (or features) and splits it into $I \times J$ flattened
-patches $\mathbf{p}_{i,j} \in \RR^{H_p \times W_p \times C}$. It then sweeps
-along each of its columns $\mathbf{p}_{i,\cdot}$ vertically a first time with
-two RNNs $f^{\downarrow}$ and $f^{\uparrow}$, with $U$ recurrent units each,
-that move top-down and bottom-up respectively. Note that the processing of each
-column is independent and can be done in parallel. This is a very important
-performance difference of the ReSeg model with respect to other architectures
-in the literature that enforce to handle the data in a more constrainedly
-sequential nature.
+non-overlapping patches $\mathbf{p}_{i,j} \in \RR^{H_p \times W_p \times C}$.
+It then sweeps along each of its columns $\mathbf{p}_{i,\cdot}$ vertically a
+first time with two RNNs $f^{\downarrow}$ and $f^{\uparrow}$, with $U$
+recurrent units each, that move top-down and bottom-up respectively. Note that
+the processing of each column is independent and can be done in parallel. This
+is a very important performance difference of the ReSeg model with respect to
+other architectures in the literature that enforce to handle the data in a more
+constrainedly sequential nature.
 
 \begin{figure}[t]
     \advance\leftskip-0.2\textwidth
@@ -309,11 +309,12 @@ sequential nature.
     \caption{The ReSeg network. For space reasons the pretrained VGG-16
         convolutional layers used to preprocess the input to ReSeg are
         not represented. The first 2 RNNs (blue and green) are applied on
-        2x2x3 patches of the image, their 16x16x256 feature maps are
-        concatenated and fed as input to the next two RNNs (red and yellow)
-        which read 1x1x512 patches and emit the output of the first ReNet
-        layer. Two similar ReNet layers are stacked, followed by an upsampling
-        layer and a softmax nonlinearity.}
+        2x2x3 patches of the image. Since the patches are non-overlapping,
+        this has the effect of halving the resolution. The resulting 16x16x256
+        feature maps are concatenated and fed as input to the next two RNNs
+        (red and yellow) which read 1x1x512 patches and emit the output of the
+        first ReNet layer. Two similar ReNet layers are stacked, followed by an
+        upsampling layer and a softmax nonlinearity.}
     \label{fig:ReSeg}
 \end{figure}
 
@@ -899,6 +900,15 @@ Notably, it is sufficient to process the input images with just a few layers of
 VGG-16 for the ReSeg model to gracefully handle the semantic segmentation task,
 confirming its ability to encode contextual information and long term
 dependencies.
+
+The dimensionality reduction that derives from halving the resolution at each
+encoding layer to expand it back in the upsampling layers can be expected to
+cause some loss of spacial precision, especially on fine-grained details. It is
+conceivable to imagine that the model could gain from the introduction of skip
+connections, a fairly recent technique that consists in providing higher
+resolution information from the lower layers to the upsampling layers. This is
+described in~\autoref{sec:deconvLSTM_skip_connections} and adopted in the model
+that will be the main subject of the following chapter.
 
 The experiments prove the flexibility of ReSeg in the foreground-background
 segmentation as well as the full semantic segmentation tasks on multiple
