@@ -2,10 +2,11 @@
 
 \emph{Classification} is a broad task that consists in predicting to which
 category an input belongs to, out of some $k$ given categories. The system is
-usually required to compute a function $f: \RR^d \to {0, \dots, (k-1)}$ that
-assigns each input to a class. This can be thought as a discrimination task,
-where the algorithm is expected to learn similarities and differences between
-categories in order to characterize each class.
+usually required to compute a function $f: \RR^d \to \{\Omega_0, \dots,
+\Omega_{(k-1)}\}$ that assigns each input to a class $\Omega_i$. This can be
+thought as a discrimination task, where the algorithm is expected to learn
+similarities and differences between categories in order to characterize each
+class.
 
 Some examples of classification are spam detection (classify a message as being
 spam or not), credit card fraud detection (identify if a transaction is legit
@@ -18,20 +19,19 @@ current and historical data), shape detection (classify a hand-drawn drawing
 from, e.g., a touch screen, as a specific shape) and sentiment analysis (given
 a text, classify it as being positive, neutral or negative)
 
-\emph{Object recognition} is an instance of this task that takes an image as an
-input and is expected to return the id of the main class represented in the
-image. This is usually achieved by computing the probability distribution over
-the classes -- i.e.\ the confidence of the algorithm for each class to be the
-main class in the scene -- and then picking the one with highest score.
-
-One downside of this method is that small and big mistakes are penalized the
-same, i.e., the prediction is considered wrong whether the right class is the
-second most probable class in the distribution or is considered extremely
-unlikely by the algorithm. For this reason, some competitions such as
+\emph{Object recognition} is an instance of the classification task that takes
+an image as an input and is expected to return the id of the main class
+represented in the image. This is usually achieved by computing the probability
+distribution over the classes -- i.e., the confidence of the algorithm for each
+class to be the main class in the scene -- and then picking the one with
+highest score. One downside of this method is that small and big mistakes are
+penalized the same, i.e., the prediction is considered wrong whether the right
+class is the second most probable class in the distribution or is considered
+extremely unlikely by the algorithm. For this reason, some competitions such as
 e.g.,~ImageNet~\citep{imagenet_cvpr09, ILSVRCarxiv14}, propose multiple
 challenges where the top-3 or top-5 guesses are considered, i.e., where an
-image is considered correctly predicted if the correct class is in the top
-$3$ or $5$ guesses of the network.
+image is considered correctly predicted if the correct class is in the top $3$
+or $5$ guesses of the network.
 
 Traditionally the computer vision community used to address this task with
 heavily hand-engineered systems that typically resorted to finding easily
@@ -46,9 +46,9 @@ models dominated the object recognition scene.
 
 This chapter presents ReNet, one of the main contributions of this thesis.
 The ReNet model is a deep neural network architecture for object recognition,
-based on recurrent neural networks. The main idea behind this project is to
+based on recurrent neural networks. The main idea behind this model is to
 propose an alternative to the typical CNN-based approach to object
-classification problems. The ReNet model replaces in fact the ubiquitous
+classification problems. In fact, the ReNet model replaces ubiquitous
 convolution+pooling layers of deep CNNs with four recurrent neural networks
 that sweep horizontally and vertically in both directions across the image.
 
@@ -67,7 +67,7 @@ for image related tasks.
 
 Convolutional neural networks~\cite[CNN,][]{Fukushima80,LeCun89} have become
 the method of choice for object recognition after the impressive improvement on
-the state of the art of~\cite{Krizhevsky-2012}. CNNs have proved to be
+the state of the art by~\cite{Krizhevsky-2012}. CNNs have proven to be
 successful at a variety of benchmark problems including, but not limited to,
 handwritten digit recognition~\citep[see, e.g.,][]{Ciresan-2012}, natural image
 classification~\citep[see, e.g.,][]{Lin2014,Simonyan2015,szegedy2014going},
@@ -82,7 +82,7 @@ generation~\citep[see, e.g.,][]{Vinyals-et-al-arxiv2014,Xu-et-al-arxiv2015},
 video description generation~\citep[see, e.g.,][]{Li2015} and object
 localization/detection~\citep[see, e.g.,][]{Sermanet14}.
 
-While the CNN has been especially successful in computer vision, recurrent
+While CNNs have been especially successful in computer vision, recurrent
 neural networks (RNN) have become the method of choice for modeling sequential
 data, such as text and sound. Natural language processing (NLP) applications
 include language modeling~\citep[see, e.g.,][]{Mikolov-thesis-2012}, and
@@ -115,12 +115,12 @@ recognition system for offline Arabic handwriting recognition. The main
 difference between ReNet and the model of \citet{Graves+Schmidhuber-2009} is
 that it uses the usual sequence RNN, instead of the multidimensional RNN. The
 way ReNet has been conceived allows in fact to capture the context of the
-image without being forced to resort to multidimensional RNNs: the latter two
-RNNs (or, equivalently, the last bidirectional RNN), work on the hidden states
-computed by the first two RNNs (or the first bidirectional RNN). This allows
-to use plain RNNs instead of the more complex multidimensional ones, while
-making each output activation of the layer be computed with respect to the
-whole input image.
+image without being forced to resort to multidimensional RNNs, indeed the
+latter two RNNs (or, equivalently, the last bidirectional RNN), work on the
+hidden states computed by the first two RNNs (or the first bidirectional RNN).
+This allows to use plain RNNs instead of the more complex multidimensional
+ones, while making each output activation of the layer be computed with respect
+to the whole input image.
 
 One important consequence of the proposed approach compared to the
 multidimensional RNN is that the number of RNNs at each layer scales linearly
@@ -135,29 +135,62 @@ of~\citet{Graves+Schmidhuber-2009}.
 
 \section{Model Description}\label{sec:renet_model}
 
+%% Creator: Inkscape inkscape 0.92.0, www.inkscape.org
 \begin{figure}[t]
-    \centering
-    \includegraphics[width=0.3\textwidth]{img/renet/renet_first_layer.pdf}
-    \caption{A ReNet layer. The green and blue dots on the input image/feature
-        map represent the steps of $f^\uparrow$ and $f^\downarrow$
-        respectively. On the concatenation of the resulting feature maps, the
-        two RNNs $f^\rightarrow$ (yellow dots) and $f^\leftarrow$ (red dots)
-        are subsequently swept. The output of the feature maps are finally
-        concatenated to form the output of the ReNet layer, depicted as a blue
-        heatmap in the figure.}
-    \label{fig:renet_layer}
-    \vspace{-3mm}
+	\centering
+    \makebox[0.5\textwidth]{%
+		\begingroup%
+			\makeatletter%
+			\providecommand\color[2][]{%
+				\errmessage{(Inkscape) Color is used for the text in Inkscape, but the package 'color.sty' is not loaded}%
+				\renewcommand\color[2][]{}%
+			}%
+			\providecommand\transparent[1]{%
+				\errmessage{(Inkscape) Transparency is used (non-zero) for the text in Inkscape, but the package 'transparent.sty' is not loaded}%
+				\renewcommand\transparent[1]{}%
+		    }%
+		    \providecommand\rotatebox[2]{#2}%
+		    \ifx\svgwidth\undefined%
+		        \setlength{\unitlength}{333.23107244bp}%
+		        \ifx\svgscale\undefined%
+		            \relax%
+		        \else%
+		            \setlength{\unitlength}{\unitlength * \real{\svgscale}}%
+		        \fi%
+		    \else%
+		        \setlength{\unitlength}{\svgwidth}%
+		    \fi%
+		    \global\let\svgwidth\undefined%
+		    \global\let\svgscale\undefined%
+		    \makeatother%
+		    \begin{picture}(0.4,0.5)%
+		        \put(0,0){\includegraphics[width=0.3\textwidth]{img/renet/renet_first_layer.pdf}}%
+		        \put(0.28,0.055){\color[rgb]{0,0,0}\makebox(0,0)[lt]{\begin{minipage}{0.15\unitlength}\centering \textbf{X}\end{minipage}}}%
+		        \put(0.28,0.24){\color[rgb]{0,0,0}\makebox(0,0)[lt]{\begin{minipage}{0.15\unitlength}\centering $\mathbf{O}^\updownarrow$\end{minipage}}}%
+		        \put(0.28,0.385){\color[rgb]{0,0,0}\makebox(0,0)[lt]{\begin{minipage}{0.15\unitlength}\centering $\mathbf{O}^\leftrightarrow$\end{minipage}}}%
+		    \end{picture}%
+		\endgroup%
+		}
+		\caption{A ReNet layer. The green and blue dots on the input image/feature
+			map represent the steps of $f^\uparrow$ and $f^\downarrow$
+			respectively. On the concatenation of the resulting feature maps, the
+			two RNNs $f^\rightarrow$ (yellow dots) and $f^\leftarrow$ (red dots)
+			are subsequently swept. The output of the feature maps are finally
+			concatenated to form the output of the ReNet layer, depicted as a blue
+			heatmap in the figure.}\label{fig:renet_layer}
+		\vspace{-3mm}
 \end{figure}
 
 Let us denote by $\mathbf{X}=\left\{x_{i,j}\right\}$ the input image or the
-feature map from the layer below, where $\mathbf{X} \in \RR^{w \times h \times
-c}$ with $w$, $h$ and $c$ the width, height and number of channels, or the
-feature dimensionality, respectively. Given a receptive field (or patch) size
-of $w_p \times h_p$, the image $\mathbf{X}$ is split into a set of $I \times J$
-(non-overlapping) patches $P = \left\{ \mathbf{p}_{i,j} \right\}$, where $I =
-\frac{w}{w_p}$, $J = \frac{h}{h_p}$ and $\mathbf{p}_{i,j} \in \RR^{w_p \times
-h_p \times c}$ is the $(i,j)$-th patch of the input image. The first index $i$
-is the horizontal index and the other index $j$ is the vertical index.
+feature map from the previous layer, where $\mathbf{X} \in \RR^{w \times h
+\times c}$ with $w$, $h$ and $c$ the width, height and number of channels, or
+the feature dimensionality, respectively. Given a receptive field (or patch)
+size of $w_p \times h_p$, the image $\mathbf{X}$ is split into a set of
+$I \times J$ (non-overlapping) patches $P = \left\{ \mathbf{p}_{i,j} \right\}$,
+where $I = \frac{w}{w_p}$, $J = \frac{h}{h_p}$ and $\mathbf{p}_{i,j} \in
+\RR^{w_p \times h_p \times c}$ is the $(i,j)$-th patch of the input image. The
+first index $i$ is the horizontal index and the other index $j$ is the vertical
+index.
 
 First, the image is swept vertically with two RNNs, with one RNN working in a
 bottom-up direction and the other working in a top-down direction.  Each RNN
@@ -172,7 +205,7 @@ two output vectors $o^{\uparrow}$ and $o^{\downarrow}$ defined as follows
         i,j+1},\mathbf{p}_{i,j}), &\text{ for }j=J,\cdots,1.
 \end{align}
 
-Note that the functions $f^\uparrow$ and $f^\downarrow$ return the
+\noindent Note that the functions $f^\uparrow$ and $f^\downarrow$ return the
 activation of the recurrent hidden unit, and may be implemented either as a
 simple $\tanh$ layer, as a gated recurrent layer~\citep{Cho2014} or as a long
 short-term memory layer~\citep{Hochreiter+Schmidhuber-1997}, as detailed
@@ -203,15 +236,15 @@ precise, two sub-layers) allows to capture the full context of the image,
 irrespective of the image size. This is possible thanks to the (potential)
 ability of RNNs to store in their memory any information that is relevant to
 retain the context of the part of the image that has been processed. The first
-two RNNs capture the horizontal dependencies in both directions. By reading
+two RNNs capture the vertical dependencies in both directions. By reading
 their composite feature map, the second pair of RNNs has access in each
-position to a "summary" of the corresponding row. This is processed vertically,
-to capture the missing dependencies between rows. This intra- and inter-row
-processing results in a final composite feature map where each position is
-specific to a pixel (or patch) of the image but has information on the full
-image. Conversely, to span over the whole image with CNN-based architectures
-would require many more layers, whose number depend on the size of the input
-image.
+position to a "summary" of the corresponding row. This is processed
+horizontally, to capture the missing dependencies between rows. This intra- and
+inter-row processing results in a final composite feature map where each
+position is specific to a pixel (or patch) of the image but has information on
+the full image. Conversely, to span over the whole image with CNN-based
+architectures would require many more layers, whose number depend on the size
+of the input image.
 
 Even if each ReNet layer captures the full input context, it is clearly still
 possible to stack multiple ReNet layers on top of each other into a deep
@@ -243,13 +276,14 @@ log-likelihood.
     \vspace{-3mm}
 \end{figure}
 
-This section will use LeNet (see~\autoref{fig:lenet}) to refer to the canonical
-convolutional neural network as shown by \citet{LeCun89}. There are many
-similarities and differences between the ReNet model and a convolutional neural
-network. The main key points of comparison will be highlighted in what follows.
+This section will use LeNet (see~\autoref{fig:lenet}) as a reference to the
+canonical convolutional neural network as shown by \citet{LeCun89}. There are
+many similarities and differences between the ReNet model and a convolutional
+neural network. The main key points of comparison will be highlighted in the
+following.
 
 At each layer, both networks apply the same set of filters to patches of the
-input image or of the feature map from the layer below. ReNet, however,
+input image or of the feature map generated by the layer below. ReNet, however,
 propagates information through lateral connections that span across the whole
 image, while LeNet exploits local information only. The lateral connections
 should help extract a more compact feature representation of the input image at
@@ -266,8 +300,8 @@ pooling due to the existence of learned lateral connections. The lateral
 connection in ReNet can emulate the local competition among features induced by
 the max-pooling in LeNet.  This does not mean that it is not possible to use
 max-pooling in ReNet. The use of max-pooling in the ReNet could be helpful in
-reducing the dimensionality of the feature map, resulting in lower computational
-cost.
+reducing the dimensionality of the feature map, resulting in a lower
+computational cost.
 
 Max-pooling as used in LeNet may prove problematic when building a
 convolutional autoencoder whose decoder is an inverse\footnote{%
@@ -332,12 +366,13 @@ describes each dataset in detail.
 \subsubsection{MNIST}
 The MNIST dataset~\citep{Lecun99objectrecognition} consists of 70,000
 handwritten digits from 0 to 9, centered on a $28\times 28$ square
-canvas~(see~\autoref{fig:mnist_digits} for some samples). Each pixel represents
-the grayscale in the range of $\left[0, 255\right]$.\footnote{Each pixel has
-been scaled to $[0, 1]$ by dividing it with $255$.} It is customary to split
-this dataset into 50,000 training samples, 10,000 validation samples and 10,000
-test samples. For a fair comparison, the results reported
-in~\autoref{sec:renet_results} were obtained following the standard split.
+canvas~(see~\autoref{fig:mnist_digits} for some samples). Each pixel value
+represents the grayscale intensity in the range
+$\left[0, 255\right]$.\footnote{Each pixel has been normalized to $[0, 1]$ by
+dividing it with $255$.} It is customary to split this dataset into 50,000
+training samples, 10,000 validation samples and 10,000 test samples. For a fair
+comparison, the results reported in~\autoref{sec:renet_results} were obtained
+following the standard split.
 
 \subsubsection{CIFAR-10}
 The CIFAR-10 dataset~\citep{KrizhevskyHinton2009} is a curated subset of the 80
@@ -355,13 +390,13 @@ as suggested by \citet{KrizhevskyHinton2009}.
 \subsubsection{Street View House Numbers}
 The Street View House Numbers dataset~\citep{Netzer-wkshp-2011} consists
 of cropped images representing house numbers captured by Google StreetView
-vehicles as a part of the Google Maps mapping process. These images consist of
+vehicles as a part of the Google Maps mapping effort. These images consist of
 digits 0 through 9 with values in the range of [0, 255] in each of 3
 red-green-blue color channels~(see~\autoref{fig:svhn} for some samples). Each
 image is 32 pixels wide and 32 pixels high giving a sample dimensionality (32,
 32, 3). The number of samples used for the training, validation, and test sets
-is 543,949, 60,439, and 26,032 respectively. Each pixel was normalized to have
-zero-mean and unit-variance across the training samples.
+is 543,949, 60,439, and 26,032 respectively. Every channel in each pixel was
+normalized to have zero-mean and unit-variance across the training samples.
 
 \subsection{Data Augmentation}
 
@@ -413,11 +448,10 @@ the number of ReNet layers ($N_{\text{RE}}$), their corresponding receptive
 field sizes ($w_p \times h_p$) and feature dimensionality ($d_{\text{RE}}$),
 the number of fully-connected layers ($N_{\text{FC}}$) and their corresponding
 numbers ($d_{\text{FC}}$) and types ($f_{\text{FC}}$) of hidden units.
-
-Table~\ref{tbl:renet_architectures} summarizes the settings of these
+\autoref{tbl:renet_architectures} summarizes the settings of the
 hyperparameters that performed best on the validation set of the studied
 datasets. \autoref{fig:renet_network} is a graphical illustration of the model
-selected with this metric for the SVHN dataset.
+selected by cross-validating on the validation set for the SVHN dataset.
 
 \begin{table}[t]
     \centering
@@ -467,9 +501,9 @@ of the best model, selected after a full training on the training set and early
 stopping on the validation performance. There is no reason not to think that
 this would further improve the reported results, but this work was mainly
 conceived as a proof of concept rather than to stress on the absolute
-performance. This, as well as e.g., ensembling multiple models, can be seen as
-one of the many potential areas of exploration for further work in case maximum
-performance is sought.
+performance achievable on the selected datasets. This, as well as e.g.,
+ensembling multiple models, can be seen as one of the many potential areas of
+exploration for further work in case maximum performance is sought.
 
 \begin{table}[t]
     \centering
@@ -543,25 +577,23 @@ performance is sought.
                 with those reported by previous works on each of the three
                 datasets. For a fair comparison, only results obtained by a
                 single model are listed, i.e., no ensembling of multiple
-                models. In the case of SVHN, only models trained on the Format
-                2 (cropped digits) dataset are reported. $\star$ denotes a
-                convolutional neural network.}
+                models is reported. In the case of SVHN, only models trained on
+                the Format 2 (cropped digits) dataset are reported. $\star$
+                denotes a convolutional neural network.}
             \label{tbl:renet_result}
         \end{minipage}
     \end{table}
 
 \subsection{Results}\label{sec:renet_results}
 
-Table~\ref{tbl:renet_result}, presents the results of ReNet on three datasets,
-along with previously reported results.
-
-It is clear that ReNet performs comparably to deep convolutional neural
-networks which are the {\it de facto} standard for object recognition. This
-suggests that ReNet is a viable alternative to convolutional neural networks
-(CNN), even on tasks where CNNs have historically dominated.  However, it is
-important to notice that ReNet does not outperform state-of-the-art
-convolutional neural networks on any of the three benchmark datasets, which
-calls for more research in the future.
+\autoref{tbl:renet_result}, presents the results of ReNet on three datasets,
+along with previously reported results. It is clear that ReNet performs
+comparably to deep convolutional neural networks which are the {\it de facto}
+standard for object recognition. This suggests that ReNet is a viable
+alternative to convolutional neural networks (CNN), even on tasks where CNNs
+have historically dominated.  However, it is important to notice that ReNet
+does not outperform state-of-the-art convolutional neural networks on any of
+the three benchmark datasets, which calls for more research in the future.
 
 
 \section{Discussion}
@@ -573,12 +605,12 @@ of RNN-based models applied to this context remain to be studied in more depth,
 some of which will be outlined in the rest of this section.
 
 \subsubsection{Choice of recurrent units}
-Note that the proposed architecture is independent of the chosen recurrent
-units. The preliminary experiments on this model showed that gated recurrent
-units, either the GRU or the LSTM, outperform a usual sigmoidal unit (affine
-transformation followed by an element-wise sigmoid function.) This indirectly
-confirms that the model utilizes long-term dependencies across an input image,
-and the gated recurrent units help capture these dependencies.
+The proposed architecture is independent of the chosen recurrent units. The
+preliminary experiments on this model showed that gated recurrent units, either
+the GRU or the LSTM, outperform a usual sigmoidal unit (affine transformation
+followed by an element-wise sigmoid function.) This indirectly confirms that
+the model exploits long-term dependencies across an input image, and the gated
+recurrent units help capture these dependencies.
 
 \subsubsection{Choice of the topology}
 A similar but less effective architecture would have been to flatten the matrix
@@ -594,16 +626,16 @@ same resolution.
 
 \subsubsection{Analysis of the trained ReNet}
 The ReNet model has been only evaluated in a quantitative fashion. However, the
-accuracies on the test sets do not reveal what kind of image structures the
-ReNet has captured in order to perform object recognition. Due to the large
-differences between ReNet and LeNet discussed in Sec.~\ref{sec:lenetrenet}, it
+accuracy values on the test sets do not reveal what kind of image structures
+the ReNet has captured in order to perform object recognition. Due to the large
+differences between ReNet and LeNet discussed in~\autoref{sec:lenetrenet}, it
 can be expected that the internal behavior of ReNet will differ from that of
 LeNet significantly. Further investigation along the line of
 \citep{ZeilerFergus14} is needed, as well as exploring ensembles that combine
 RNNs and CNNs for bagged prediction.
 
 \subsubsection{Computationally Efficient Implementation}
-As discussed in Sec.~\ref{sec:lenetrenet}, the proposed ReNet is less
+As discussed in~\autoref{sec:lenetrenet}, the proposed ReNet is less
 parallelizable due to the sequential nature of the recurrent neural network
 (RNN). Although this sequential nature cannot be addressed directly, our
 construction of ReNet allows the forward and backward RNNs to be run
