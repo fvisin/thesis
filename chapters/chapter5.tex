@@ -743,14 +743,20 @@ this dataset is remarkable, as reported in \autoref{tbl:deconvLSTM_gatech}. The
 model aligns with the state-of-the-art without resorting to data augmentation
 techniques, or finetuning on full resolution (i.e., without cropping the
 frames), which can be expected to further improve the result, setting a new
-state-of-the-art for this dataset. The first goal of the research carried out
-on this model has been to evaluate the effectiveness of the proposed
-architecture in non-trivial settings where the time component has to be
-exploited to obtain convincing predictions. The results on this dataset show
-that the proposed architecture can address successfully the video segmentation
-task and suggest to carry on experimentation, e.g., adding data augmentation
-and finetuning the network on full resolution sequences, to further improve the
-state of the art.
+state-of-the-art for this dataset. \autoref{fig:deconvlstm_gatech_samples}
+presents some samples on the Gatech dataset. Although the model is usually able
+to produce precise segmentation even on fine-grained details of the most
+represented classes, such as sky and solid (the buildings), it can suffer on
+the less frequent ones, such as humans and cars. A more in-depth discussion on
+this issue will be provided in the following section.
+
+The research carried out on this dataset allowed to evaluate the effectiveness
+of the proposed architecture in non-trivial settings where the time component
+has to be exploited to obtain convincing predictions. The results on the Gatech
+dataset show that the proposed architecture can address successfully the video
+segmentation task and suggest to carry on experimentation, e.g., adding data
+augmentation and finetuning the network on full resolution sequences, to
+further improve the state of the art.
 
 \begin{table}[t]
     \centering{\small
@@ -771,6 +777,37 @@ state of the art.
         dataset.}
     \label{tbl:deconvLSTM_gatech}
 \end{table}
+
+\begin{figure}[p]
+    \captionsetup[subfigure]{justification=centering}
+    \begin{minipage}[c]{.95\textwidth}
+        \begin{subfigure}{.47\textwidth}
+            \centering
+            \includegraphics[trim={13 10mm 25mm 10mm},clip,width=\linewidth]{img/deconvLSTM/gatech_10_204-0.png}
+            \caption{}\label{fig:deconvlstm_gatech_samples:a}
+        \end{subfigure}%
+        \begin{subfigure}{.47\textwidth}
+            \centering
+            \includegraphics[trim={13 10mm 25mm 10mm},clip,width=\linewidth]{img/deconvLSTM/gatech_10_339-2.png}
+            \caption{}\label{fig:deconvlstm_gatech_samples:b}
+        \end{subfigure}
+        \begin{subfigure}{.47\textwidth}
+            \centering
+            \includegraphics[trim={13 10mm 25mm 5mm},clip,width=\linewidth]{img/deconvLSTM/gatech_24_99-0.png}
+            \caption{}\label{fig:deconvlstm_gatech_samples:c}
+        \end{subfigure}
+        \begin{subfigure}{.47\textwidth}
+            \centering
+            \includegraphics[trim={13 10mm 25mm 5mm},clip,width=\linewidth]{img/deconvLSTM/gatech_29_69-1.png}
+            \caption{}\label{fig:deconvlstm_gatech_samples:d}
+        \end{subfigure}
+    \end{minipage}%
+    \begin{minipage}[c]{.1\textwidth}
+        \includegraphics[width=.7\textwidth]{img/deconvLSTM/gatech_barra.png}
+    \end{minipage}%
+    \caption{Segmentation samples on the Gatech dataset.}
+	\label{fig:deconvlstm_gatech_samples}
+\end{figure}
 
 
 %%%%%% DAVIS %%%%%%%%%%
@@ -874,6 +911,26 @@ generalization seems to be much better on Gatech with respect to CamVid, in
 fact the drop in performance between the validation and the test set is
 remarkably contained around $2\%$, as opposed to the $10-15\%$ drop typically
 experienced in CamVid.
+
+By analyzing some of the segmentation samples (see
+\autoref{fig:deconvlstm_gatech_samples}) it is evident that the model learns a
+good representation of the most represented objects of the dataset (e.g., the
+buildings (labeled as solid) and the sky), and is able to segment fine-grained
+details such as the leaves of the trees
+(\autoref{fig:deconvlstm_gatech_samples:a}) and, although not perfectly, far
+away people (such as those in ~\autoref{fig:deconvlstm_gatech_samples:d}).
+There are still some imperfections in the segmentation which could be caused by
+misleading ground truth labels that could be making it less clear for the model
+to distinguish between some of the classes. Take for
+example~\Autoref{fig:deconvlstm_gatech_samples:a,
+fig:deconvlstm_gatech_samples:b}, where the ground truth label for some of the
+trees is "porous" and for some other is "vertical mix"; similarly in
+\autoref{fig:deconvlstm_gatech_samples:c} part of the street is labeled as
+"ground" and some of it as "general mix", even if there is no apparent
+difference between the two parts of the street in the image. These kind of
+unclear semantic is a probable cause for the uncertainty of the model in some
+cases, such as the mixed segmentation of the building in the background
+in~\autoref{fig:deconvlstm_gatech_samples:d}.
 
 Unfortunately the model did not perform as well when trained \emph{using the
 same hyperparameters} on the Davis dataset. The results on this dataset are not
