@@ -171,18 +171,26 @@ here
 
 \begin{equation*}\tag{\ref{eq:LSTM_peepholes} revisited}
 \begin{split}
-    \mathbf{i}_t &= \sigma\left(\mathbf{W}_i \cdot \left[\mathbf{h}_{t-1},
-        \mathbf{x}_t\right] + \mathbf{W}_{ic} \hadamard \mathbf{c}_{t-1} +
+    \mathbf{i}_t &= \sigma\left(
+        \mathbf{W}_{ih} \cdot \mathbf{h}_{t-1} +
+        \mathbf{W}_{ix} \cdot \mathbf{x}_t +
+        \mathbf{W}_{ic} \hadamard \mathbf{c}_{t-1} +
         \mathbf{b}_i \right),\\
-    \mathbf{f}_t &= \sigma\left(\mathbf{W}_f \cdot \left[\mathbf{h}_{t-1},
-        \mathbf{x}_t\right] + \mathbf{W}_{fc} \hadamard \mathbf{c}_{t-1} +
+    \mathbf{f}_t &= \sigma\left(
+        \mathbf{W}_{fh} \cdot \mathbf{h}_{t-1} +
+        \mathbf{W}_{fx} \cdot \mathbf{x}_t +
+        \mathbf{W}_{fc} \hadamard \mathbf{c}_{t-1} +
         \mathbf{b}_f \right),\\
-    \mathbf{\tilde c}_t &= tanh \left(\mathbf{W}_c \cdot
-        \left[\mathbf{h}_{t-1}, \mathbf{x}_t\right] + \mathbf{b}_c \right),\\
+    \mathbf{\tilde c}_t &= tanh \left(
+        \mathbf{W}_{ch} \cdot \mathbf{h}_{t-1} +
+        \mathbf{W}_{cx} \cdot \mathbf{x}_t +
+        \mathbf{b}_c \right),\\
     \mathbf{c}_t &= \mathbf{f}_t \hadamard \mathbf{c}_{t-1} + \mathbf{i}_t
         \hadamard \mathbf{\tilde c}_t,\\
-    \mathbf{o}_t &= \sigma\left(\mathbf{W}_o \cdot \left[\mathbf{h}_{t-1},
-        \mathbf{x}_t\right] + \mathbf{W}_{oc} \hadamard \mathbf{c}_{t-1} +
+    \mathbf{o}_t &= \sigma\left(
+        \mathbf{W}_{oh} \cdot \mathbf{h}_{t-1} +
+        \mathbf{W}_{ox} \cdot \mathbf{x}_t +
+        \mathbf{W}_{oc} \hadamard \mathbf{c}_{t-1} +
         \mathbf{b}_o \right),\\
     \mathbf{h}_t &= \mathbf{o}_t \hadamard tanh \left(\mathbf{c}_t\right),
 \end{split}
@@ -197,29 +205,34 @@ unit given the input and its state at each time step $t$. $\sigma$ is the
 logistic function, $\mathbf{W}_{\star}$\footnote{
     The $\star$ notation here is used as a placeholder to represent any letter
     or string. In this particular case it takes the place of \textit{i, f, c}
-    and \textit{o}.}.
-the weights and $\hadamard$ the Hadamard product. Note that the compact
-notation $\mathbf{W}_\star \cdot [\mathbf{h}_{t-1}, \mathbf{x}_t]$ represents
-$\mathbf{W}_{\star h} \cdot \mathbf{h}_{t-1} + \mathbf{W}_{\star x} \cdot
-\mathbf{x}_t$
+    and \textit{o}.},
+the weights and $\hadamard$ the Hadamard product.
 
 The convolutional LSTM of~\citep{ShiCWYWW15} replaces the dot products with
 convolutions, leading to the following formulation
 
 \begin{equation}
 \begin{split}
-    \mathbf{i}_t &= \sigma\left(\mathbf{W}_i * \left[\mathbf{h}_{t-1},
-        \mathbf{x}_t\right] + \mathbf{W}_{ic} \hadamard \mathbf{c}_{t-1} +
+    \mathbf{i}_t &= \sigma\left(
+        \mathbf{W}_{ih} * \mathbf{h}_{t-1} +
+        \mathbf{W}_{ix} * \mathbf{x}_t +
+        \mathbf{W}_{ic} \hadamard \mathbf{c}_{t-1} +
         \mathbf{b}_i \right),\\
-    \mathbf{f}_t &= \sigma\left(\mathbf{W}_f * \left[\mathbf{h}_{t-1},
-        \mathbf{x}_t\right] + \mathbf{W}_{fc} \hadamard \mathbf{c}_{t-1} +
+    \mathbf{f}_t &= \sigma\left(
+        \mathbf{W}_{fh} * \mathbf{h}_{t-1} +
+        \mathbf{W}_{fx} * \mathbf{x}_t +
+        \mathbf{W}_{fc} \hadamard \mathbf{c}_{t-1} +
         \mathbf{b}_f \right),\\
-    \mathbf{\tilde c}_t &= tanh \left(\mathbf{W}_c * \left[\mathbf{h}_{t-1},
-        \mathbf{x}_t\right] + \mathbf{b}_c \right),\\
+    \mathbf{\tilde c}_t &= tanh \left(
+        \mathbf{W}_{ch} * \mathbf{h}_{t-1} +
+        \mathbf{W}_{cx} * \mathbf{x}_t +
+        \mathbf{b}_c \right),\\
     \mathbf{c}_t &= \mathbf{f}_t \hadamard \mathbf{c}_{t-1} + \mathbf{i}_t
         \hadamard \mathbf{\tilde c}_t,\\
-    \mathbf{o}_t &= \sigma\left(\mathbf{W}_o * \left[\mathbf{h}_{t-1},
-        \mathbf{x}_t\right] + \mathbf{W}_{oc} \hadamard \mathbf{c}_{t-1} +
+    \mathbf{o}_t &= \sigma\left(
+        \mathbf{W}_{oh} * \mathbf{h}_{t-1} +
+        \mathbf{W}_{ox} * \mathbf{x}_t +
+        \mathbf{W}_{oc} \hadamard \mathbf{c}_{t-1} +
         \mathbf{b}_o \right),\\
     \mathbf{h}_t &= \mathbf{o}_t \hadamard tanh \left(\mathbf{c}_t\right),
 \end{split}
@@ -238,22 +251,29 @@ This is expressed in~\autoref{eq:deconvLSTM_enc}
 
 \begin{equation}\label{eq:deconvLSTM_enc}
 \begin{split}
-    \mathbf{i}_t &= \sigma\left(\mathbf{W}_{ix}^{(L)} * \dots * \rho
-        \mathbf{W}_{ix}^{(1)} * \rho \mathbf{W}_{ix}^{(0)} * \mathbf{x}_t +
-        \mathbf{W}_i * \left[\mathbf{h}_{t-1}, \mathbf{c}_{t-1}\right] +
+    \mathbf{i}_t &= \sigma\left(
+        \mathbf{W}_{ix}^{(L)} * \dots * \rho \mathbf{W}_{ix}^{(1)} *
+            \rho \mathbf{W}_{ix}^{(0)} * \mathbf{x}_t +
+        \mathbf{W}_{ih} * \mathbf{h}_{t-1} +
+        \mathbf{W}_{ic} * \mathbf{c}_{t-1} +
         \mathbf{b}_i \right),\\
-    \mathbf{f}_t &= \sigma\left(\mathbf{W}_{fx}^{(L)} * \dots * \rho
-        \mathbf{W}_{fx}^{(1)} * \rho \mathbf{W}_{fx}^{(0)} * \mathbf{x}_t +
-        \mathbf{W}_f * \left[\mathbf{h}_{t-1}, \mathbf{c}_{t-1}\right] +
+    \mathbf{f}_t &= \sigma\left(
+        \mathbf{W}_{fx}^{(L)} * \dots * \rho \mathbf{W}_{fx}^{(1)} *
+            \rho \mathbf{W}_{fx}^{(0)} * \mathbf{x}_t +
+        \mathbf{W}_{fh} * \mathbf{h}_{t-1} +
+        \mathbf{W}_{fc} * \mathbf{c}_{t-1} +
         \mathbf{b}_f \right),\\
-    \mathbf{\tilde c}_t &= tanh \left(\mathbf{W}_{cx}^{(L)} * \dots * \rho
-        \mathbf{W}_{cx}^{(1)} * \rho \mathbf{W}_{cx}^{(0)} * \mathbf{x}_t +
-        \mathbf{W}_c * \mathbf{h}_{t-1} + \mathbf{b}_c \right),\\
+    \mathbf{\tilde c}_t &= tanh \left(\mathbf{W}_{cx}^{(L)} * \dots *
+            \rho \mathbf{W}_{cx}^{(1)} * \rho \mathbf{W}_{cx}^{(0)} *
+            \mathbf{x}_t +
+        \mathbf{W}_{ch} * \mathbf{h}_{t-1} + \mathbf{b}_c \right),\\
     \mathbf{c}_t &= \mathbf{f}_t \hadamard \mathbf{c}_{t-1} + \mathbf{i}_t
         \hadamard \mathbf{\tilde c}_t,\\
-    \mathbf{o}_t &= \sigma\left(\mathbf{W}_{ox}^{(L)} * \dots * \rho
-        \mathbf{W}_{ox}^{(1)} * \rho \mathbf{W}_{ox}^{(0)} * \mathbf{x}_t +
-        \mathbf{W}_o * \left[\mathbf{h}_{t-1}, \mathbf{c}_{t-1}\right] +
+    \mathbf{o}_t &= \sigma\left(
+        \mathbf{W}_{ox}^{(L)} * \dots * \rho \mathbf{W}_{ox}^{(1)} *
+            \rho \mathbf{W}_{ox}^{(0)} * \mathbf{x}_t +
+        \mathbf{W}_{oh} * \mathbf{h}_{t-1} +
+        \mathbf{W}_{oc} * \mathbf{c}_{t-1} +
         \mathbf{b}_o \right),\\
     \mathbf{h}_t &= \mathbf{o}_t \hadamard tanh \left(\mathbf{c}_t\right).
 \end{split}
@@ -292,27 +312,35 @@ function of an LSTM with peephole connections
 
 \begin{equation}\label{eq:deconvLSTM_dec}
 \begin{split}
-    \mathbf{i}_t &= \sigma\left(\mathbf{W}_{ix}^{(L)} \circledast \dots
-        \circledast \rho \mathbf{W}_{ix}^{(1)} \circledast \rho
-        \mathbf{W}_{ix}^{(0)} \circledast \mathbf{x}_t + \mathbf{W}_i *
-        \left[\mathbf{h}_{t-1}, \mathbf{c}_{t-1}\right] + \mathbf{b}_i
-        \right),\\
-    \mathbf{f}_t &= \sigma\left(\mathbf{W}_{fx}^{(L)} \circledast \dots
-        \circledast \rho \mathbf{W}_{fx}^{(1)} \circledast \rho
-        \mathbf{W}_{fx}^{(0)} \circledast \mathbf{x}_t + \mathbf{W}_f *
-        \left[\mathbf{h}_{t-1}, \mathbf{c}_{t-1}\right] + \mathbf{b}_f
-        \right),\\
-    \mathbf{\tilde c}_t &= tanh \left(\mathbf{W}_{cx}^{(L)} \circledast \dots
-        \circledast \rho \mathbf{W}_{cx}^{(1)} \circledast \rho
-        \mathbf{W}_{cx}^{(0)} \circledast \mathbf{x}_t + \mathbf{W}_c *
-        \mathbf{h}_{t-1} + \mathbf{b}_c \right),\\
+    \mathbf{i}_t &= \sigma\left(
+        \mathbf{W}_{ix}^{(L)} \circledast \dots \circledast \rho
+            \mathbf{W}_{ix}^{(1)} \circledast \rho \mathbf{W}_{ix}^{(0)}
+            \circledast \mathbf{x}_t +
+        \mathbf{W}_{ih} * \mathbf{h}_{t-1} +
+        \mathbf{W}_{ic} * \mathbf{c}_{t-1} +
+        \mathbf{b}_i \right),\\
+    \mathbf{f}_t &= \sigma\left(
+        \mathbf{W}_{fx}^{(L)} \circledast \dots \circledast \rho
+            \mathbf{W}_{fx}^{(1)} \circledast \rho \mathbf{W}_{fx}^{(0)}
+            \circledast \mathbf{x}_t +
+        \mathbf{W}_{fh} * \mathbf{h}_{t-1} +
+        \mathbf{W}_{fc} * \mathbf{c}_{t-1} +
+        \mathbf{b}_f \right),\\
+    \mathbf{\tilde c}_t &= tanh \left(
+        \mathbf{W}_{cx}^{(L)} \circledast \dots \circledast \rho
+            \mathbf{W}_{cx}^{(1)} \circledast \rho \mathbf{W}_{cx}^{(0)}
+            \circledast \mathbf{x}_t +
+        \mathbf{W}_{ch} * \mathbf{h}_{t-1} +
+        \mathbf{b}_c \right),\\
     \mathbf{c}_t &= \mathbf{f}_t \hadamard \mathbf{c}_{t-1} + \mathbf{i}_t
         \hadamard \mathbf{\tilde c}_t,\\
-    \mathbf{o}_t &= \sigma\left(\mathbf{W}_{ox}^{(L)} \circledast \dots
-        \circledast \rho \mathbf{W}_{ox}^{(1)} \circledast \rho
-        \mathbf{W}_{ox}^{(0)} \circledast \mathbf{x}_t + \mathbf{W}_o *
-        \left[\mathbf{h}_{t-1}, \mathbf{c}_{t-1}\right] + \mathbf{b}_o
-        \right),\\
+    \mathbf{o}_t &= \sigma\left(
+        \mathbf{W}_{ox}^{(L)} \circledast \dots \circledast \rho
+            \mathbf{W}_{ox}^{(1)} \circledast \rho \mathbf{W}_{ox}^{(0)}
+            \circledast \mathbf{x}_t +
+        \mathbf{W}_{oh} * \mathbf{h}_{t-1} +
+        \mathbf{W}_{oc} * \mathbf{c}_{t-1} +
+        \mathbf{b}_o \right),\\
     \mathbf{h}_t &= \mathbf{o}_t \hadamard tanh \left(\mathbf{c}_t\right).
 \end{split}
 \end{equation}
