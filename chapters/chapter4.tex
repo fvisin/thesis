@@ -34,7 +34,7 @@ Semantic segmentation is a broad area of research that encompasses many
 subtasks, which depend on the kind of images at hand as well as on the domain
 of application. The input is usually an image that can be in grayscale or
 colors.  In some cases it is required to segment a single image, while
-sometimes the task is simplified by the presence of stereo pairs of images that
+sometimes the task is simplified by the presence of stereo images pairs that
 allow to exploit the disparity information, i.e., the difference between the
 two images due to the displacement of the cameras. This extra information can
 be used to compute a (usually noisy) depth map that can be very helpful to
@@ -51,7 +51,7 @@ constraint can be used as a prior to improve those parts that are difficult to
 segment in one image but trivial in another.
 
 % How tackled historically
-Historically the computer vision community tackled this problem by building
+Historically the computer vision community has tackled this problem by building
 very specialized hand-engineered algorithms that relied heavily on very
 specific domain knowledge. Many of these methods addressed the segmentation
 problem looking for highly discriminative local and global features, such as
@@ -64,7 +64,7 @@ patch -- or the similar bag of visual words (BOV)~\citep{csurka2004visual}; the
 many local patch descriptors such as SIFT~\citep{lowe2004distinctive},
 SURF~\citep{bay2008speeded}, Kaze~\citep{alcantarilla2012kaze}, CenSurE~\citep{
 agrawal2008censure}, BRISK~\citep{leutenegger2011brisk}; poselets~\citep{
-brox2011object,bourdev2010detecting} that annotate keypoints of the object to
+brox2011object,bourdev2010detecting}, that annotate keypoints of the object to
 be detected; dimensionality reduction methods (see e.g., principal components
 analysis (PCA)~\citep{smith2002tutorial,shlens2014tutorial,chen2011pixel} and
 ZCA whitening~(see e.g.,~\citep{KrizhevskyHinton2009} for a good
@@ -110,10 +110,10 @@ model~\citep{Visin_2016_CVPR_Workshops} builds on
 ReNet~(see~\autoref{sec:renet}) to tackle the task of semantic segmentation.
 The primary motivation behind ReSeg is to exploit the peculiar structure of
 ReNet in order to capture the underlying semantic of the input image and use it
-to drive the prediction in each location. Thanks to the strong lateral
-connections built in the model, ReSeg is able to capture the \emph{global}
-scene depicted in the image and exploit it to perform fine, high resolution,
-semantic segmentation focusing on \emph{local} details.
+to drive the prediction in each location, i.e., pixel. Thanks to the strong
+lateral connections built in the model, ReSeg is able to capture the
+\emph{global} scene depicted in the image and exploit it to perform fine, high
+resolution, semantic segmentation focusing on \emph{local} details.
 
 This work extends the preliminary results of~\citep{visin2015renet} modifying
 and extending the ReNet model to the more ambitious task of object
@@ -129,8 +129,8 @@ scenes.
 
 The experiments show that the proposed adaptation of the ReNet for pixel-level
 object segmentation performs successfully on the object segmentation task
-achieving state-of-the-art in all three datasets and may have further
-applications in other structured prediction problems.\footnote{
+achieving state-of-the-art performance in all three datasets and may have
+further applications in other structured prediction problems.\footnote{
     Subsequent but independent work~\citep{DBLP:journals/corr/YanZJBY16}
     further confirmed the effectiveness of ReSeg, combining a variation of it
     with CRFs and reporting state of the art results on Pascal
@@ -138,10 +138,10 @@ applications in other structured prediction problems.\footnote{
 Furthermore, the ReNet and ReSeg architectures could be easily merged into a
 joint network to perform both tasks at the same time, sharing most of the
 computation. This could be interesting in application domains where object
-classification and segmentation have to be performed simultaneously, such as,
+classification and segmentation have to be performed simultaneously,
 e.g., autonomous driving and object retrieval.
 
-In the following of this chapter, \autoref{sec:reseg_rationale} motivates the
+In the following of the chapter, \autoref{sec:reseg_rationale} motivates the
 model in the context of the state of the art at the time it was conceived,
 \autoref{sec:reseg_model} describe the ReSeg model in detail and
 \autoref{sec:reseg_experiments} presents the results of the experiments.
@@ -169,9 +169,10 @@ to use these pre-trained CNNs for tasks such as semantic segmentation, where a
 per pixel prediction is required.
 
 %% Upsampling
-The information recovery problem has been tackled in a large variety of ways.
-For instance, \citep{eigen2015predicting} proposed a multi-scale architecture
-that extracts coarse predictions, which are then refined using finer scales.
+The problem of recovering pixel level information from the inner layers of a
+CNN has been tackled in a large variety of ways. For instance,
+\citep{eigen2015predicting} proposed a multi-scale architecture that extracts
+coarse predictions, which are then refined using finer scales.
 \cite{Farabet:2013} introduced a multi-scale CNN architecture;
 \cite{Hariharan2015} combine the information distributed over all layers to
 make accurate predictions. Other methods such
@@ -237,9 +238,9 @@ semantic segmentation.
 
 To decrease the training time and benefit from generic local features, the
 ReSeg model first preprocesses the input with a FCN, i.e., the intermediate
-convolutional output of VGG-16~\citep{Simonyan2015}. Multiple ReNet layers then
-work on this generic feature map to extract meaningful local and global pixel
-dependencies.
+convolutional output of VGG-16~\citep{Simonyan2015} is given as an input to the
+recurrent part of the network. Multiple ReNet layers then work on this generic
+feature map to extract meaningful local and global pixel dependencies.
 % Each ReNet layer is composed of four RNN that sweep the image
 % horizontally and vertically in both directions, encoding patches or
 % activations, and providing relevant global information.
@@ -251,24 +252,21 @@ upsample the intermediate feature maps back to the image size, in order to
 allow predictions at the pixel level.
 
 The ReSeg architecture is efficient, flexible and suitable for a variety of
-pixel-level, fine grained tasks, e.g., detecting road signs, cars, pedestrians,
-in autonomous navigation settings; detecting tumors in fMRI scans or surgical
-videos; guide autonomous surgical robots by detecting medical instruments in
-operations; detect faces and other parts of the human body for end users
-applications such as interactive games or camera autofocus.
+pixel-level, fine grained tasks, e.g., detecting road signs, cars and
+pedestrians in autonomous navigation settings; detecting tumors in fMRI scans
+or surgical videos; guide autonomous surgical robots by detecting medical
+instruments in operations; detect faces and other parts of the human body for
+end users applications such as interactive games or camera autofocus.
 %The model is evaluated on the semantic segmentation tasks on several
 %widely-used datasets: Weizmann~Horse, Oxford~Flower, and CamVid; achieving
 %state-of-the-art performance in all of them.
 %Results show that ReSeg can act as a suitable architecture for semantic
 %segmentation tasks,
-The source code and model hyperparameters are available on
+The ReSeg source code and model hyperparameters are available on
 \href{https://github.com/fvisin/reseg}{https://github.com/fvisin/reseg}.
 
 
 \section{Model Description}\label{sec:reseg_model}
-
-The architecture of the ReSeg model, motivated in~\autoref{%
-sec:reseg_rationale}, will be described in detail in this section.
 
 ReSeg builds on top of ReNet, described in \autoref{sec:renet} and
 extends it to address the task of semantic segmentation. The model pipeline
@@ -332,8 +330,8 @@ It has to be stressed that the decision to read non-overlapping patches is a
 modeling choice to increase the image scan speed and lower the memory usage,
 but is not a limitation of the architecture.
 
-Once the first two vertical RNNs have processed the whole input $\mathbf{X}$,
-their projections $\mathbf{o}^{\downarrow}_{i,j}$ and
+Once the first two vertical RNNs have processed the whole input $\mathbf{X}$ in
+parallel, their projections $\mathbf{o}^{\downarrow}_{i,j}$ and
 $\mathbf{o}^{\uparrow}_{i,j}$ are concatenated to obtain a composite feature
 map $\mathbf{O^{\updownarrow}}$ whose elements $\mathbf{o}^{\updownarrow}_{i,j}
 \in \RR^{2U}$ can be seen as the activation of a feature detector at the
@@ -437,6 +435,17 @@ boolean mask, the data has been thresholded in the center of the range setting
 all smaller values to 0, and all greater values to 1. See~\autoref{%
 fig:reseg_samples_horses} for some segmentation samples.
 
+\begin{figure}[t!]
+    \centering
+    \includegraphics[width=\textwidth]{img/reseg/samples/horse1.pdf}\\
+    \vspace{0.1em}
+    \includegraphics[width=\textwidth]{img/reseg/samples/horse2.pdf}
+    \caption{ReSeg Weizmann Horse segmentation samples.
+        Left: Input image, Center: Ground truth segmentation,
+        Right: ReSeg predicted segmentation.}
+    \label{fig:reseg_samples_horses}
+\end{figure}
+
 % \subsubsection{Fashionista}
 % The Fashionista dataset from ~\citep{Fashionista} contains 685 RGB images of
 % fashion models wearing a variety of different clothing.
@@ -461,6 +470,17 @@ Oxford Flowers 17 is described in detail in~\citep{Xiaomeng14}.
 %A larger 102 class Oxford Flowers dataset is available from the same authors.
 See~\autoref{fig:reseg_samples_flowers} for some segmentation samples.
 
+\begin{figure}[t!]
+    \centering
+    \includegraphics[width=0.5\textwidth]{img/reseg/samples/flowers1.jpg}\\
+    \vspace{0.1em}
+    \includegraphics[width=0.5\textwidth]{img/reseg/samples/flowers2.jpg}
+    \caption{ReSeg Oxford Flowers segmentation samples.
+        Left: Input image, Center: Ground truth segmentation,
+        Right: ReSeg predicted segmentation.}
+    \label{fig:reseg_samples_flowers}
+\end{figure}
+
 \subsubsection{CamVid Dataset}\label{sec:reseg+camvid}
 The Cambridge-driving Labeled Video Database (CamVid)~\citep{
 Brostow2010semantic}~\footnote{%
@@ -482,6 +502,17 @@ compare the results of the model to those reported
 in~\citep{badrinarayanan2015segnet}. See~\autoref{fig:reseg_samples_camvid} for
 some segmentation samples.
 
+\begin{figure}[t!]
+    \centering
+    \includegraphics[width=\textwidth]{img/reseg/samples/camvid1.png}\\
+    \vspace{0.1em}
+    \includegraphics[width=\textwidth]{img/reseg/samples/camvid2.png}
+    \caption{ReSeg CamVid segmentation samples.
+        Left: Input image, Center: Ground truth segmentation,
+        Right: ReSeg predicted segmentation.}
+    \label{fig:reseg_samples_camvid}
+\end{figure}
+
 \subsection{Data augmentation and preprocessing}\label{sec:data_preprocessing}
 
 The ReNet model adopted some data augmentation methods to enlarge the dataset
@@ -498,80 +529,109 @@ and the network did not perform very well on the former without data
 augmentation. Its introduction allowed to significantly improve the performance
 on the Weizmann Horse dataset, probably because the misclassification of the
 few light-colored horses impacted severely on the total score due to the very
-limited number of images if the dataset. The same technique would probably not
+limited number of images of the dataset. The same technique would probably not
 be as effective on bigger and more balanced datasets.
 
-The only other data manipulation technique adopted was to resize the
-\emph{training} images to allow for training on batches of multiple images with
-the effect of speeding up the training. The performance loss due to the
-difference in training and validation/test size was negligible, probably thanks
-to the adoption of the pretrained VGG-16 layers that can extract meaningful
-features from the typical size of the images in the adopted datasets.
+In the \emph{training} phase, all the images have been resized to the average
+resolution of the training set, by computing the mean width and height over the
+training set in case of images with variable size. To keep the aspect ratio of
+the images unmodified, each image has been first resized to match the shortest
+dimension and then center-padded with zeros on the remaining axis to reach the
+desired resolution. It should be noted that all transformations that involve
+changes in dimensionality or position must also be applied in the same form to
+the segmentation mask, and great care must be taken (especially during
+resizing/shifting) not to introduce unexpected errors. It is particularly
+important to resize the network prediction to the original size of the ground
+truth and not the opposite, not to misrepresent the segmentation accuracy. This
+is not a problem for validation and test, as the images are not resized in
+those cases.
 
-On the contrary, training benefitted a little from resizing the images on some
-of the datasets, probably because eliminating unnecessary and easily explained
-variance can help the model focus on harder characteristics, which generally
-leads to better performance on the task at hand.
+This resizing strategy was adopted for the Weizmann Horse and Oxford Flowers
+dataset, while in the Camvid dataset case no resize was needed, apart from the
+one reported in~\autoref{sec:reseg+camvid}. This strategy allowed to train on
+batches of multiple images, with the effect of speeding up the training fully
+exploiting the parallel computation allowed by GPU-computing. The performance
+loss due to the difference in training and validation/test size was negligible,
+probably thanks to the adoption of the pretrained VGG-16 layers that can
+extract meaningful features from the typical size of the images in the adopted
+datasets. On the contrary, training benefitted a little from resizing the
+images on some of the datasets, probably because eliminating unnecessary and
+easily explained variance can help the model focus on harder characteristics,
+which generally leads to better performance on the task at hand.
 %especially in the case of segmentation where object scale between images has little
 %impact on the class category.
 
-A common choice for resizing is to resize every image to the mean width and
-height, calculated over the entire dataset of variable size images. This
-strategy was adopted for the Weizmann Horse and Oxford Flowers dataset, while
-in the Camvid dataset case no resize was needed, apart from the one reported
-in~\autoref{sec:reseg+camvid}.
-
-It should be noted that all transformations that involve changes in
-dimensionality or position must also be applied in the same form to the
-segmentation mask, and great care must be taken (especially during
-resizing/shifting) not to introduce unexpected errors. It is particularly
-important to resize the network prediction to the original size of the ground
-truth and not the opposite, not to misrepresent the segmentation accuracy.
-This is not a problem for validation and test, as the images are not resized in
-those cases.
-
 \subsection{Experimental settings}
 
-% HORSES
-\begin{table}[t]
-    \centering{
-        \small
-        \begin{tabular}{l|c||c}
-            Method & Global & \textbf{Avg IoU}\\ \hline
+To gain confidence with the sensitivity of the model to the different
+hyperparameters, ReSeg was first evaluated on the Weissman Horse and Oxford
+Flowers datasets on a binary foreground/background segmentation task. Once a
+good initial setting of the hyperparameters was found, most of the efforts were
+spent on the more challenging semantic segmentation task on the CamVid dataset.
 
-            All foreground baseline & 25.4 & 79.9 \\
-            All background baseline & 74.7 & 0.0 \\
-            Kernelized structural SVM \citep{bertelli2011kernelized} & 94.6 & 80.1 \\
-            ReSeg (no VGG) & 94.9 & 79.9 \\
-            CRF learning \citep{liu2015crf} & 95.7 & 84.0 \\
-            PatchCut \citep{yang2015patchcut} & 95.8 & 84.0 \\
-            \textbf{ReSeg} & 96.8 & \textbf{91.6} \\
-        \end{tabular}
-    }
-    \caption{Weizmann Horses. Per pixel accuracy and average IoU are reported
-        (higher is better).}
-    \label{tbl:WeizmannHorses_SOTA}
-\end{table}
+The number of hyperparameters of this model is potentially very high, as for
+each ReNet layer different implementations are possible (namely vanilla RNN,
+GRU or LSTM), each one with its specific parameters. Furthermore, the number of
+features, the size of the patches and the initialization scheme have to be
+defined for each ReNet layer as well as for each transposed convolutional
+layer. To make it feasible to explore the hyperparameter space, some of the
+hyperparameters have been fixed by design and the remaining have been
+finetuned.
+In the rest of this section, the architectural choices for both
+sets of parameters will be detailed.
 
-% FLOWERS
-\begin{table}[t]
-    \centering{
-    \small
-        \begin{tabular}{l|c||c}
-            Method & Global & \textbf{Avg IoU}\\ \hline
+Initial experiments on upsampling showed that transposed convolutional layers
+seem to provide a better performance with respect to less sophisticated (not
+learned) tiling strategies such as nearest neighbor tiling or bilinear
+interpolation when there is enough data to learn the transformation. All the
+transposed convolution upsampling layers were followed by a
+ReLU~\citep{Krizhevsky2012-alexnet} non-linearity and initialized with the
+fan-in plus fan-out initialization scheme described
+in~\citep{glorot2010understanding}. The recurrent weight matrices were instead
+initialized to be orthonormal, following the procedure defined
+in~\citep{Saxe2014}. Finally, the stride of the upsampling transposed
+convolutional layers was constrained to be tied to their filter size.
 
-            All background baseline & 71.0 & 0.0 \\
-            All foreground baseline & 29.0 & 29.2 \\
-            % \textbf{ReSeg (no VGG)} & 86.9 & \textbf{65.8} \\
-            GrabCut \citep{rother2004grabcut} & 95.9 & 89.3 \\
-            Tri-map \citep{Xiaomeng14} & 96.7 & 91.7 \\
-            \textbf{ReSeg} & 98 & \textbf{93.7} \\
-        \end{tabular}
-    }
-    \caption{Oxford Flowers. Per pixel accuracy and average IoU are reported
-        (higher is better).}
-    \label{tbl:OxfordFlowers_SOTA}
-\end{table}
+One specificity of the segmentation task is that each training image carries
+classification information for all of its pixels. Differently from the image
+classification task, small batch sizes already provide the model with a large
+amount of information with sufficient variance to learn and generalize well.
+The ReSeg model was tested with various values of batch size, going as low as
+processing a single image at a time, obtaining comparable results in terms of
+performance. Many experiments were performed using a minibatch size of 1. When
+computational resources allowed, larger batch sizes were used, e.g., 5, 10,
+20, 35, and 50. Larger batch sizes smoothed learning (as expected), and removed
+some issues related to spurious occurrences in the datasets such as misaligned
+or poorly segmented groundtruth masks. This had a bigger impact on the smaller
+datasets than on Camvid, where the batch size was kept fixed to the value of
+$5$, as a compromise between training speed and memory usage.
+
+All the experiments, used L2 regularization~\citep{Krogh92asimple} with a
+weight decay factor of $0.001$ to avoid instability at the end of training.
+Also, all the models were trained with the Adam~\citep{kingma2014adam}
+optimization algorithm, that does not require a specific hyperparameter tuning.
+The effect of batch normalization in RNNs has been a focus of
+attention~\citep{Laurent2015}, but it does not seem yet to provide a
+reliable improvement in performance, so it was not adopted.
+
+The adaptive learning rate algorithm known as Adam~\citep{Kingma2014} was a
+key ingredient to stable learning, though others such as
+Adadelta~\citep{Zeiler-2012} were useful during model development. In addition,
+gradient norm rescaling was also utilized to help with the problems described
+in~\citep{bengio2013advances}. Regularization proved to be another important
+part of the process on the smaller Weizmann Horse and Oxford flowers datasets.
+For those two, weight noise, as described in~\citep{Graves2011}, with a scale
+of 0.075 was applied to all weight matrices before each forward pass in all the
+experiments. Dropout~\citep{Srivastava14} on each forward connection with drop
+probability of $0.2$ on the input, and/or with drop probability of $0.5$ on the
+hidden projections was applied too.
+
+The experiments mainly focused on varying the number of ReNet layers and the
+number of upsampling transposed convolutional layers, as well as tuning their
+respective parameters, such as the number of features $d_{\text{RE}}(l)$ and
+$d_{\text{UP}}(l)$ respectively, and the size of the input patches (or
+equivalently of the filters) ${ps}_{\text{RE}}(l)$ and ${fs}_{\text{UP}}(l)$.
+The best parameters are reported in~\autoref{tbl:camvid_params}.
 
 % CAMVID RESULTS
 \begin{table}[t]
@@ -631,79 +691,6 @@ those cases.
     \label{tbl:camvid_params}
 \end{table}
 
-To gain confidence with the sensitivity of the model to the different
-hyperparameters, ReSeg was first evaluated on the Weissman Horse and Oxford
-Flowers datasets on a binary foreground/background segmentation task. Once a
-good initial setting of the hyperparameters was found, most of the efforts were
-spent on the more challenging semantic segmentation task on the CamVid dataset.
-
-The number of hyperparameters of this model is potentially very high, as for
-each ReNet layer different implementations are possible (namely vanilla RNN,
-GRU or LSTM), each one with its specific parameters. Furthermore, the number of
-features, the size of the patches and the initialization scheme have to be
-defined for each ReNet layer as well as for each transposed convolutional
-layer. To make it feasible to explore the hyperparameter space, some of the
-hyperparameters have been fixed by design and the remaining have been
-finetuned.
-In the rest of this section, the architectural choices for both
-sets of parameters will be detailed.
-
-Initial experiments on upsampling showed that transposed convolutional layers
-seem to provide a better performance with respect to less sophisticated (not
-learned) tiling strategies such as nearest neighbor tiling or bilinear
-interpolation when there is enough data to learn the transformation.
-
-All the transposed convolution upsampling layers were followed by a
-ReLU~\citep{Krizhevsky2012-alexnet} non-linearity and initialized with the
-fan-in plus fan-out initialization scheme described
-in~\citep{glorot2010understanding}. The recurrent weight matrices were instead
-initialized to be orthonormal, following the procedure defined
-in~\citep{Saxe2014}. Finally, the stride of the upsampling transposed
-convolutional layers was constrained to be tied to their filter size.
-
-One specificity of the segmentation task is that each training image carries
-classification information for all of its pixels. Differently from the image
-classification task, small batch sizes already provide the model with a large
-amount of information with sufficient variance to learn and generalize well.
-The ReSeg model was tested with various values of batch size, going as low as
-processing a single image at a time, obtaining comparable results in terms of
-performance. Many experiments were performed using a minibatch size of 1. When
-computational constraints allowed, larger batch sizes were used, e.g., 5, 10,
-20, 35, and 50. Larger batch sizes smoothed learning (as expected), and removed
-some issues related to spurious occurrences in the datasets such as misaligned
-or poorly segmented groundtruth masks. This had a bigger impact on the smaller
-datasets than on Camvid, where the batch size was kept fixed to the value of
-$5$, as a compromise between training speed and memory usage.
-
-All the experiments, used L2 regularization~\citep{Krogh92asimple} with a
-weight decay factor of $0.001$ to avoid instability at the end of training.
-Also, all the models were trained with the Adam~\citep{kingma2014adam}
-optimization algorithm, for its desired property of not requiring a specific
-hyperparameter tuning. The effect of batch normalization in RNNs has been a
-focus of attention~\citep{Laurent2015}, but it does not seem yet to provide a
-reliable improvement in performance, so it was not adopted.
-
-The adaptive learning rate algorithm known as Adam~\citep{Kingma2014} was a
-key ingredient to stable learning, though others such as
-Adadelta~\citep{Zeiler-2012} were useful during model development. In addition,
-gradient norm rescaling was also utilized to help with the problems described
-in~\citep{bengio2013advances}.
-
-Regularization proved to be another important part of the process on the
-smaller Weizmann Horse and Oxford flowers datasets. For those two, weight
-noise, as described in~\citep{Graves2011}, with a scale of 0.075 was applied to
-all weight matrices before each forward pass in all the experiments.
-Dropout~\citep{Srivastava14} on each forward connection with drop probability of
-$0.2$ on the input, and/or with drop probability of $0.5$ on the hidden
-projections was applied too.
-
-The experiments mainly focused on varying the number of ReNet layers and the
-number of upsampling transposed convolutional layers, as well as tuning their
-respective parameters, such as the number of features $d_{\text{RE}}(l)$ and
-$d_{\text{UP}}(l)$ respectively, and the size of the input patches (or
-equivalently of the filters) ${ps}_{\text{RE}}(l)$ and ${fs}_{\text{UP}}(l)$.
-The best parameters are reported in~\autoref{tbl:camvid_params}.
-
 % \begin{table}[t]
 %     \centering{
 %         \small
@@ -730,6 +717,27 @@ positive divided by the sum of true positives, false positives and false
 negatives and then averaged. In the full semantic segmentation setting the
 per-class accuracy and the average per-class accuracy (\emph{Avg class acc})
 are also reported.
+
+% HORSES
+\begin{table}[t]
+    \centering{
+        \small
+        \begin{tabular}{l|c||c}
+            Method & Global & \textbf{Avg IoU}\\ \hline
+
+            All foreground baseline & 25.4 & 79.9 \\
+            All background baseline & 74.7 & 0.0 \\
+            Kernelized structural SVM \citep{bertelli2011kernelized} & 94.6 & 80.1 \\
+            ReSeg (no VGG) & 94.9 & 79.9 \\
+            CRF learning \citep{liu2015crf} & 95.7 & 84.0 \\
+            PatchCut \citep{yang2015patchcut} & 95.8 & 84.0 \\
+            \textbf{ReSeg} & 96.8 & \textbf{91.6} \\
+        \end{tabular}
+    }
+    \caption{Weizmann Horses. Per pixel accuracy and average IoU are reported
+        (higher is better).}
+    \label{tbl:WeizmannHorses_SOTA}
+\end{table}
 
 \autoref{tbl:WeizmannHorses_SOTA} reports the results on the Weizmann
 Horse dataset. On this dataset, the assumption that processing the input image
@@ -764,6 +772,26 @@ following experiments. Recent techniques, such as the use of residual
 connections~\citep{he2015deep,srivastava2015training} are most probably more
 effective at speeding up the training of early layers of the network.
 
+% FLOWERS
+\begin{table}[t]
+    \centering{
+    \small
+        \begin{tabular}{l|c||c}
+            Method & Global & \textbf{Avg IoU}\\ \hline
+
+            All background baseline & 71.0 & 0.0 \\
+            All foreground baseline & 29.0 & 29.2 \\
+            % \textbf{ReSeg (no VGG)} & 86.9 & \textbf{65.8} \\
+            GrabCut \citep{rother2004grabcut} & 95.9 & 89.3 \\
+            Tri-map \citep{Xiaomeng14} & 96.7 & 91.7 \\
+            \textbf{ReSeg} & 98 & \textbf{93.7} \\
+        \end{tabular}
+    }
+    \caption{Oxford Flowers. Per pixel accuracy and average IoU are reported
+        (higher is better).}
+    \label{tbl:OxfordFlowers_SOTA}
+\end{table}
+
 \autoref{tbl:OxfordFlowers_SOTA} shows the results for Oxford Flowers dataset,
 when using the full ReSeg architecture (i.e., including VGG convolutional
 layers).  As shown in the table, this method clearly outperforms the
@@ -776,46 +804,13 @@ network based methods, showing an increase of $17\%$ with respect to the recent
 SegNet model. It is worth highlighting that incorporating sub-model averaging
 to SegNet model, as in \citep{Kendall2015bayesiansegnet}, boosts the original
 model performance, as expected. Therefore, introducing sub-model averaging to
-ReSeg would also presumably result in significant performance increase.
+ReSeg could also presumably result in significant performance increase.
 However, this remains to be tested.
 
 % There are number of difficulties in directly comparing our performance with the
 % reported scores, some of which are intrinsic to using neural based models for
 % segmentation, while others are specific to the evaluation datasets or competing
 % methodologies.
-
-\begin{figure}[t!]
-    \centering
-    \includegraphics[width=\textwidth]{img/reseg/samples/horse1.pdf}\\
-    \vspace{0.1em}
-    \includegraphics[width=\textwidth]{img/reseg/samples/horse2.pdf}
-    \caption{ReSeg Weizmann Horse segmentation samples.
-        Left: Input image, Center: Ground truth segmentation,
-        Right: ReSeg predicted segmentation.}
-    \label{fig:reseg_samples_horses}
-\end{figure}
-
-\begin{figure}[t!]
-    \centering
-    \includegraphics[width=0.5\textwidth]{img/reseg/samples/flowers1.jpg}\\
-    \vspace{0.1em}
-    \includegraphics[width=0.5\textwidth]{img/reseg/samples/flowers2.jpg}
-    \caption{ReSeg Oxford Flowers segmentation samples.
-        Left: Input image, Center: Ground truth segmentation,
-        Right: ReSeg predicted segmentation.}
-    \label{fig:reseg_samples_flowers}
-\end{figure}
-
-\begin{figure}[t!]
-    \centering
-    \includegraphics[width=\textwidth]{img/reseg/samples/camvid1.png}\\
-    \vspace{0.1em}
-    \includegraphics[width=\textwidth]{img/reseg/samples/camvid2.png}
-    \caption{ReSeg CamVid segmentation samples.
-        Left: Input image, Center: Ground truth segmentation,
-        Right: ReSeg predicted segmentation.}
-    \label{fig:reseg_samples_camvid}
-\end{figure}
 
 
 \section{Discussion}
@@ -835,9 +830,9 @@ binary background/foreground segmentation setting, on the CamVid dataset the
 full semantic segmentation task was addressed. In this setting, when the
 dataset is highly imbalanced, the segmentation performance of some classes can
 drop significantly as the network tries to maximize the score on the
-high-occurrence classes, {\em de facto} \/ignoring the low-occurrence ones. To
+high-occurring classes, {\em de facto} \/ignoring the least occurring ones. To
 overcome this behaviour, a class-balancing term was added to the cross-entropy
-loss to bias the prediction towards the low-occurrence classes. Specifically,
+loss to bias the prediction towards the less represented classes. Specifically,
 \emph{median frequency balancing}~\citep{eigen2015predicting} was employed,
 which re-weights the class predictions by the ratio between the median of the
 frequencies of the classes (computed on the training set) and the frequency of
@@ -866,13 +861,14 @@ usually $0$, the cross-entropy is equivalent to the negative log likelihood of
 the correct class under the model's distribution.
 
 Consider the classes ordered by frequency. This rebalancing term assigns a
-unitary weight to the central class (i.e., it does not modify its value) lower
-than $1$ to the first half and higher than $1$ to the second half. The final
-effect of class balancing is to increase the score of the low frequency classes
-(see~\autoref{tbl:camvid_params}) at the price of a more noisy segmentation
-mask, as the probability of the underrepresented classes is overestimated and
-can lead to an increase in misclassified pixels in the output segmentation
-mask. This behavior is clearly visible in~\autoref{fig:camvid_class_balance}.
+unitary weight to the central class (i.e., it does not modify its predicted
+probability) lower than $1$ to the first half and a weight higher than $1$ to
+the second half. The final effect of class balancing is to increase the score
+of the low frequency classes (see~\autoref{tbl:camvid_params}) at the price of
+a more noisy segmentation mask, as the probability of the underrepresented
+classes is overestimated and can lead to an increase in misclassified pixels in
+the output segmentation mask. This behavior is clearly visible
+in~\autoref{fig:camvid_class_balance}.
 
 \begin{figure}[t]
     \centering
@@ -880,7 +876,7 @@ mask. This behavior is clearly visible in~\autoref{fig:camvid_class_balance}.
     \caption{Camvid segmentation example with and without class balancing. From
         the left: input image, ground truth segmentation, ReSeg segmentation,
         ReSeg segmentation with class balancing. Class balancing improves the
-        low frequency classes as e.g., the street lights, at the price of a
+        low frequency classes, e.g., the street poles, at the price of a
         worse overall segmentation.}
     \label{fig:camvid_class_balance}
 \end{figure}
@@ -899,19 +895,19 @@ mask. This behavior is clearly visible in~\autoref{fig:camvid_class_balance}.
 Notably, it is sufficient to process the input images with just a few layers of
 VGG-16 for the ReSeg model to gracefully handle the semantic segmentation task,
 confirming its ability to encode contextual information and long term
-dependencies.
+dependencies. The dimensionality reduction that derives from halving the
+resolution at each encoding layer to expand it back in the upsampling layers
+can be expected to cause some loss of spacial precision, especially on
+fine-grained details. It is conceivable to imagine that the model could gain
+from the introduction of skip connections, a fairly recent technique that
+consists in providing higher resolution information from the lower layers to
+the upsampling ones. This is described
+in~\autoref{sec:deconvLSTM_skip_connections} and adopted in the model that will
+be the main subject of the following chapter.
 
-The dimensionality reduction that derives from halving the resolution at each
-encoding layer to expand it back in the upsampling layers can be expected to
-cause some loss of spacial precision, especially on fine-grained details. It is
-conceivable to imagine that the model could gain from the introduction of skip
-connections, a fairly recent technique that consists in providing higher
-resolution information from the lower layers to the upsampling layers. This is
-described in~\autoref{sec:deconvLSTM_skip_connections} and adopted in the model
-that will be the main subject of the following chapter.
-
-The experiments prove the flexibility of ReSeg in the foreground-background
+The experiments proved the flexibility of ReSeg in the foreground-background
 segmentation as well as the full semantic segmentation tasks on multiple
-datasets. The model achieves state of the art on all the datasets and generates
-convincing segmentation masks, as shown in~\Autoref{fig:reseg_samples_horses,
-fig:reseg_samples_flowers, fig:reseg_samples_camvid, fig:camvid_class_balance}.
+datasets. The model achieves state of the art on all the datasets it was tested
+on and generates convincing segmentation masks, as shown
+in~\Autoref{fig:reseg_samples_horses, fig:reseg_samples_flowers,
+fig:reseg_samples_camvid, fig:camvid_class_balance}.

@@ -28,18 +28,18 @@ separation).
 
 Applying machine learning techniques to this class of problems is challenging
 due to the lack of large amounts of labeled data, as well as the huge amount of
-time required to train these kinds of models that calls for non-trivial
-technological solutions. For one, the time spent on operations that are not
-strictly related to training, such as loading and preprocessing the data,
+time required to train these kind of models; this calls for non-trivial
+technological solutions. For instance, the time spent on operations that are
+not strictly related to training, such as loading and preprocessing the data,
 saving the weights on disk, saving samples and generating plots to monitor the
-progress of the algorithm, has to be minimized. Another recent trend in this
-field is to resort to multi-GPU training; this introduces an almost linear
+progress of the algorithm, has to be minimized. Furthermore, a recent trend in
+this field is to resort to multi-GPU training; this introduces an almost linear
 speedup (up to a certain numbers of GPUs)~\citep{theano2016short,ma2016theano},
 but increases the complexity of the algorithm, is often subject to constraints
 (e.g., the GPUs might have to be hosted by the same machine or node of a
-cluster), and makes debugging much less pleasant in many cases.
+cluster), and makes debugging much less cumbersome in many cases.
 
-\autoref{sec:reseg} analyzed ReSeg~\citep{Visin_2016_CVPR_Workshops}, an
+\autoref{sec:reseg} introduced ReSeg~\citep{Visin_2016_CVPR_Workshops}, an
 RNN-based model for image semantic segmentation. One of the main strengths of
 ReSeg comes from the coupling of fast general-purpose CNN feature extractors
 with stateful RNNs able to carry the information extracted by the CNNs through
@@ -84,7 +84,7 @@ challenging task of end to end video semantic segmentation~\citep{Tran16v2v}.
 
 While many computer vision video-related tasks involve predicting only a single
 or a few output per video, some of them -- such as video semantic
-segmentation, change detection and object tracking -- require a
+segmentation, change detection, and object tracking -- require a
 \emph{per temporal "voxel"} prediction. As an analogy to 3D voxels, where a
 volumetric pixel (or voxel) is used to describe a local portion of the data
 that extends across space in three dimensions, temporal voxels refer to 3D
@@ -110,11 +110,11 @@ transitions of the RNN itself, rather than encoding each frame independently
 with CNNs and then processing the spatial encodings timewise with an RNN. The
 model presented in this chapter, called Decoder Encoder Convolutional LSTM
 (DEConvLSTM), builds on top of~\cite{ShiCWYWW15} and extends their work in two
-ways: i) replacing the convolution operator in the state-to-state and
-input-to-state transitions with a full multi-layer convolutional subnetwork ii)
-introducing a novel recurrent-convolutional-upsampling layer that learns how to
-leverage the spatio-temporal dimensions jointly to produce an upsampled feature
-map that respects the 2D topology of the input feature map and at the same time
+ways: i) replacing the convolution operator in input-to-state transitions with
+a full multi-layer convolutional subnetwork ii) introducing a novel
+recurrent-convolutional-upsampling layer that learns how to leverage the
+spatio-temporal dimensions jointly to produce an upsampled feature map that
+respects the 2D topology of the input feature map and at the same time
 maintains its time consistency. The full model mimics the conventional 2D
 semantic segmentation encoder-decoder architecture, but is able to jointly
 capture spatio-temporal information, using the internal memory of RNNs instead
@@ -496,9 +496,9 @@ annotations The DEConvLSTM model has been trained on the same variant of the
 dataset as the one used by~\citep{badrinarayanan2015segnet}, that consists of a
 subset of 11 class categories and downsamples the images by a factor of 2
 resulting in a final $480 \times 360$ resolution. The dataset contains video
-sequences but has mostly been used for still image semantic segmentation in the
-literature. See~\autoref{fig:deconvlstm_camvid_gt} for a sample with ground
-truth from each of the three sequences.
+sequences, but in the literature it has mostly been used for still image
+semantic segmentation. See~\autoref{fig:deconvlstm_camvid_gt} for a sample with
+ground truth from each of the three sequences.
 
 
 \subsubsection{Gatech: Geometric Context Video Segmentation}
@@ -510,7 +510,7 @@ training/validation and 38 for testing. Each video has between 50 and 300
 frames (with an average of 190). A pixel-wise segmentation map is provided for
 each frame. There are 8 classes in the dataset: \textit{sky}, \textit{ground},
 \textit{buildings}, \textit{porous}, \textit{humans}, \textit{cars},
-\textit{vertical mix} and \textit{main mix}. The dataset was originally built
+\textit{vertical mix} and \textit{general mix}. The dataset was originally built
 to learn 3D geometric structure of outdoor video scenes. A sample with ground
 truth segmentation taken from the Gatech dataset can be seen
 in~\autoref{fig:deconvLSTM_gatech_gt}.
@@ -561,8 +561,9 @@ model and of its flexibility in tackling different kinds of datasets, we chose
 to keep the training time as contained as possible without resorting to data
 augmentation techniques. However, it has to be pointed out that some degree of
 improvement can be expected from the introduction of some data augmentation,
-e.g., by distorting the frames with affine transformations or by flipping and
-rotating them.
+e.g., by distorting the frames with affine transformations, by flipping and
+rotating them or by shifting the intensity values of all the pixels by a random
+value.
 
 In the same spirit, the only preprocessing technique adopted -- apart from
 resizing the videos to allow a comparison with the state-of-the-art
@@ -817,14 +818,14 @@ cursory hyperparameter search around the settings that worked best on the
 Gatech dataset, the DEConvLSTM obtains results comparable with the
 state-of-the-art of a few years ago. \autoref{tbl:deconvLSTM_davis} reports the
 results of the initial experiments with the DEConvLSTM model on this dataset
-and \autoref{fig:deconvlstm_gatech_sample} shows an example of prediction made
+and \autoref{fig:deconvlstm_davis_sample} shows an example of prediction made
 by the model.
 
 The experiments conducted on this dataset are not enough to draw final
 conclusions, but one failure mode of the DEConvLSTM model on this task seems to
-be not to properly recognize what to segment. The task in DAVIS is to segment
-only the main element in the scene. By inspecting the segmentation samples
-(see, e.g.,~\autoref{fig:deconvlstm_gatech_failure}) it appears that sometimes
+be not to recognize the goal properly. The task in DAVIS is to segment only the
+main element in the scene and by inspecting the segmentation samples (see,
+e.g.,~\autoref{fig:deconvlstm_davis_failure}) it appears that sometimes
 the network has a hard time identifying what to segment and what to ignore and
 ends up focusing too much on the background, heavily decreasing the overall
 segmentation performance. More experiments have to be conducted to address this
@@ -837,6 +838,7 @@ information to segment the main element of the scene that in these datasets is
 usually the one that moves and changes the most. This early result is very
 encouraging and calls for more thorough experiments on this dataset.
 
+\afterpage{
 \begin{table}[t]
     \centering{\small
         \begin{tabular}{l||c}
@@ -855,18 +857,19 @@ encouraging and calls for more thorough experiments on this dataset.
         \end{tabular}
     }
     \caption{Results on the Davis dataset. Average Intersection over Union
-        (IoU) is reported. We compare to~{\tiny\url{
-            https://graphics.ethz.ch/~perazzif/davis/soa_compare.php}},
-        where pixel accuracy is not reported.}
+        (IoU) is reported. We compare to~\protect\footnotemark, where pixel accuracy is
+        not reported.}
     \label{tbl:deconvLSTM_davis}
 \end{table}
+\footnotetext{\url{https://graphics.ethz.ch/~perazzif/davis/soa_compare.php}}
+}
 
-\begin{figure}[t]
+\begin{figure}[p]
     \centering
-    \includegraphics[trim={0 15mm 0 0},width=0.8\columnwidth]{img/deconvLSTM/paragliding-0.png}\\
+    \includegraphics[trim={0 15mm 0 0},width=0.9\columnwidth]{img/deconvLSTM/paragliding-0.png}\\
     \caption{An example of proper segmentation produced by the DEConvLSTM model
         on the DAVIS dataset.}
-    \label{fig:deconvlstm_gatech_sample}
+    \label{fig:deconvlstm_davis_sample}
 \end{figure}
 
 \begin{figure}[t]
@@ -876,9 +879,8 @@ encouraging and calls for more thorough experiments on this dataset.
     \caption{A frequent failure mode of the model on the DAVIS dataset is to
         focus on segmenting the background rather than the main element in the
         scene.}
-    \label{fig:deconvlstm_gatech_failure}
+    \label{fig:deconvlstm_davis_failure}
 \end{figure}
-
 
 
 \section{Discussion}\label{sec:deconvLSTM_discussion}
