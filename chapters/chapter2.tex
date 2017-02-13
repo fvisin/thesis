@@ -2211,6 +2211,7 @@ negatives}, i.e., the number of positive samples incorrectly classified as
 positive.
 
 % IoU figure
+\renewcommand{\floatpagefraction}{.8}% Prevent figure from using the whole page
 \begin{figure}
     \makebox[0.5\textwidth]{%
     \begingroup%
@@ -2238,7 +2239,7 @@ positive.
       \global\let\svgscale\undefined%
       \makeatother%
       \begin{picture}(.3,0.62952177)%
-        \put(0,0){\includegraphics[width=\unitlength,page=1]{pdf/IoU.pdf}}%
+        \put(0,0){\includegraphics[width=\unitlength]{pdf/IoU.pdf}}%
         \put(0.47213805,0.36960392){\color[rgb]{0,0,0}\makebox(0,0)[lb]{\smash{\\ }}}%
         \put(0.46915768,0.35147535){\color[rgb]{0,0,0}\makebox(0,0)[lb]{\smash{TP}}}%
         \put(0.73030419,0.35147535){\color[rgb]{0,0,0}\makebox(0,0)[lb]{\smash{FN}}}%
