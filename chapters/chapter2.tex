@@ -2060,7 +2060,7 @@ through
 
 \begin{equation}\label{eq:LSTM_state_update}
     \mathbf{c}_t = \mathbf{f}_t \hadamard \mathbf{c}_{t-1} +
-        \mathbf{i}_t \hadamard \mathbf{c}_t.
+        \mathbf{i}_t \hadamard \mathbf{\tilde c}_t.
 \end{equation}
 
 The last gate of LSTMs is the \emph{output~gate}~(\autoref{%
