@@ -2023,8 +2023,8 @@ input $\mathbf{x}_t$ and the output of the previous step $\mathbf{h}_{t-1}$ and
 produces an activation vector between $0$ and $1$
 
 \begin{equation}\label{eq:LSTM_forget_gate}
-    \mathbf{f}_t = \sigma\left(\mathbf{W}_f \cdot \left[\mathbf{h}_{t-1},
-        \mathbf{x}_t\right] + \mathbf{b}_f \right),
+    \mathbf{f}_t = \sigma\left(\mathbf{W}_f \cdot \mathbf{h}_{t-1} +
+        \mathbf{W}_f \cdot \mathbf{x}_t + \mathbf{b}_f \right),
 \end{equation}
 
 \noindent this activation is multiplied by the previous state
@@ -2045,10 +2045,11 @@ $\mathbf{\tilde c}_t$ between $-1$ and $1$. This is governed by the equations
 
 \begin{equation}\label{eq:LSTM_input_gate}
 \begin{split}
-    \mathbf{i}_t &= \sigma\left(\mathbf{W}_i \cdot \left[\mathbf{h}_{t-1},
-        \mathbf{x}_t\right] + \mathbf{b}_i \right),\\
+    \mathbf{i}_t &= \sigma\left(\mathbf{W}_i \cdot \mathbf{h}_{t-1} +
+        \mathbf{W}_i \cdot \mathbf{x}_t + \mathbf{b}_i \right),\\
     \mathbf{\tilde c}_t &= tanh \left(\mathbf{W}_c \cdot
-        \left[\mathbf{h}_{t-1}, \mathbf{x}_t\right] + \mathbf{b}_c \right).
+        \mathbf{h}_{t-1} + \mathbf{W}_c \cdot \mathbf{x}_t +
+        \mathbf{b}_c \right).
 \end{split}
 \end{equation}
 
@@ -2070,8 +2071,8 @@ state of the output gate
 
 \begin{equation}\label{eq:LSTM_output_gate}
 \begin{split}
-    \mathbf{o}_t &= \sigma\left(\mathbf{W}_o \cdot \left[\mathbf{h}_{t-1},
-        \mathbf{x}_t\right] + \mathbf{b}_o \right),\\
+    \mathbf{o}_t &= \sigma\left(\mathbf{W}_o \cdot \mathbf{h}_{t-1} +
+        \mathbf{W}_o \cdot \mathbf{x}_t + \mathbf{b}_o \right),\\
     \mathbf{h}_t &= \mathbf{o}_t \hadamard tanh \left(\mathbf{c}_t\right),
 \end{split}
 \end{equation}
@@ -2084,16 +2085,16 @@ Putting it all together, the equations that govern the behavior of an LSTM are
 
 \begin{equation}\label{eq:LSTM}
 \begin{split}
-    \mathbf{i}_t &= \sigma\left(\mathbf{W}_i \cdot \left[\mathbf{h}_{t-1},
-        \mathbf{x}_t\right] + \mathbf{b}_i \right),\\
-    \mathbf{f}_t &= \sigma\left(\mathbf{W}_f \cdot \left[\mathbf{h}_{t-1},
-        \mathbf{x}_t\right] + \mathbf{b}_f \right),\\
-    \mathbf{\tilde c}_t &= tanh \left(\mathbf{W}_c \cdot
-        \left[\mathbf{h}_{t-1}, \mathbf{x}_t\right] + \mathbf{b}_c \right),\\
+    \mathbf{i}_t &= \sigma\left(\mathbf{W}_i \cdot \mathbf{h}_{t-1} +
+        \mathbf{W}_i \cdot \mathbf{x}_t + \mathbf{b}_i \right),\\
+    \mathbf{f}_t &= \sigma\left(\mathbf{W}_f \cdot \mathbf{h}_{t-1} +
+        \mathbf{W}_f \cdot \mathbf{x}_t + \mathbf{b}_f \right),\\
+    \mathbf{\tilde c}_t &= tanh \left(\mathbf{W}_c \cdot \mathbf{h}_{t-1} +
+        \mathbf{W}_c \cdot \mathbf{x}_t + \mathbf{b}_c \right),\\
     \mathbf{c}_t &= \mathbf{f}_t \hadamard \mathbf{c}_{t-1} + \mathbf{i}_t
         \hadamard \mathbf{\tilde c}_t,\\
-    \mathbf{o}_t &= \sigma\left(\mathbf{W}_o \cdot \left[\mathbf{h}_{t-1},
-        \mathbf{x}_t\right] + \mathbf{b}_o \right),\\
+    \mathbf{o}_t &= \sigma\left(\mathbf{W}_o \cdot \mathbf{h}_{t-1} +
+        \mathbf{W}_o \cdot \mathbf{x}_t + \mathbf{b}_o \right),\\
     \mathbf{h}_t &= \mathbf{o}_t \hadamard tanh \left(\mathbf{c}_t\right).
 \end{split}
 \end{equation}
@@ -2114,18 +2115,21 @@ i.e., the state after the input and forget gate updates
 
 \begin{equation}\label{eq:LSTM_peepholes}
 \begin{split}
-    \mathbf{i}_t &= \sigma\left(\mathbf{W}_i \cdot \left[\mathbf{h}_{t-1},
-        \mathbf{x}_t\right] + \mathbf{W}_{ic} \circ \mathbf{c}_{t-1} +
+    \mathbf{i}_t &= \sigma\left(\mathbf{W}_i \cdot \mathbf{h}_{t-1} +
+        \mathbf{W}_i \cdot \mathbf{x}_t +
+        \mathbf{W}_{ic} \circ \mathbf{c}_{t-1} +
         \mathbf{b}_i \right),\\
-    \mathbf{f}_t &= \sigma\left(\mathbf{W}_f \cdot \left[\mathbf{h}_{t-1},
-        \mathbf{x}_t\right] + \mathbf{W}_{fc} \circ \mathbf{c}_{t-1} +
+    \mathbf{f}_t &= \sigma\left(\mathbf{W}_f \cdot \mathbf{h}_{t-1} +
+        \mathbf{W}_f \cdot \mathbf{x}_t +
+        \mathbf{W}_{fc} \circ \mathbf{c}_{t-1} +
         \mathbf{b}_f \right),\\
-    \mathbf{\tilde c}_t &= tanh \left(\mathbf{W}_c \cdot
-        \left[\mathbf{h}_{t-1}, \mathbf{x}_t\right] + \mathbf{b}_c \right),\\
+    \mathbf{\tilde c}_t &= tanh \left(\mathbf{W}_c \cdot \mathbf{h}_{t-1} +
+        \mathbf{W}_c \cdot \mathbf{x}_t + \mathbf{b}_c \right),\\
     \mathbf{c}_t &= \mathbf{f}_t \hadamard \mathbf{c}_{t-1} + \mathbf{i}_t
         \hadamard \mathbf{\tilde c}_t,\\
-    \mathbf{o}_t &= \sigma\left(\mathbf{W}_o \cdot \left[\mathbf{h}_{t-1},
-        \mathbf{x}_t\right] + \mathbf{W}_{oc} \hadamard \mathbf{c}_{t-1} +
+    \mathbf{o}_t &= \sigma\left(\mathbf{W}_o \cdot \mathbf{h}_{t-1} +
+        \mathbf{W}_o \cdot \mathbf{x}_t +
+        \mathbf{W}_{oc} \hadamard \mathbf{c}_{t} +
         \mathbf{b}_o \right),\\
     \mathbf{h}_t &= \mathbf{o}_t \hadamard tanh \left(\mathbf{c}_t\right).
 \end{split}
@@ -2168,12 +2172,13 @@ the internal structure is modified to cope with these changes
 
 \begin{equation}\label{eq:GRU}
 \begin{split}
-    \mathbf{z}_t &= \sigma \left( \mathbf{W}_z \cdot \left[\mathbf{h}_{t-1},
-        \mathbf{x}_t\right]\right), \\
-    \mathbf{r}_t &= \sigma \left( \mathbf{W}_r \cdot \left[\mathbf{h}_{t-1},
-        \mathbf{x}_t\right]\right), \\
-    \mathbf{\tilde h}_t &= tanh \left(\mathbf{W}_o \cdot \left[\mathbf{r}_t
-        \hadamard \mathbf{h}_{t-1}, \mathbf{x}_t\right]
+    \mathbf{z}_t &= \sigma \left(\mathbf{W}_z \cdot \mathbf{h}_{t-1} +
+        \mathbf{W}_z \cdot \mathbf{x}_t\right), \\
+    \mathbf{r}_t &= \sigma \left(\mathbf{W}_r \cdot \mathbf{h}_{t-1} +
+        \mathbf{W}_r \cdot \mathbf{x}_t\right), \\
+    \mathbf{\tilde h}_t &= tanh \left(
+        \mathbf{W}_o \cdot \mathbf{r}_t + \hadamard \mathbf{h}_{t-1} +
+        \mathbf{W}_o \cdot \mathbf{x}_t
         \right), \\
     \mathbf{h}_t &= (1-\mathbf{z}_t) \hadamard \mathbf{h}_{t-1} +
         (\mathbf{z}_t) \hadamard \mathbf{\tilde h}_t.
