@@ -12,13 +12,13 @@
 \usepackage[twoside=true]{geometry}
 % In the weird format
 % In the Blurb format
-\geometry{
-    paperwidth=15.557cm,
-	paperheight=23.495cm,
-	margin=2cm,
-	top=2.3cm,
-	bindingoffset=0.4cm
-}
+% \geometry{
+%     paperwidth=15.557cm,
+% 	paperheight=23.495cm,
+% 	margin=2cm,
+% 	top=2.3cm,
+% 	bindingoffset=0.4cm
+% }
 % % In the weird format
 % \geometry{
 % 	paperwidth=17cm,
@@ -27,6 +27,12 @@
 % 	top=2.3cm,
 % 	bindingoffset=0.4cm
 % }
+% B5
+\geometry{b5paper,
+	margin=2cm,
+	top=2.3cm,
+	bindingoffset=0.4cm
+}
 % A4
 % \geometry{a4paper,
 %   margin=3cm,
@@ -99,7 +105,7 @@
 % Language and notation
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \usepackage[english,italian]{babel} % has to precede hyperref to set the language of \autoref
-\usepackage[bookmarks=true,pdftex=false,bookmarksopen=true,pdfborder={0,0,0}]{hyperref}
+\usepackage[bookmarks=true,pdftex=false,bookmarksopen=true,pdfborder={0,0,0},hidelinks]{hyperref}
 % Change section, subsection and subsubsection to Section (in autoref)
 \addto\extrasenglish{%
     \renewcommand{\sectionautorefname}{Section \negthinspace}

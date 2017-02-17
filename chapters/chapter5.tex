@@ -450,36 +450,6 @@ coming from the skipped connections is always preserved.
 
 \subsection{Datasets}\label{sec:deconvLSTM_datasets}
 
-\begin{figure}[t]
-    \centering
-    \includegraphics[width=0.8\columnwidth]{img/deconvLSTM/camvid_gt.jpg}
-    \caption{An example of ground truth segmentation for the CamVid dataset.}
-    \label{fig:deconvlstm_camvid_gt}
-\end{figure}
-
-\begin{figure}[t]
-    \centering
-    \includegraphics[width=\columnwidth]{img/deconvLSTM/gatech_gt.png}
-    \caption{An example of ground truth segmentation for the Gatech dataset.}
-    \label{fig:deconvLSTM_gatech_gt}
-\end{figure}
-
-\begin{figure}[t]
-    \centering
-    \includegraphics[width=0.3\columnwidth]{img/deconvLSTM/davis_gt1.jpg}
-    \includegraphics[width=0.3\columnwidth]{img/deconvLSTM/davis_gt2.jpg}
-    \includegraphics[width=0.3\columnwidth]{img/deconvLSTM/davis_gt3.jpg}\\
-    \includegraphics[width=0.3\columnwidth]{img/deconvLSTM/davis_gt4.jpg}
-    \includegraphics[width=0.3\columnwidth]{img/deconvLSTM/davis_gt5.jpg}
-    \includegraphics[width=0.3\columnwidth]{img/deconvLSTM/davis_gt6.jpg}\\
-    \includegraphics[width=0.3\columnwidth]{img/deconvLSTM/davis_gt7.jpg}
-    \includegraphics[width=0.3\columnwidth]{img/deconvLSTM/davis_gt8.jpg}
-    \includegraphics[width=0.3\columnwidth]{img/deconvLSTM/davis_gt9.jpg}\\
-    \caption{An example of ground truth segmentation for the DAVIS dataset.}
-    \label{fig:deconvlstm_davis_gt}
-\end{figure}
-
-
 \subsubsection{CamVid: Motion-based Video Segmentation}
 \label{sec:deconvLSTM_camvid}
 The Cambridge-driving Labeled Video Database (CamVid)~\citep{
@@ -500,6 +470,19 @@ sequences, but in the literature it has mostly been used for still image
 semantic segmentation. See~\autoref{fig:deconvlstm_camvid_gt} for a sample with
 ground truth from each of the three sequences.
 
+\begin{figure}[t]
+    \centering
+    \includegraphics[width=0.8\columnwidth]{img/deconvLSTM/camvid_gt.jpg}
+    \caption{An example of ground truth segmentation for the CamVid dataset.}
+    \label{fig:deconvlstm_camvid_gt}
+\end{figure}
+
+\begin{figure}[t!]
+    \centering
+    \includegraphics[width=\columnwidth]{img/deconvLSTM/gatech_gt.png}
+    \caption{An example of ground truth segmentation for the Gatech dataset.}
+    \label{fig:deconvLSTM_gatech_gt}
+\end{figure}
 
 \subsubsection{Gatech: Geometric Context Video Segmentation}
 \label{sec:deconvLSTM_gatech}
@@ -515,6 +498,20 @@ to learn 3D geometric structure of outdoor video scenes. A sample with ground
 truth segmentation taken from the Gatech dataset can be seen
 in~\autoref{fig:deconvLSTM_gatech_gt}.
 
+\begin{figure}[t]
+    \centering
+    \includegraphics[width=0.3\columnwidth]{img/deconvLSTM/davis_gt1.jpg}
+    \includegraphics[width=0.3\columnwidth]{img/deconvLSTM/davis_gt2.jpg}
+    \includegraphics[width=0.3\columnwidth]{img/deconvLSTM/davis_gt3.jpg}\\
+    \includegraphics[width=0.3\columnwidth]{img/deconvLSTM/davis_gt4.jpg}
+    \includegraphics[width=0.3\columnwidth]{img/deconvLSTM/davis_gt5.jpg}
+    \includegraphics[width=0.3\columnwidth]{img/deconvLSTM/davis_gt6.jpg}\\
+    \includegraphics[width=0.3\columnwidth]{img/deconvLSTM/davis_gt7.jpg}
+    \includegraphics[width=0.3\columnwidth]{img/deconvLSTM/davis_gt8.jpg}
+    \includegraphics[width=0.3\columnwidth]{img/deconvLSTM/davis_gt9.jpg}\\
+    \caption{An example of ground truth segmentation for the DAVIS dataset.}
+    \label{fig:deconvlstm_davis_gt}
+\end{figure}
 
 \subsubsection{DAVIS: Densely Annotated Video Segmentation}
 \label{sec:deconvLSTM_davis}
@@ -738,6 +735,37 @@ confidence with the model rather than to reach the state-of-the-art.
 
 
 %%%%%%%%% GATECH %%%%%%%%%
+\begin{figure}[t]
+    \captionsetup[subfigure]{justification=centering}
+    \begin{minipage}[c]{.95\textwidth}
+        \begin{subfigure}{.47\textwidth}
+            \centering
+            \includegraphics[trim={13 10mm 25mm 10mm},clip,width=\linewidth]{img/deconvLSTM/gatech_10_204-0.png}
+            \caption{}\label{fig:deconvlstm_gatech_samples:a}
+        \end{subfigure}%
+        \begin{subfigure}{.47\textwidth}
+            \centering
+            \includegraphics[trim={13 10mm 25mm 10mm},clip,width=\linewidth]{img/deconvLSTM/gatech_10_339-2.png}
+            \caption{}\label{fig:deconvlstm_gatech_samples:b}
+        \end{subfigure}
+        \begin{subfigure}{.47\textwidth}
+            \centering
+            \includegraphics[trim={13 10mm 25mm 5mm},clip,width=\linewidth]{img/deconvLSTM/gatech_24_99-0.png}
+            \caption{}\label{fig:deconvlstm_gatech_samples:c}
+        \end{subfigure}
+        \begin{subfigure}{.47\textwidth}
+            \centering
+            \includegraphics[trim={13 10mm 25mm 5mm},clip,width=\linewidth]{img/deconvLSTM/gatech_29_69-1.png}
+            \caption{}\label{fig:deconvlstm_gatech_samples:d}
+        \end{subfigure}
+    \end{minipage}%
+    \begin{minipage}[c]{.1\textwidth}
+        \includegraphics[width=.7\textwidth]{img/deconvLSTM/gatech_barra.png}
+    \end{minipage}%
+    \caption{Segmentation samples on the Gatech dataset.}
+	\label{fig:deconvlstm_gatech_samples}
+\end{figure}
+
 Most of the training effort was spent on the Gatech dataset, a well known
 dataset for structured prediction. The performance of the DEConvLSTM model on
 this dataset is remarkable, as reported in \autoref{tbl:deconvLSTM_gatech}. The
@@ -779,65 +807,8 @@ further improve the state of the art.
     \label{tbl:deconvLSTM_gatech}
 \end{table}
 
-\begin{figure}[p]
-    \captionsetup[subfigure]{justification=centering}
-    \begin{minipage}[c]{.95\textwidth}
-        \begin{subfigure}{.47\textwidth}
-            \centering
-            \includegraphics[trim={13 10mm 25mm 10mm},clip,width=\linewidth]{img/deconvLSTM/gatech_10_204-0.png}
-            \caption{}\label{fig:deconvlstm_gatech_samples:a}
-        \end{subfigure}%
-        \begin{subfigure}{.47\textwidth}
-            \centering
-            \includegraphics[trim={13 10mm 25mm 10mm},clip,width=\linewidth]{img/deconvLSTM/gatech_10_339-2.png}
-            \caption{}\label{fig:deconvlstm_gatech_samples:b}
-        \end{subfigure}
-        \begin{subfigure}{.47\textwidth}
-            \centering
-            \includegraphics[trim={13 10mm 25mm 5mm},clip,width=\linewidth]{img/deconvLSTM/gatech_24_99-0.png}
-            \caption{}\label{fig:deconvlstm_gatech_samples:c}
-        \end{subfigure}
-        \begin{subfigure}{.47\textwidth}
-            \centering
-            \includegraphics[trim={13 10mm 25mm 5mm},clip,width=\linewidth]{img/deconvLSTM/gatech_29_69-1.png}
-            \caption{}\label{fig:deconvlstm_gatech_samples:d}
-        \end{subfigure}
-    \end{minipage}%
-    \begin{minipage}[c]{.1\textwidth}
-        \includegraphics[width=.7\textwidth]{img/deconvLSTM/gatech_barra.png}
-    \end{minipage}%
-    \caption{Segmentation samples on the Gatech dataset.}
-	\label{fig:deconvlstm_gatech_samples}
-\end{figure}
-
 
 %%%%%% DAVIS %%%%%%%%%%
-Encouraged by the good results on Gatech, we also tested the network on the
-recently introduced DAVIS dataset for dense semantic segmentation. With only
-cursory hyperparameter search around the settings that worked best on the
-Gatech dataset, the DEConvLSTM obtains results comparable with the
-state-of-the-art of a few years ago. \autoref{tbl:deconvLSTM_davis} reports the
-results of the initial experiments with the DEConvLSTM model on this dataset
-and \autoref{fig:deconvlstm_davis_sample} shows an example of prediction made
-by the model.
-
-The experiments conducted on this dataset are not enough to draw final
-conclusions, but one failure mode of the DEConvLSTM model on this task seems to
-be not to recognize the goal properly. The task in DAVIS is to segment only the
-main element in the scene and by inspecting the segmentation samples (see,
-e.g.,~\autoref{fig:deconvlstm_davis_failure}) it appears that sometimes
-the network has a hard time identifying what to segment and what to ignore and
-ends up focusing too much on the background, heavily decreasing the overall
-segmentation performance. More experiments have to be conducted to address this
-issue; one option could be to
-% impose a stronger spatial prior with, e.g., a CRF, to focus more on the
-% central part of the frame where the objects of interest are usually placed.
-% Alternatively,
-increase the capacity of the temporal pathway to rely more on the temporal
-information to segment the main element of the scene that in these datasets is
-usually the one that moves and changes the most. This early result is very
-encouraging and calls for more thorough experiments on this dataset.
-
 \afterpage{
 \begin{table}[t]
     \centering{\small
@@ -864,7 +835,16 @@ encouraging and calls for more thorough experiments on this dataset.
 \footnotetext{\url{https://graphics.ethz.ch/~perazzif/davis/soa_compare.php}}
 }
 
-\begin{figure}[p]
+Encouraged by the good results on Gatech, we also tested the network on the
+recently introduced DAVIS dataset for dense semantic segmentation. With only
+cursory hyperparameter search around the settings that worked best on the
+Gatech dataset, the DEConvLSTM obtains results comparable with the
+state-of-the-art of a few years ago. \autoref{tbl:deconvLSTM_davis} reports the
+results of the initial experiments with the DEConvLSTM model on this dataset
+and \autoref{fig:deconvlstm_davis_sample} shows an example of prediction made
+by the model.
+
+\begin{figure}[t!]
     \centering
     \includegraphics[trim={0 15mm 0 0},width=0.9\columnwidth]{img/deconvLSTM/paragliding-0.png}\\
     \caption{An example of proper segmentation produced by the DEConvLSTM model
@@ -872,7 +852,7 @@ encouraging and calls for more thorough experiments on this dataset.
     \label{fig:deconvlstm_davis_sample}
 \end{figure}
 
-\begin{figure}[t]
+\begin{figure}[t!]
     \centering
     \includegraphics[trim={0 15mm 0 0},width=0.8\columnwidth]{img/deconvLSTM/drift-0.png}\\
     \includegraphics[trim={0 15mm 0 0},width=0.8\columnwidth]{img/deconvLSTM/bmx-trees-0.png}
@@ -881,6 +861,24 @@ encouraging and calls for more thorough experiments on this dataset.
         scene.}
     \label{fig:deconvlstm_davis_failure}
 \end{figure}
+
+
+The experiments conducted on this dataset are not enough to draw final
+conclusions, but one failure mode of the DEConvLSTM model on this task seems to
+be not to recognize the goal properly. The task in DAVIS is to segment only the
+main element in the scene and by inspecting the segmentation samples (see,
+e.g.,~\autoref{fig:deconvlstm_davis_failure}) it appears that sometimes
+the network has a hard time identifying what to segment and what to ignore and
+ends up focusing too much on the background, heavily decreasing the overall
+segmentation performance. More experiments have to be conducted to address this
+issue; one option could be to
+% impose a stronger spatial prior with, e.g., a CRF, to focus more on the
+% central part of the frame where the objects of interest are usually placed.
+% Alternatively,
+increase the capacity of the temporal pathway to rely more on the temporal
+information to segment the main element of the scene that in these datasets is
+usually the one that moves and changes the most. This early result is very
+encouraging and calls for more thorough experiments on this dataset.
 
 
 \section{Discussion}\label{sec:deconvLSTM_discussion}

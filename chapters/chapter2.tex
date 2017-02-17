@@ -2106,7 +2106,7 @@ have information about the state of the LSTM. Note that, as illustrated
 in~\autoref{fig:LSTM_peepholes}, the output gate peeps into $\mathbf{c}_t$,
 i.e., the state after the input and forget gate updates
 
-\begin{figure}[t]
+\begin{figure}[p]
     \centering
     \includegraphics[width=0.5\textwidth]{pdf/LSTM_peepholes.pdf}
     \caption{LSTM with peepholes.\label{fig:LSTM_peepholes}}
@@ -2144,7 +2144,7 @@ input is going to be written. The modified state update equation is
         \hadamard \mathbf{\tilde c}_t.
 \end{equation}
 
-\begin{figure}[t]
+\begin{figure}[p]
     \centering
     \includegraphics[width=0.5\textwidth]{pdf/LSTM_coupled.pdf}
     \caption{LSTM with coupled forget and input gate.\label{fig:LSTM_coupled}}
@@ -2159,6 +2159,12 @@ different internal structure. Along the lines of \autoref{sec:LSTM_coupled}, in
 GRUs the forget and input gates are coupled into an~\emph{update gate}
 $\mathbf{z}_t$.  The memory and output are also merged into a single state and
 the internal structure is modified to cope with these changes
+
+\begin{figure}[p]
+    \centering
+    \includegraphics[width=0.5\textwidth]{pdf/GRU.pdf}
+    \caption{Gated Recurrent Units (GRUs).\label{fig:GRU}}
+\end{figure}
 
 \begin{equation}\label{eq:GRU}
 \begin{split}
@@ -2178,12 +2184,6 @@ The advantage of GRUs over LSTMs is the smaller number of gates that makes them
 less memory as well as computationally intense, which is often a critical
 aspect for ANNs. GRUs have been shown to perform as well as LSTMs in some
 settings (see~\citep{Chung-et-al-NIPSDL2014-small}).
-
-\begin{figure}[pt]
-    \centering
-    \includegraphics[width=0.5\textwidth]{pdf/GRU.pdf}
-    \caption{Gated Recurrent Units (GRUs).\label{fig:GRU}}
-\end{figure}
 
 \section{Metrics}
 Metrics allow to evaluate the effectiveness of a model on a given task and to
