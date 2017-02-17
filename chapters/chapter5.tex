@@ -190,7 +190,7 @@ here
     \mathbf{o}_t &= \sigma\left(
         \mathbf{W}_{oh} \cdot \mathbf{h}_{t-1} +
         \mathbf{W}_{ox} \cdot \mathbf{x}_t +
-        \mathbf{W}_{oc} \hadamard \mathbf{c}_{t-1} +
+        \mathbf{W}_{oc} \hadamard \mathbf{c}_{t} +
         \mathbf{b}_o \right),\\
     \mathbf{h}_t &= \mathbf{o}_t \hadamard tanh \left(\mathbf{c}_t\right),
 \end{split}
@@ -232,7 +232,7 @@ convolutions, leading to the following formulation
     \mathbf{o}_t &= \sigma\left(
         \mathbf{W}_{oh} * \mathbf{h}_{t-1} +
         \mathbf{W}_{ox} * \mathbf{x}_t +
-        \mathbf{W}_{oc} \hadamard \mathbf{c}_{t-1} +
+        \mathbf{W}_{oc} \hadamard \mathbf{c}_{t} +
         \mathbf{b}_o \right),\\
     \mathbf{h}_t &= \mathbf{o}_t \hadamard tanh \left(\mathbf{c}_t\right),
 \end{split}
@@ -273,7 +273,7 @@ This is expressed in~\autoref{eq:deconvLSTM_enc}
         \mathbf{W}_{ox}^{(L)} * \dots * \rho \mathbf{W}_{ox}^{(1)} *
             \rho \mathbf{W}_{ox}^{(0)} * \mathbf{x}_t +
         \mathbf{W}_{oh} * \mathbf{h}_{t-1} +
-        \mathbf{W}_{oc} * \mathbf{c}_{t-1} +
+        \mathbf{W}_{oc} * \mathbf{c}_{t} +
         \mathbf{b}_o \right),\\
     \mathbf{h}_t &= \mathbf{o}_t \hadamard tanh \left(\mathbf{c}_t\right).
 \end{split}
@@ -339,7 +339,7 @@ function of an LSTM with peephole connections
             \mathbf{W}_{ox}^{(1)} \circledast \rho \mathbf{W}_{ox}^{(0)}
             \circledast \mathbf{x}_t +
         \mathbf{W}_{oh} * \mathbf{h}_{t-1} +
-        \mathbf{W}_{oc} * \mathbf{c}_{t-1} +
+        \mathbf{W}_{oc} * \mathbf{c}_{t} +
         \mathbf{b}_o \right),\\
     \mathbf{h}_t &= \mathbf{o}_t \hadamard tanh \left(\mathbf{c}_t\right).
 \end{split}
